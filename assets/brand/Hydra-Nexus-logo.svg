@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+<defs>
+ <linearGradient id="energy" x1="10%" y1="0%" x2="90%" y2="100%"><stop stop-color="#B9FFE0"/><stop offset=".48" stop-color="#62E5C8"/><stop offset="1" stop-color="#28B6BE"/></linearGradient>
+ <linearGradient id="edge" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#204C53"/><stop offset="1" stop-color="#12303A"/></linearGradient>
+ <radialGradient id="back" cx=".5" cy=".43" r=".75"><stop stop-color="#162A31"/><stop offset="1" stop-color="#0A1017"/></radialGradient>
+ <filter id="glow"><feGaussianBlur stdDeviation="9"/></filter>
+</defs>
+<rect width="1024" height="1024" rx="216" fill="url(#back)"/><rect x="16" y="16" width="992" height="992" rx="200" fill="none" stroke="#1A3038" stroke-width="4"/><!-- One recognizable hydraulic knot: 3 sentient serpents joining one data core. -->
+<g fill="none" stroke-linecap="round" stroke-linejoin="round">
+ <!-- Orbit connectors, clean at small sizes -->
+ <path d="M512 365V494" stroke="#20484F" stroke-width="22"/>
+ <!-- Side hydra necks, thick angular curves -->
+ <path d="M424 580 338 528 296 464 304 420" stroke="url(#energy)" stroke-width="44" />
+ <path d="M600 580 686 528 728 464 720 420" stroke="url(#energy)" stroke-width="44" />
+ <path d="M512 514V375" stroke="#4DDCC4" stroke-width="47"/>
+</g>
+<!-- Symmetric fanged side heads, distinct from Hydra's source logo -->
+<path d="M304 420 253 426 209 396 197 350 224 308 277 292 322 316 341 360 329 393Z" fill="url(#energy)"/>
+<path d="M720 420 771 426 815 396 827 350 800 308 747 292 702 316 683 360 695 393Z" fill="url(#energy)"/>
+<!-- deep eyes and jaw-cuts -->
+<path d="m260 330 32 12 10 31-24 25-32-9-16-26z" fill="#0C151B"/>
+<path d="m764 330-32 12-10 31 24 25 32-9 16-26z" fill="#0C151B"/>
+<path d="m207 405 46 19 30-9-5 27-31 12z" fill="#0B1117"/>
+<path d="m817 405-46 19-30-9 5 27 31 12z" fill="#0B1117"/>
+<!-- central Hydra head, abstract gemlike crowned reptile -->
+<path d="M451 268 426 223 451 238 470 211 481 240 512 251 543 240 554 211 573 238 598 223 573 268 598 304 583 356 552 390 522 406H502l-30-16-31-34-15-52Z" fill="url(#energy)"/>
+<!-- center crown and split mouth detail -->
+<path d="m461 319 31 16-17 15-26-9zM563 319l-31 16 17 15 26-9z" fill="#0B151A" />
+<path d="m498 379 14 10 14-10-14 24z" fill="#164D4C"/>
+<!-- Center: the "Nexus", an open hexagonal circuit core, with three attachment points -->
+<path d="M512 484 669 575V744L512 835 355 744V575Z" fill="#0D1B22" stroke="url(#energy)" stroke-width="29" stroke-linejoin="round"/>
+<path d="M512 522 632 591V726L512 797 392 726V591Z" fill="#10252B"/>
+<!-- original Nexus N modernized as continuous folded circuit -->
+<path d="M437 716V613l150 104V613" fill="none" stroke="url(#energy)" stroke-width="43" stroke-linecap="square" stroke-linejoin="miter"/>
+<!-- 3 energized node contacts -->
+<circle cx="512" cy="484" r="16" fill="#D3FFE9"/>
+<circle cx="355" cy="659" r="12" fill="#58DECA"/>
+<circle cx="669" cy="659" r="12" fill="#58DECA"/>
+</svg>

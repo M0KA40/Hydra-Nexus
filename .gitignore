@@ -1,0 +1,11 @@
+dist/
+__pycache__/
+*.pyc
+/test-run-*/
+/tests/*-fixture-*/
+/tests/test-run-*/
+/tests/fault-*/
+/tests/review-fixture-*/
+/tests/updater-faults-*/
+/tests/preview-backend-*/
+*.log

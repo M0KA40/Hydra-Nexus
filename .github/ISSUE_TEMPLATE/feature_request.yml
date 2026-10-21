@@ -1,0 +1,15 @@
+name: Feature request
+description: Suggest a change to Hydra Nexus.
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What would this help you do?
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Proposed behavior
+    validations:
+      required: true

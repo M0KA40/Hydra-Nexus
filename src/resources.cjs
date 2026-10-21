@@ -1,0 +1,21 @@
+'use strict';
+function createResourceManager({app,enabled,isMain,busy,log,sleepDelay=30000}){
+  const windows=new Map();let stopping=false,last={state:'Ready',beforeMB:null,afterMB:null,when:null},collecting=false,lastCollect=0;
+  const memory=()=>{try{return Math.round(app.getAppMetrics().reduce((sum,m)=>sum+(Number(m.memory?.workingSetSize)||0),0)/1024);}catch{return null;}};
+  async function collect(win){if(collecting||Date.now()-lastCollect<60000||win.isDestroyed()||!isMain(win))return;const debug=win.webContents.debugger;if(!debug||debug.isAttached()||win.webContents.isDevToolsOpened?.())return;collecting=true;lastCollect=Date.now();let ours=false;const before=memory();try{debug.attach('1.3');ours=true;await debug.sendCommand('HeapProfiler.collectGarbage');last={state:'Unused renderer objects collected',beforeMB:before,afterMB:memory(),when:Date.now()};}catch(e){log(e);}finally{if(ours&&debug.isAttached())try{debug.detach();}catch{}collecting=false;}}
+  function clear(record){clearTimeout(record.timer);record.timer=null;clearTimeout(record.gcTimer);record.gcTimer=null;}
+  function wake(win){const r=windows.get(win);if(!r)return Promise.resolve();clear(r);if(r.waking)return r.waking;if(!r.sleeping)return Promise.resolve();const saved=r.saved;r.sleeping=false;r.saved=null;if(win.isDestroyed()||!saved||win.webContents.getURL()!=='about:blank')return Promise.resolve();
+    r.waking=(async()=>{try{await win.loadURL(saved.url);if(saved.state&&!win.isDestroyed()){await win.webContents.executeJavaScript('new Promise(resolve=>{let tries=0;const timer=setInterval(()=>{if(window.__hydraNexusUI&&window.__nexusWorkspace){clearInterval(timer);Promise.resolve(window.__hydraNexusUI.restoreView('+JSON.stringify(saved.state)+')).finally(resolve);}else if(++tries>100){clearInterval(timer);resolve();}},100);})');}last={...last,state:'Interface restored',when:Date.now()};}catch(e){log(e);}finally{r.waking=null;}})();return r.waking;
+  }
+  async function sleep(win){const r=windows.get(win);if(!r||stopping||!enabled()||win.isDestroyed()||!isMain(win)||(!win.isMinimized()&&win.isVisible())||busy()||r.sleeping||r.waking||win.webContents.isLoading()||win.webContents.isDevToolsOpened?.())return;
+    try{const initialURL=win.webContents.getURL(),state=await win.webContents.executeJavaScript('window.__hydraNexusUI?.snapshotView?.()||null');if(!state||state.blockSleep||busy()||win.webContents.getURL()!==initialURL||(!win.isMinimized()&&win.isVisible())||!enabled()||stopping)return;const url=win.webContents.getURL(),before=memory();r.saved={url,state};r.sleeping=true;await win.loadURL('about:blank');last={state:'Interface asleep; background tasks continue',beforeMB:before,afterMB:memory(),when:Date.now()};
+      if(!r.sleeping)return;if(!enabled()||(!win.isMinimized()&&win.isVisible()))await wake(win);
+    }catch(e){log(e);if(r.sleeping)await wake(win);}
+  }
+  function schedule(win){const r=windows.get(win);if(!r)return;clear(r);if(stopping||!enabled()||!isMain(win))return;if(!win.isVisible()||win.isMinimized()){r.timer=setTimeout(()=>sleep(win),sleepDelay);r.timer.unref?.();}else {r.gcTimer=setTimeout(()=>collect(win),win.isFocused()?2000:8000);r.gcTimer.unref?.();}}
+  function attach(win){if(windows.has(win))return;const r={timer:null,gcTimer:null,sleeping:false,saved:null,waking:null};windows.set(win,r);win.on('hide',()=>schedule(win));win.on('minimize',()=>schedule(win));win.on('blur',()=>schedule(win));win.on('focus',()=>wake(win));win.on('show',()=>wake(win));win.on('restore',()=>wake(win));win.on('closed',()=>{clear(r);windows.delete(win);});win.webContents.on('did-finish-load',()=>{if(!r.sleeping)schedule(win);});
+    win.webContents.on('did-start-navigation',(_event,url,inPlace,mainFrame)=>{if(typeof url==='object'){mainFrame=url.isMainFrame;url=url.url;}if(r.sleeping&&url&&url!=='about:blank'&&mainFrame!==false){r.sleeping=false;r.saved=null;}});
+  }
+  return {attach,collect,sleep,wake,status:()=>({...last,currentMB:memory()}),refresh:()=>{for(const win of windows.keys()){if(enabled())schedule(win);else wake(win);}},stop:()=>{stopping=true;for(const r of windows.values())clear(r);}};
+}
+module.exports={createResourceManager};
