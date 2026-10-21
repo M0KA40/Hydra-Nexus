@@ -86,6 +86,6 @@ base=base.replace('$catalog = @($script:BuiltInPatches)',"$catalog = @($script:B
 base=base.replace("'    HYDRA PATCH MANAGER                                 v2.1.0'", "'    HYDRA NEXUS                                         v1.0.0'")
 base=base.replace('title Hydra Patch Manager','title Hydra Nexus')
 base=base.replace("if ($Action -eq 'Menu') { Show-MainMenu }", "if ($Action -eq 'Menu') { Show-NexusDevelopmentNotice; Show-NexusMenu ($script:BuiltInPatches | Where-Object Id -eq 'nexus') }")
-base=':: HYDRA_NEXUS_RELEASE 1.0.0\n'+base
+base=':: HYDRA_NEXUS_RELEASE 1.0.0\n:: HYDRA_NEXUS_REVISION 2\n'+base
 (output/'Hydra_Nexus.bat').write_bytes(base.replace('\r\n','\n').replace('\n','\r\n').encode())
 print('Built Hydra Nexus 1.0.0: 8 plugins, backgrounds, safe updater and per-game tools. GameShift is not bundled.')

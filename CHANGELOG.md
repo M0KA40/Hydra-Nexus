@@ -2,6 +2,12 @@
 
 ## 1.0.0
 
+### Internal repair 2
+
+- Copy existing backups immediately when choosing a Drive folder or enabling automatic Drive copies. Show copied and already-present counts separately from local backup changes.
+- Keep automatic-copy controls and their current state on the Drive page.
+- Detect internal repair revisions without changing the public release number.
+
 The first official Hydra Nexus release.
 
 - Eight optional plugins: Steam launch settings, Game Backup, Play Activity, Game Tabs, Nexus Mods, Game Notes, PC Compatibility and Low Resource Mode.

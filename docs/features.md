@@ -17,8 +17,8 @@ External restore accepts a ZIP, manifest, game folder or backup collection. The 
 ### Google Drive for desktop
 
 1. [Install Google Drive for desktop](https://www.google.com/drive/download/) and sign in to your account in the Google app.
-2. In **Backup → Google Drive**, select **Choose Drive folder**. Choose **My Drive**, or a folder already synced by Drive. Nexus creates **Hydra Nexus Backups** inside it. Drive letters can differ; do not assume everyone uses `G:`.
-3. Select **Copy latest backups**, or enable **Copy new backups to Google Drive** in General.
+2. In **Backup → Google Drive**, select **Choose Drive folder**. Choose **My Drive**, or a folder already synced by Drive. Nexus creates **Hydra Nexus Backups** inside it and copies the existing latest backup for each game immediately. No new save changes are required. Drive letters can differ; do not assume everyone uses `G:`.
+3. Select **Copy existing / latest backups**, or enable **Copy new backups to Google Drive** in General.
 4. Check the Google Drive tray icon and wait for syncing to finish before shutting down or disconnecting the drive.
 
 Nexus verifies each local recovery point, creates a ZIP and checks its copy before marking it complete. Google Drive handles uploading and authentication. Nexus does not use the Google Drive API, request Google credentials or confirm that a copy has reached the cloud. A copied file may still be waiting for internet access or available cloud storage.
@@ -102,3 +102,5 @@ Adjust **Darkness** and **Blur**, or choose **Reset background** to return to th
 The installer download is checked against the release's SHA-256 checksum and version. **Install & restart Hydra** asks for confirmation, closes Hydra normally, runs the hidden installer and reopens Hydra once. Running games and active backup operations block restart. **Choose local update** accepts a Nexus BAT you downloaded yourself.
 
 The repository link is always available. Checksums detect changed downloads; they are not a publisher signature. Read [troubleshooting](troubleshooting.md) if installation does not finish.
+
+Internal repairs can keep the same public version. The updater also compares an internal revision marker, so a later repair of 1.0.0 can still be offered as an update.

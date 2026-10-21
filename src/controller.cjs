@@ -82,13 +82,13 @@ if(!global.__HYDRA_NEXUS__){
     if(name==='updateStatus'||name==='checkUpdates'||name==='installUpdate'||name==='chooseUpdate')return updater.action(win,name,data);
     throw Error('Unknown Nexus action');
   }
-  const updater=require('./updater.cjs').createUpdater({directory,version:VERSION,getRepository:()=>config.repository,fetcher:(url,options)=>net.fetch(url,options),app,dialog});
+  const updater=require('./updater.cjs').createUpdater({directory,version:VERSION,revision:brand.revision||1,getRepository:()=>config.repository,fetcher:(url,options)=>net.fetch(url,options),app,dialog});
   let automaticChecking=false,lastUpdateNotice=null,nextUpdateNotice=0,pendingUpdateNotice=null;
   async function automaticUpdateCheck(){
     if(configError||config.autoCheckUpdates===false||automaticChecking)return;
     automaticChecking=true;
-    try{await ready;const result=await updater.action(null,'checkUpdates');if(config.autoCheckUpdates!==false&&result.release?.newer&&(lastUpdateNotice!==result.release.version||Date.now()>=nextUpdateNotice)){
-      lastUpdateNotice=result.release.version;nextUpdateNotice=Date.now()+6*60*60*1000;
+    try{await ready;const result=await updater.action(null,'checkUpdates');if(config.autoCheckUpdates!==false&&result.release?.newer&&(lastUpdateNotice!==result.release.version+':'+result.release.revision||Date.now()>=nextUpdateNotice)){
+      lastUpdateNotice=result.release.version+':'+result.release.revision;nextUpdateNotice=Date.now()+6*60*60*1000;
       let delivered=false;for(const win of windows.keys())if(trusted(win)){send(win,{event:'updateAvailable',value:result});delivered=true;}pendingUpdateNotice=delivered?null:result;
     }}catch(e){log(e);}finally{automaticChecking=false;}
   }
