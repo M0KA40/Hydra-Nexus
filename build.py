@@ -1,17 +1,14 @@
 from pathlib import Path
 import base64,json,re,argparse
 parser=argparse.ArgumentParser()
-parser.add_argument('--google-client',help='Optional Google Desktop OAuth JSON; only the public client ID is embedded')
 args=parser.parse_args()
 root=Path(__file__).resolve().parent
 source=root/'src';backup=source;output=root/'dist';output.mkdir(exist_ok=True)
-client=json.loads(Path(args.google_client).read_text(encoding='utf-8-sig'))['installed'] if args.google_client else {}
-client={k:client[k] for k in ('client_id',) if k in client}
 modules={}
-for name in ['core.cjs','drive.cjs','achievements.cjs','ui.js','bridge.cjs']:
-    text=(backup/name).read_text(encoding='utf-8').replace('__GOOGLE_CLIENT__',json.dumps(client,separators=(',',':')))
+for name in ['core.cjs','drive-folder.cjs','achievements.cjs','ui.js','bridge.cjs']:
+    text=(backup/name).read_text(encoding='utf-8')
     if name=='bridge.cjs':
-        text=text.replace("  async function backup(key,reason='Manual'){await ready();", "  global.__NEXUS_BACKUP_BUSY__=()=>!!(engine?.busy||drive?.uploading);\n  async function backup(key,reason='Manual'){if(global.__HYDRA_NEXUS_ENABLED__?.('backup')===false)throw Error('Enable Backup in Hydra Nexus > Plugins first');await ready();")
+        text=text.replace("  async function performBackup(key,reason='Manual'){await ready();", "  global.__NEXUS_BACKUP_BUSY__=()=>!!(backupTask||engine?.busy||drive?.uploading);\n  async function performBackup(key,reason='Manual'){if(global.__HYDRA_NEXUS_ENABLED__?.('backup')===false)throw Error('Enable Backup in Hydra Nexus > Plugins first');await ready();")
         text=text.replace("if(!engine.settings.autoBackup)", "if(!engine.settings.autoBackup||global.__HYDRA_NEXUS_ENABLED__?.('backup')===false)")
     modules['./'+name]=text
 steam=(source/'steam.cjs').read_text(encoding='utf8')
@@ -19,7 +16,7 @@ modules['./steam.cjs']=steam
 for name in ['activity.cjs','themes.cjs','nexus-ui.js','updater.cjs','controller.cjs','notes.cjs','notes-ui.js','hardware.cjs','services.cjs','workspace-ui.js','steam-ui.js','mod-catalog.cjs','game-links.cjs','ratings.cjs','requirements.cjs','resources.cjs','brand.cjs']:
     modules['./'+name]=(source/name).read_text(encoding='utf-8').replace('__NEXUS_REPOSITORY__',json.dumps('M0KA40/Hydra-Nexus')).replace('__NEXUS_BRAND_ICON__','data:image/svg+xml;base64,'+base64.b64encode((root/'assets/brand/Hydra-Nexus-transparent.svg').read_bytes()).decode()).replace('__NEXUS_BRAND_WINDOW_ICON__','data:image/png;base64,'+base64.b64encode((root/'assets/brand/Hydra-Nexus-transparent.png').read_bytes()).decode()).replace('__NEXUS_MODS_ICON__','data:image/png;base64,'+base64.b64encode((root/'assets/nexus-mods.png').read_bytes()).decode())
 factories=','.join(json.dumps(name)+':function(module,exports,require){\n'+text+'\n}' for name,text in modules.items())
-bundle='// Hydra Nexus 2.0.0\n(function(nativeRequire){\nconst factories={'+factories+'};const cache={};function localRequire(id){if(!factories[id])return nativeRequire(id);if(!cache[id]){const module={exports:{}};cache[id]=module;factories[id](module,module.exports,localRequire);}return cache[id].exports;}localRequire("./controller.cjs");\n})(require);\n'
+bundle='// Hydra Nexus 1.0.0\n(function(nativeRequire){\nconst factories={'+factories+'};const cache={};function localRequire(id){if(!factories[id])return nativeRequire(id);if(!cache[id]){const module={exports:{}};cache[id]=module;factories[id](module,module.exports,localRequire);}return cache[id].exports;}localRequire("./controller.cjs");\n})(require);\n'
 (output/'hydra-nexus-bridge.cjs').write_bytes(bundle.encode())
 base=(root/'installer/installer-base.bat').read_text(encoding='utf-8-sig')
 base=re.sub(r"BridgeBase64 = '[A-Za-z0-9+/=]+'", "BridgeBase64 = ''",base)
@@ -46,8 +43,8 @@ function Get-NexusAdapter([string]$Text){
     return $adapter
 }
 function Show-NexusDevelopmentNotice {
-    Show-Header 'Hydra Nexus 2.0 - First Public Release'
-    Write-Host '  First public release. Development and updates will continue.' -ForegroundColor Yellow
+    Show-Header 'Hydra Nexus 1.0.0'
+    Write-Host '  Official release. Updates are available in Hydra Nexus > Updater.' -ForegroundColor Yellow
     Write-Host '  If something fails, keep your backup and report it on GitHub.'
     Write-Host '  Open Hydra > Settings > Hydra Nexus to manage your plugins.'
     Write-Host ''
@@ -86,9 +83,9 @@ base=base.replace("if (!$Testing -and $Patch.Id -eq 'backup') { Assert-HydraBack
 base=base.replace("elseif ($Patch.Id -eq 'backup')", "elseif ($Patch.Id -eq 'nexus') { Write-Host '  Open Hydra > Settings > Hydra Nexus.' }\n        elseif ($Patch.Id -eq 'backup')")
 base=base.replace("function Show-BuiltInMenu($Patch) {", "function Show-BuiltInMenu($Patch) {\n    if($Patch.Id -eq 'nexus'){Show-NexusMenu $Patch;return}")
 base=base.replace('$catalog = @($script:BuiltInPatches)',"$catalog = @($script:BuiltInPatches | Where-Object Id -eq 'nexus')")
-base=base.replace("'    HYDRA PATCH MANAGER                                 v2.1.0'", "'    HYDRA NEXUS                                         v2.0.0'")
+base=base.replace("'    HYDRA PATCH MANAGER                                 v2.1.0'", "'    HYDRA NEXUS                                         v1.0.0'")
 base=base.replace('title Hydra Patch Manager','title Hydra Nexus')
 base=base.replace("if ($Action -eq 'Menu') { Show-MainMenu }", "if ($Action -eq 'Menu') { Show-NexusDevelopmentNotice; Show-NexusMenu ($script:BuiltInPatches | Where-Object Id -eq 'nexus') }")
-base=':: HYDRA_NEXUS_RELEASE 2.0.0\n'+base
+base=':: HYDRA_NEXUS_RELEASE 1.0.0\n'+base
 (output/'Hydra_Nexus.bat').write_bytes(base.replace('\r\n','\n').replace('\n','\r\n').encode())
-print('Built Hydra Nexus 2.0.0: 8 plugins, backgrounds, safe updater and per-game tools. GameShift is not bundled.')
+print('Built Hydra Nexus 1.0.0: 8 plugins, backgrounds, safe updater and per-game tools. GameShift is not bundled.')

@@ -1,7 +1,6 @@
 'use strict';
 const assert=require('node:assert/strict'),fs=require('node:fs'),fsp=fs.promises,path=require('node:path');
 const {BackupEngine,keyOf,atomicJson,filesIn}=require('../src/core.cjs');
-const {DriveUploader}=require('../src/drive.cjs');
 let checks=0;
 async function root(name){return fsp.mkdtemp(path.join(__dirname,'fault-'+name+'-'));}
 async function localFailures(){
@@ -20,13 +19,4 @@ async function localFailures(){
   await assert.rejects(engine.addExtra(keyOf(game),user),/entire profile/);await assert.rejects(engine.addExtra(keyOf(game),engine.stateDir),/Protected/);assert.throws(()=>engine.target({root:'User',relative:'Game/save.dat:stream',original:source}),/Invalid backup path/);checks+=3;
   const damagedDir=await root('settings');await atomicJson(path.join(damagedDir,'settings.json'),{destination:'C:\\',extraPaths:[]});const before=await fsp.readFile(path.join(damagedDir,'settings.json'),'utf8');await assert.rejects(new BackupEngine({stateDir:damagedDir,adapter,destination:path.join(dir,'other')}).init(),/settings are damaged/);assert.equal(await fsp.readFile(path.join(damagedDir,'settings.json'),'utf8'),before);checks+=2;
 }
-async function chunkedUpload(){
-  const dir=await root('chunks'),archive=path.join(dir,'payload.zip');let chunks=0;const ranges=[],events=[];
-  const uploader=new DriveUploader({stateDir:dir,client:{},safeStorage:{},notify:e=>events.push(e.phase),transport:async(url,options,body)=>{
-    const u=new URL(url);if(u.pathname==='/session'){chunks++;ranges.push(options.headers['Content-Range']);assert.equal(body.length,Number(options.headers['Content-Length']));if(chunks===1)return {status:308,headers:{range:'bytes=0-4194303'}};return {status:200,data:{id:'confirmed'}};}
-    if(u.pathname.includes('/upload/'))return {status:200,headers:{location:'https://www.googleapis.com/session'}};
-    return {status:200,data:{files:[]}};
-  }});uploader.bearer=async()=> 'mock';uploader.folder=async()=> 'folder';uploader.zip=async()=>{await fsp.writeFile(archive,Buffer.alloc(10*1024*1024,1));return archive;};
-  const result=await uploader.uploadSnapshots([{folder:dir,id:'chunks',key:'steam:1',game:{title:'Game'}}],()=>{});assert.equal(result.uploaded.length,1);assert.deepEqual(ranges,['bytes 0-8388607/10485760','bytes 4194304-10485759/10485760']);assert.equal(uploader.uploading,false);assert.equal(events.at(-1),'idle');checks+=4;
-}
-(async()=>{await localFailures();await chunkedUpload();console.log('PASS: '+checks+' failure assertions: restore rollback after database mutation, full disk/partial cleanup, live-game exclusion, unsafe paths, damaged settings preservation, and resumable multi-chunk upload acknowledgements.');})().catch(e=>{console.error(e);process.exitCode=1});
+(async()=>{await localFailures();console.log('PASS: '+checks+' failure assertions: restore rollback after database mutation, full disk/partial cleanup, live-game exclusion, unsafe paths, damaged settings preservation.');})().catch(e=>{console.error(e);process.exitCode=1});

@@ -18,6 +18,10 @@ Choose plugins individually. Notes asks for its storage folder; PC Compatibility
 
 The BAT includes the patch runtime. Python and Node.js are needed only to build or test the source, not to install the release.
 
+## Moving from a development build
+
+If you installed an earlier development build numbered 2.x, close Hydra and run the **1.0.0 BAT installer** once. The development updater treats the new launch number as an older version and cannot perform that migration itself. Settings, notes, backups and play history are kept. Future 1.x updates use the normal in-app updater.
+
 ## After a Hydra update
 
 Hydra updates can replace `app.asar`, removing the Nexus loader. Exit Hydra and re-run the Nexus BAT. Existing Nexus data stays outside the application archive. There is no fixed-version whitelist, but a future Hydra change can require an updated adapter. If installation reports an unsupported structure, keep the recovery copy and report the version instead of forcing a different patch.

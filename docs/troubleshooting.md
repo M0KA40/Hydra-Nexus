@@ -20,9 +20,14 @@ No unique game mapping was found. Edition suffixes are normalized, but the exten
 
 Launch the game and create a save first. If automatic detection still misses it, add the actual save folder in Backup → Games. Installation files and library entries alone are not save data.
 
-## Google Drive reports 403 / API disabled
+## Drive copies are paused or files are not online
 
-Enable Google Drive API in the OAuth project's Google Cloud console and check its consent/test-user settings. Allow time for the setting to take effect, then retry. Local backups remain usable. Do not post your OAuth JSON, API key or tokens in an issue.
+Start Google Drive for desktop, sign in, and confirm the selected folder is inside My Drive or a folder configured to sync. Drive letters can change; choose the folder again if the old path is unavailable. A normal local folder will not upload unless you configured Google Drive to sync it.
+
+Nexus stops after 3 failed automatic copies, at least five minutes apart. The counter survives restarting Hydra. Fix the problem, then use **Copy latest backups** or **Reset automatic attempts**. Your local recovery points stay at their existing backup destination.
+
+After a successful copy, check Google's tray icon for paused syncing, cloud quota or sign-in errors. Nexus reports local copies; it cannot confirm cloud upload completion. Do not clear Google's cache while files are waiting to upload. [Download Google Drive for desktop](https://www.google.com/drive/download/).
+
 
 ## An update is waiting or did not install
 

@@ -13,4 +13,4 @@ For a bug, use the issue template and include a short reproduction. For a code c
 
 Run `python build.py` and `python tests/check.py` before submitting. The Windows installer and actual Electron integration also require local checks against Hydra; see the verification record. Do not commit generated test folders, OAuth client secrets, tokens, account bindings, notes or game saves.
 
-Source and CI builds omit the optional Google client configuration unless one is supplied explicitly. The distributed release embeds only the public Desktop client ID.
+Google Drive integration uses a folder managed by Drive for desktop. Source and distributed builds contain no Google OAuth client configuration.

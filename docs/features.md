@@ -14,13 +14,20 @@ Choose a backup destination and the number of versions to retain. Automatic back
 
 External restore accepts a ZIP, manifest, game folder or backup collection. The scanner selects the newest complete backup for that exact game. A matching title alone is not enough. To choose an older version, select its snapshot folder directly. Restore checks integrity, asks for confirmation and creates a safety copy before replacing files. Close the game first.
 
-### Google Drive
+### Google Drive for desktop
 
-Connect your own Google account in Backup → Google Drive to upload backup ZIPs directly. You can upload manually or enable uploads for new backups. A local copy remains if an upload fails.
+1. [Install Google Drive for desktop](https://www.google.com/drive/download/) and sign in to your account in the Google app.
+2. In **Backup → Google Drive**, select **Choose Drive folder**. Choose **My Drive**, or a folder already synced by Drive. Nexus creates **Hydra Nexus Backups** inside it. Drive letters can differ; do not assume everyone uses `G:`.
+3. Select **Copy latest backups**, or enable **Copy new backups to Google Drive** in General.
+4. Check the Google Drive tray icon and wait for syncing to finish before shutting down or disconnecting the drive.
 
-The project OAuth client needs an enabled Drive API and a consent configuration that permits your account. If Google reports that the API is disabled, that setting must be fixed in Google Cloud; retrying the upload alone will not fix it. The Google Drive desktop app is not needed.
+Nexus verifies each local recovery point, creates a ZIP and checks its copy before marking it complete. Google Drive handles uploading and authentication. Nexus does not use the Google Drive API, request Google credentials or confirm that a copy has reached the cloud. A copied file may still be waiting for internet access or available cloud storage.
 
-This release uploads to Drive. To restore a cloud copy, download its ZIP from Drive and import it through Recovery points.
+Local backups remain available when the Drive folder is disconnected. Automatic copies stop after 3 failed attempts, at least five minutes apart. The counter survives restarts. Retry manually or select **Reset automatic attempts** after fixing the Drive folder. A successful copy resets the counter. Previously copied archives are skipped after an integrity check. Cloud copies are kept independently of local retention; manage older ZIPs in Drive yourself. Removing the folder from Nexus does not delete those copies.
+
+To restore, use **Recovery points → Import backup → Backup ZIP (local or Drive)** and choose the ZIP. Let Drive download an online-only file first if needed. Nexus verifies it and creates a safety copy before restoring.
+
+Earlier development releases used Google OAuth. That integration has been removed; choose a sync folder once after upgrading. The obsolete local token is deleted. If you previously authorized the old app, you can also remove its access in your Google Account's third-party connections.
 
 ## Game Notes
 
