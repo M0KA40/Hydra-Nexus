@@ -32,7 +32,7 @@ The installer includes its runtime. You do not need Node.js or Python. Optional 
 | **Steam** | Chooses a saved Steam account and online, offline or standalone launch mode per game. Login usernames can be hidden. | Steam button beside game actions |
 | **Nexus Mods** | Opens a matched game's mods page. Edition names are normalized; unmatched games open a game search. | Nexus Mods logo on library game pages |
 | **PC Compatibility** | Compares your confirmed PC specifications with published minimum requirements. Supported CPU/GPU models use benchmark references. | Monitor icon on a game's cover |
-| **Low Resource Mode** | Pauses background video and visual effects, and suspends an idle hidden interface until you return. | Plugins |
+| **Low Resource Mode** | Pauses background video and visual effects, and suspends an idle minimized interface. | Plugins |
 | **Custom Backgrounds** | Applies a local image or video over your theme's background. Includes darkness, blur and reset controls. | Themes |
 | **Updater** | Checks GitHub releases and offers a verified download, installation and restart. Automatic checks can be disabled. | Updater |
 
@@ -73,7 +73,9 @@ The screenshots show the extension with a Hydra theme. Themes are not included i
 
 ## Project information
 
-**1.0.0 — Official Release** includes all eight plugins, desktop Drive sync and the in-app updater. Earlier 2.x development builds need one manual installation of 1.0.0. Subsequent 1.x releases update through Updater. GameShift, achievement-style imports and theme CSS editing are not included.
+**1.0.1 — Maintenance update** fixes unnecessary UI work, Steam activation, Notes, Backup navigation and installer/update handling. [Read the patch notes](docs/releases/1.0.1.md).
+
+**1.0.0 — First Release** includes all eight plugins, desktop Drive sync and the in-app updater. Earlier 2.x development builds need one manual installation of 1.0.0. Subsequent 1.x releases update through Updater. GameShift, achievement-style imports and theme CSS editing are not included.
 
 Hydra Nexus is a community project, independent of Hydra Launcher, Valve, Google and Nexus Mods. Development continues; please include steps to reproduce a problem when opening an issue.
 

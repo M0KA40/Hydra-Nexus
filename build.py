@@ -4,6 +4,7 @@ parser=argparse.ArgumentParser()
 args=parser.parse_args()
 root=Path(__file__).resolve().parent
 source=root/'src';backup=source;output=root/'dist';output.mkdir(exist_ok=True)
+version=re.search(r"version:'([^']+)'",(source/'brand.cjs').read_text(encoding='utf8')).group(1)
 modules={}
 for name in ['core.cjs','drive-folder.cjs','achievements.cjs','ui.js','bridge.cjs']:
     text=(backup/name).read_text(encoding='utf-8')
@@ -13,10 +14,16 @@ for name in ['core.cjs','drive-folder.cjs','achievements.cjs','ui.js','bridge.cj
     modules['./'+name]=text
 steam=(source/'steam.cjs').read_text(encoding='utf8')
 modules['./steam.cjs']=steam
-for name in ['activity.cjs','themes.cjs','nexus-ui.js','updater.cjs','controller.cjs','notes.cjs','notes-ui.js','hardware.cjs','services.cjs','workspace-ui.js','steam-ui.js','mod-catalog.cjs','game-links.cjs','ratings.cjs','requirements.cjs','resources.cjs','brand.cjs']:
+for name in ['activity.cjs','themes.cjs','nexus-ui.js','updater.cjs','controller.cjs','notes.cjs','notes-ui.js','hardware.cjs','services.cjs','workspace-ui.js','steam-vdf.cjs','steam-ui.js','mod-catalog.cjs','game-links.cjs','ratings.cjs','requirements.cjs','brand.cjs']:
     modules['./'+name]=(source/name).read_text(encoding='utf-8').replace('__NEXUS_REPOSITORY__',json.dumps('M0KA40/Hydra-Nexus')).replace('__NEXUS_BRAND_ICON__','data:image/svg+xml;base64,'+base64.b64encode((root/'assets/brand/Hydra-Nexus-transparent.svg').read_bytes()).decode()).replace('__NEXUS_BRAND_WINDOW_ICON__','data:image/png;base64,'+base64.b64encode((root/'assets/brand/Hydra-Nexus-transparent.png').read_bytes()).decode()).replace('__NEXUS_MODS_ICON__','data:image/png;base64,'+base64.b64encode((root/'assets/nexus-mods.png').read_bytes()).decode())
+missing=set()
+for name,text in modules.items():
+    for match in re.finditer(r"require\(['\"](\./[^'\"]+)['\"]\)",text):
+        if match.group(1) not in modules:missing.add(name+' -> '+match.group(1))
+if missing:raise SystemExit('Bundled modules require files that are not bundled: '+', '.join(sorted(missing)))
 factories=','.join(json.dumps(name)+':function(module,exports,require){\n'+text+'\n}' for name,text in modules.items())
 bundle='// Hydra Nexus 1.0.0\n(function(nativeRequire){\nconst factories={'+factories+'};const cache={};function localRequire(id){if(!factories[id])return nativeRequire(id);if(!cache[id]){const module={exports:{}};cache[id]=module;factories[id](module,module.exports,localRequire);}return cache[id].exports;}localRequire("./controller.cjs");\n})(require);\n'
+bundle=bundle.replace('// Hydra Nexus 1.0.0','// Hydra Nexus '+version,1)
 (output/'hydra-nexus-bridge.cjs').write_bytes(bundle.encode())
 base=(root/'installer/installer-base.bat').read_text(encoding='utf-8-sig')
 base=re.sub(r"BridgeBase64 = '[A-Za-z0-9+/=]+'", "BridgeBase64 = ''",base)
@@ -86,6 +93,8 @@ base=base.replace('$catalog = @($script:BuiltInPatches)',"$catalog = @($script:B
 base=base.replace("'    HYDRA PATCH MANAGER                                 v2.1.0'", "'    HYDRA NEXUS                                         v1.0.0'")
 base=base.replace('title Hydra Patch Manager','title Hydra Nexus')
 base=base.replace("if ($Action -eq 'Menu') { Show-MainMenu }", "if ($Action -eq 'Menu') { Show-NexusDevelopmentNotice; Show-NexusMenu ($script:BuiltInPatches | Where-Object Id -eq 'nexus') }")
-base=':: HYDRA_NEXUS_RELEASE 1.0.0\n:: HYDRA_NEXUS_REVISION 2\n'+base
+revision=int(re.search(r'revision:(\d+)',(source/'brand.cjs').read_text(encoding='utf8')).group(1))
+base=base.replace('Hydra Nexus 1.0.0','Hydra Nexus '+version).replace('v1.0.0','v'+version)
+base=f':: HYDRA_NEXUS_RELEASE {version}\n:: HYDRA_NEXUS_REVISION {revision}\n'+base
 (output/'Hydra_Nexus.bat').write_bytes(base.replace('\r\n','\n').replace('\n','\r\n').encode())
-print('Built Hydra Nexus 1.0.0: 8 plugins, backgrounds, safe updater and per-game tools. GameShift is not bundled.')
+print('Built Hydra Nexus '+version+': 8 plugins, backgrounds, safe updater and per-game tools. GameShift is not bundled.')

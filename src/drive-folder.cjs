@@ -13,7 +13,7 @@ class DriveFolderSync {
   }
   async save(){await atomicJson(path.join(this.stateDir,'drive-folder.json'),{folder:this.folder,lastCopy:this.lastCopy,lastResult:this.lastResult,retryAttempts:this.retryAttempts,nextRetry:this.nextRetry,lastError:this.lastError});}
   async canAutomatic(){await this.load();return !!this.folder&&this.retryAttempts<3&&Date.now()>=this.nextRetry;}
-  async resetRetries(){this.retryAttempts=0;this.nextRetry=0;this.lastError=null;await this.save();return this.status();}
+  async resetRetries(){await this.load();this.retryAttempts=0;this.nextRetry=0;this.lastError=null;await this.save();return this.status();}
   async validate(folder){
     if(typeof folder!=='string'||!path.isAbsolute(folder))throw Error('Choose a Google Drive folder first');
     const target=path.resolve(folder);if(target===path.parse(target).root||target.slice(path.parse(target).root.length).includes(':'))throw Error('Choose a folder inside My Drive, not a drive root');

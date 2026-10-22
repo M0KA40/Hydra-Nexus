@@ -63,6 +63,8 @@ Open the **Steam** button beside game actions. Choose a launch mode and, for Ste
 
 Select **Save settings** to keep the choice for that game. **Copy executable path** copies the detected game executable when available.
 
+Steam modes use the original forced-switch workflow: stop Steam, mark the selected saved account for auto-login, apply the online/offline preference and restart Steam before launching. The newer shutdown option, account-picker notice and account-status polling are removed. This legacy shutdown terminates Steam's process tree and may close Steam-launched applications or games. Account-file validation, recovery copies and atomic writes remain.
+
 **Hide Steam login usernames** is optional. It hides login names in Nexus account lists, badges and messages while keeping display names visible. The saved metadata stays local so switching can still work. Nexus does not ask for your Steam password. Close running games before changing the plugin.
 
 ## Nexus Mods
@@ -85,9 +87,8 @@ The result distinguishes below-minimum components, borderline comparisons and mo
 
 ## Low Resource Mode
 
-This mode pauses custom background video, animations and expensive blur effects while Hydra is open. It also collects unused renderer objects when possible.
+This mode pauses custom background video, animations and expensive blur effects while Hydra is open.
 
-After 30 seconds minimized or in the tray, an idle interface can be unloaded and restored when you return. Main-process downloads, game tracking and backup work continue. Open dialogs, pending requests, focused inputs and active backup operations prevent suspension. Restore brings back your route, game tabs and Nexus view. Memory savings depend on Hydra, your theme and the current page; there is no fixed reduction.
 
 ## Custom Backgrounds
 

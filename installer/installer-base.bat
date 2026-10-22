@@ -83,18 +83,26 @@ public static class HydraSuiteAsar {
             input.Position=oldOffset; input.CopyTo(output); writer.Write(appended); output.Flush(true);
         }
     }
-    public static bool EnableModifiedAsar(string executable) {
-        if(!File.Exists(executable)) throw new FileNotFoundException("Hydra executable not found.");
-        var bytes=File.ReadAllBytes(executable); var marker=Encoding.ASCII.GetBytes("dL7pKGdnNz796PbbjQWNKmHXBZaB9tsX"); int found=-1;
-        for(int i=0;i<=bytes.Length-marker.Length-12;i++) {
+    private static int FuseWireStart(byte[] bytes) {
+        var marker=Encoding.ASCII.GetBytes("dL7pKGdnNz796PbbjQWNKmHXBZaB9tsX"); int found=-1;
+        for(int i=0;i<=bytes.Length-marker.Length-2;i++) {
             if(bytes[i]!=marker[0]) continue; bool match=true;
             for(int j=1;j<marker.Length;j++) if(bytes[i+j]!=marker[j]) {match=false;break;}
             if(match) {found=i;break;}
         }
         if(found<0) throw new InvalidDataException("Electron integrity settings could not be located. No installation was applied.");
-        int count=bytes[found+marker.Length+1],start=found+marker.Length+2; bool changed=false;
-        foreach(int index in new int[]{4,5}) {
-            if(index>=count) throw new InvalidDataException("Unsupported Electron fuse layout.");
+        // Electron FuseVersion.V1 is the numeric byte 1 (not 0 or ASCII '1').
+        if(bytes[found+marker.Length]!=1) throw new InvalidDataException("Unsupported Electron fuse version.");
+        int count=bytes[found+marker.Length+1],start=found+marker.Length+2;
+        if(count<6 || count>bytes.Length-start) throw new InvalidDataException("Unsupported or truncated Electron fuse layout.");
+        return start;
+    }
+    public static bool EnableModifiedAsar(string executable) {
+        if(!File.Exists(executable)) throw new FileNotFoundException("Hydra executable not found.");
+        var bytes=File.ReadAllBytes(executable);int start=FuseWireStart(bytes);bool changed=false;
+        // Only disable embedded ASAR integrity, which a patched archive cannot match.
+        // Keep OnlyLoadAppFromAsar and every unrelated protection unchanged.
+        foreach(int index in new int[]{4}) {
             if(bytes[start+index]==(byte)'1') {bytes[start+index]=(byte)'0';changed=true;}
             else if(bytes[start+index]!=(byte)'0') throw new InvalidDataException("Unsupported Electron fuse state.");
         }
@@ -105,6 +113,19 @@ public static class HydraSuiteAsar {
             File.Replace(temporary,executable,null);
         }
         return changed;
+    }
+    public static bool RestoreOriginalFuses(string executable) {
+        string backup=executable+".before-hydra-suite.bak";
+        if(!File.Exists(backup)) return false;
+        var current=File.ReadAllBytes(executable);var original=File.ReadAllBytes(backup);
+        if(current.Length!=original.Length) return false;
+        int start;try{start=FuseWireStart(current);if(FuseWireStart(original)!=start)return false;}catch(InvalidDataException){return false;}
+        foreach(int index in new int[]{4,5})if((current[start+index]!=(byte)'0'&&current[start+index]!=(byte)'1')||(original[start+index]!=(byte)'0'&&original[start+index]!=(byte)'1'))return false;
+        for(int i=0;i<current.Length;i++)if(i!=start+4&&i!=start+5&&current[i]!=original[i])return false;
+        // Restore only when the original executable is the same build.
+        current[start+4]=original[start+4];current[start+5]=original[start+5];
+        string temporary=executable+".nexus-fuses-"+Guid.NewGuid().ToString("N")+".tmp";
+        File.WriteAllBytes(temporary,current);File.Replace(temporary,executable,null);return true;
     }
 }
 '@
@@ -293,6 +314,9 @@ function Invoke-BuiltInPatch($Patch, [ValidateSet('Install','Remove')][string]$O
     $backup = $archive+'.before-hydra-suite.bak'
     if (!(Test-Path -LiteralPath $backup)) { Copy-Item -LiteralPath $archive -Destination $backup }
     $temporary = $archive+'.hydra-suite.'+[guid]::NewGuid().ToString('N')+'.tmp'
+    $originalExecutable=$null
+    $transactionArchive=$archive+'.nexus-rollback-'+[guid]::NewGuid().ToString('N')+'.bak'
+    $executable=Join-Path $directory 'Hydra.exe'
     try {
         Write-Host ('  Preparing '+$Patch.Name+'...') -ForegroundColor Cyan
         [HydraSuiteAsar]::Write($archive,$state.Offset,$temporary,($state.Header | ConvertTo-Json -Depth 100 -Compress),$appended)
@@ -303,7 +327,7 @@ function Invoke-BuiltInPatch($Patch, [ValidateSet('Install','Remove')][string]$O
             $bridgeNode = $check.Files.($Patch.BridgeName)
             $verifiedBridge = [HydraSuiteAsar]::ReadFile($temporary,$check.Offset,[long]$bridgeNode.offset,[int]$bridgeNode.size)
             if ((Get-Integrity $verifiedBridge).hash -ne (Get-Integrity $bridgeBytes).hash) { throw 'Bridge verification failed. The original archive was not replaced.' }
-            if (!$Testing) { [HydraSuiteAsar]::EnableModifiedAsar((Join-Path $directory 'Hydra.exe')) | Out-Null }
+            if (!$Testing) { $originalExecutable=[IO.File]::ReadAllBytes($executable);[HydraSuiteAsar]::EnableModifiedAsar($executable) | Out-Null }
         }
         if ($Operation -eq 'Install' -and $Patch.Id -eq 'gameshift') {
             $dataDir = Join-Path $env:APPDATA 'Hydra\GameShiftBridge'
@@ -312,7 +336,17 @@ function Invoke-BuiltInPatch($Patch, [ValidateSet('Install','Remove')][string]$O
         }
         if (!$Testing -and $Operation -eq 'Install' -and $Patch.Id -eq 'backup') { Write-BackupInstallation $directory }
         if (!$Testing -and $Patch.Id -eq 'backup') { Assert-HydraBackupIdle }
-        [IO.File]::Replace($temporary,$archive,[System.Management.Automation.Language.NullString]::Value)
+        [IO.File]::Replace($temporary,$archive,$transactionArchive)
+        if(!$Testing -and $Operation -eq 'Remove'){
+            $otherPatches=@($script:BuiltInPatches|Where-Object {$_.Id -ne $Patch.Id -and $check.Files.PSObject.Properties[$_.BridgeName]})
+            if(!$otherPatches.Count){$originalExecutable=[IO.File]::ReadAllBytes($executable);[HydraSuiteAsar]::RestoreOriginalFuses($executable)|Out-Null}
+        }
+        Remove-Item -LiteralPath $transactionArchive -Force
+    } catch {
+        $installationError=$_
+        if(Test-Path -LiteralPath $transactionArchive){[IO.File]::Replace($transactionArchive,$archive,[System.Management.Automation.Language.NullString]::Value)}
+        if($null -ne $originalExecutable){$restoreExe=$executable+'.nexus-recover-'+[guid]::NewGuid().ToString('N')+'.tmp';[IO.File]::WriteAllBytes($restoreExe,$originalExecutable);[IO.File]::Replace($restoreExe,$executable,[System.Management.Automation.Language.NullString]::Value)}
+        throw $installationError
     } finally {
         if (Test-Path -LiteralPath $temporary) { Remove-Item -LiteralPath $temporary -Force }
     }

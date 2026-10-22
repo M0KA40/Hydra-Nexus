@@ -7,6 +7,7 @@
   const path = require("path");
   const os = require("os");
   const cp = require("child_process");
+  const vdf = require("./steam-vdf.cjs");
   const electron = require("electron");
   const { app, ipcMain, BrowserWindow } = electron;
 
@@ -38,21 +39,25 @@
     return {};
   }
 
-  function saveBindings(data) {
+  async function saveBindings(data) {
     try {
-      fs.writeFileSync(getConfigPath(), JSON.stringify(data, null, 2), "utf8");
+      await require("./themes.cjs").atomicText(getConfigPath(),JSON.stringify(data,null,2));
     } catch (e) {
-      log("Error saving bindings:", e);
+      log("Error saving bindings:", e);throw e;
     }
   }
 
-  function getSteamPath() {
+  let steamPathCache=null,steamPathPending=null,steamAccountsCache=[],bindingsQueue=Promise.resolve();
+  const execSteam=(file,args)=>new Promise((resolve,reject)=>cp.execFile(file,args,{encoding:"utf8",windowsHide:true,timeout:10000,maxBuffer:1024*1024},(error,out)=>error?reject(error):resolve(out)));
+  async function getSteamPath() {
+    if(steamPathCache)return steamPathCache;
+    if(steamPathPending)return steamPathPending;
+    steamPathPending=resolveSteamPath().then(p=>steamPathCache=p).finally(()=>steamPathPending=null);return steamPathPending;
+  }
+  async function resolveSteamPath() {
     if (process.platform === "win32") {
       try {
-        const out = cp.execSync(
-          'reg query "HKCU\\Software\\Valve\\Steam" /v SteamPath',
-          { encoding: "utf8", windowsHide: true }
-        );
+        const out = await execSteam('reg.exe',['query','HKCU\\Software\\Valve\\Steam','/v','SteamPath']);
         const m = out.match(/SteamPath\s+REG_SZ\s+(.+)/i);
         if (m && m[1]) {
           const p = path.normalize(m[1].trim());
@@ -72,52 +77,28 @@
     return "C:\\Program Files (x86)\\Steam";
   }
 
-  function getSteamAccounts() {
-    const steamPath = getSteamPath();
+  async function getSteamAccounts() {
+    const steamPath = await getSteamPath();
     const vdfPath = path.join(steamPath, "config", "loginusers.vdf");
     if (!fs.existsSync(vdfPath)) return [];
 
     try {
-      const content = fs.readFileSync(vdfPath, "utf8");
-      const accounts = [];
-      const userBlockRegex = /"(\d{17})"\s*\{([^}]*)\}/g;
-      let match;
-      while ((match = userBlockRegex.exec(content)) !== null) {
-        const steamId64 = match[1];
-        const body = match[2];
-        const getVal = (key) => {
-          const r = new RegExp('"' + key + '"\\s+"([^"]*)"', "i");
-          const m = body.match(r);
-          return m ? m[1] : "";
-        };
-        const accountName = getVal("AccountName");
-        const personaName = getVal("PersonaName") || accountName;
-        const mostRecent = getVal("MostRecent") === "1";
-        const wantsOffline = getVal("WantsOfflineMode") === "1";
-        if (accountName) {
-          accounts.push({
-            steamId64,
-            accountName,
-            personaName,
-            mostRecent,
-            wantsOffline
-          });
-        }
-      }
-      return accounts;
+      const content = await fs.promises.readFile(vdfPath, "utf8");
+      const accounts = vdf.accountList(content);
+      steamAccountsCache=accounts;return accounts;
     } catch (e) {
       log("Error parsing loginusers.vdf:", e);
       return [];
     }
   }
 
-  function findSteamGameExe(appId) {
+  async function findSteamGameExe(appId) {
     try {
-      const steamPath = getSteamPath();
+      const steamPath = await getSteamPath();
       const libs = [steamPath];
       const libVdf = path.join(steamPath, "steamapps", "libraryfolders.vdf");
       if (fs.existsSync(libVdf)) {
-        const txt = fs.readFileSync(libVdf, "utf8");
+        const txt = await fs.promises.readFile(libVdf, "utf8");
         const pathRegex = /"path"\s+"([^"]+)"/gi;
         let m;
         while ((m = pathRegex.exec(txt)) !== null) {
@@ -129,12 +110,12 @@
       for (const lib of libs) {
         const manifest = path.join(lib, "steamapps", `appmanifest_${appId}.acf`);
         if (fs.existsSync(manifest)) {
-          const acf = fs.readFileSync(manifest, "utf8");
+          const acf = await fs.promises.readFile(manifest, "utf8");
           const m = acf.match(/"installdir"\s+"([^"]+)"/i);
           if (m && m[1]) {
             const gameDir = path.join(lib, "steamapps", "common", m[1]);
             if (fs.existsSync(gameDir)) {
-              const exes = findExesInDir(gameDir, 3);
+              const exes = await findExesInDir(gameDir, 3);
               if (exes.length > 0) {
                 exes.sort((a, b) => b.size - a.size);
                 return { gameDir, exePath: exes[0].fullPath, allExes: exes.map(x => x.fullPath) };
@@ -149,15 +130,15 @@
     return null;
   }
 
-  function findExesInDir(dir, maxDepth, currentDepth = 0) {
+  async function findExesInDir(dir, maxDepth, currentDepth = 0) {
     let results = [];
     if (currentDepth > maxDepth) return results;
     try {
-      const items = fs.readdirSync(dir, { withFileTypes: true });
+      const items = await fs.promises.readdir(dir, { withFileTypes: true });
       for (const it of items) {
         const fullPath = path.join(dir, it.name);
         if (it.isDirectory()) {
-          results = results.concat(findExesInDir(fullPath, maxDepth, currentDepth + 1));
+          results = results.concat(await findExesInDir(fullPath, maxDepth, currentDepth + 1));
         } else if (it.isFile() && it.name.toLowerCase().endsWith(".exe")) {
           const lower = it.name.toLowerCase();
           if (
@@ -168,7 +149,7 @@
             !lower.includes("dxsetup") &&
             !lower.includes("unitycrash")
           ) {
-            const st = fs.statSync(fullPath);
+            const st = await fs.promises.stat(fullPath);
             results.push({ fullPath, size: st.size });
           }
         }
@@ -178,7 +159,7 @@
   }
 
   async function switchSteamAccountAndLaunch(targetSteamId64, mode, appId, hasCustomExeInHydra) {
-    const steamPath = getSteamPath();
+    const steamPath = await getSteamPath();
     const steamExe = path.join(steamPath, "steam.exe");
     const vdfPath = path.join(steamPath, "config", "loginusers.vdf");
 
@@ -186,7 +167,7 @@
       throw new Error("Steam loginusers.vdf not found.");
     }
 
-    const accounts = getSteamAccounts();
+    const accounts = await getSteamAccounts();
     const targetAcc = accounts.find((a) => a.steamId64 === targetSteamId64);
     if (!targetAcc) {
       throw new Error("Selected Steam account was not found in loginusers.vdf.");
@@ -195,50 +176,37 @@
     const wantOffline = mode === "offline" ? "1" : "0";
 
     try {
-      cp.execSync("taskkill /F /IM steam.exe /T", { windowsHide: true, stdio: "ignore" });
+      await execSteam("taskkill.exe",["/F","/IM","steam.exe","/T"]);
       await new Promise((r) => setTimeout(r, 1800));
     } catch (_) {}
 
-    let vdfContent = fs.readFileSync(vdfPath, "utf8");
-    const userBlockRegex = /"(\d{17})"\s*\{([^}]*)\}/g;
-    vdfContent = vdfContent.replace(userBlockRegex, (fullBlock, sid, body) => {
+    let vdfContent = await fs.promises.readFile(vdfPath, "utf8");
+    vdf.assertWellFormed(vdfContent);
+    const rewritten = vdf.transformUserBlocks(vdfContent, (sid, body) => {
       const isTarget = sid === targetSteamId64;
       let newBody = body;
-
-      const setOrAddKey = (text, key, val) => {
-        const r = new RegExp('("' + key + '"\\s+)"[^"]*"', "i");
-        if (r.test(text)) {
-          return text.replace(r, `$1"${val}"`);
-        } else {
-          return text.trimEnd() + `\n\t\t"${key}"\t\t"${val}"\n\t`;
-        }
-      };
-
-      newBody = setOrAddKey(newBody, "MostRecent", isTarget ? "1" : "0");
+      newBody = vdf.setOrAddKey(newBody, "MostRecent", isTarget ? "1" : "0");
       if (isTarget) {
-        newBody = setOrAddKey(newBody, "AllowAutoLogin", "1");
-        newBody = setOrAddKey(newBody, "RememberPassword", "1");
-        newBody = setOrAddKey(newBody, "WantsOfflineMode", wantOffline);
-        newBody = setOrAddKey(newBody, "SkipOfflineModeWarning", "1");
+        newBody = vdf.setOrAddKey(newBody, "AllowAutoLogin", "1");
+        newBody = vdf.setOrAddKey(newBody, "RememberPassword", "1");
+        newBody = vdf.setOrAddKey(newBody, "WantsOfflineMode", wantOffline);
+        newBody = vdf.setOrAddKey(newBody, "SkipOfflineModeWarning", "1");
       }
       return `"${sid}"\n\t{${newBody}}`;
     });
+    // Re-parse before writing: if the surgery did not survive a round trip, leave the file untouched.
+    if (rewritten === null || !vdf.accountList(rewritten).some((a) => a.steamId64 === targetSteamId64)) {
+      throw new Error("Steam loginusers.vdf could not be updated safely. No changes were made.");
+    }
+    vdfContent = rewritten;
 
-    try {
-      fs.copyFileSync(vdfPath, vdfPath + ".hydra.bak");
-    } catch (_) {}
-    fs.writeFileSync(vdfPath, vdfContent, "utf8");
+    await fs.promises.copyFile(vdfPath, vdfPath + ".hydra.bak");
+    await require("./themes.cjs").atomicText(vdfPath, vdfContent);
 
     if (process.platform === "win32") {
       try {
-        cp.execSync(
-          `reg add "HKCU\\Software\\Valve\\Steam" /v AutoLoginUser /t REG_SZ /d "${targetAcc.accountName}" /f`,
-          { windowsHide: true, stdio: "ignore" }
-        );
-        cp.execSync(
-          `reg add "HKCU\\Software\\Valve\\Steam" /v RememberPassword /t REG_DWORD /d 1 /f`,
-          { windowsHide: true, stdio: "ignore" }
-        );
+        await execSteam('reg.exe',['add','HKCU\\Software\\Valve\\Steam','/v','AutoLoginUser','/t','REG_SZ','/d',targetAcc.accountName,'/f']);
+        await execSteam('reg.exe',['add','HKCU\\Software\\Valve\\Steam','/v','RememberPassword','/t','REG_DWORD','/d','1','/f']);
       } catch (e) {
         log("Registry update warning:", e);
       }
@@ -256,7 +224,7 @@
       stdio: "ignore",
       windowsHide: true
     });
-    child.unref();
+    await new Promise((resolve,reject)=>{child.once('error',reject);child.once('spawn',()=>{child.unref();resolve();});});
 
     await new Promise((r) => setTimeout(r, 4500));
     hideSteamWindowOnce();
@@ -283,11 +251,12 @@
         windowsHide: true,
         stdio: "ignore"
       });
+      p.once('error',e=>log('Steam window hide skipped:',e.message));
       p.unref();
     } catch (_) {}
   }
 
-  let activeFsWatcher = null;
+  let activeFsWatcher = null,statsTimer=null,statsTask=null;
 
   function steamId64ToAccountId3(steamId64) {
     try {
@@ -299,7 +268,7 @@
     }
   }
 
-  function syncSteamStatsBinToGoldberg(steamPath, steamId3, appId) {
+  async function syncSteamStatsBinToGoldberg(steamPath, steamId3, appId) {
     try {
       const statsDir = path.join(steamPath, "appcache", "stats");
       const userStatsBin = path.join(statsDir, `UserGameStats_${steamId3}_${appId}.bin`);
@@ -307,8 +276,8 @@
 
       if (!fs.existsSync(userStatsBin)) return;
 
-      const userBuf = fs.readFileSync(userStatsBin);
-      const schemaBuf = fs.existsSync(schemaBin) ? fs.readFileSync(schemaBin) : null;
+      const userBuf = await fs.promises.readFile(userStatsBin);
+      const schemaBuf = await fs.promises.readFile(schemaBin).catch(e=>{if(e.code==='ENOENT')return null;throw e;});
 
       const unlocked = parseSteamUserGameStats(userBuf, schemaBuf);
       if (!unlocked || Object.keys(unlocked).length === 0) return;
@@ -321,13 +290,13 @@
 
       for (const dir of targetDirs) {
         if (!fs.existsSync(dir)) {
-          fs.mkdirSync(dir, { recursive: true });
+          await fs.promises.mkdir(dir, { recursive: true });
         }
         const achJsonPath = path.join(dir, "achievements.json");
         let current = {};
         if (fs.existsSync(achJsonPath)) {
           try {
-            current = JSON.parse(fs.readFileSync(achJsonPath, "utf8"));
+            current = JSON.parse(await fs.promises.readFile(achJsonPath, "utf8"));
           } catch (_) {}
         }
 
@@ -343,7 +312,7 @@
         }
 
         if (changed) {
-          fs.writeFileSync(achJsonPath, JSON.stringify(current, null, 2), "utf8");
+          await require("./themes.cjs").atomicText(achJsonPath,JSON.stringify(current,null,2));
           log(`Synced unlocked achievements for AppID ${appId}`);
         }
       }
@@ -458,12 +427,14 @@
     const steamId3 = steamId64ToAccountId3(steamId64);
     if (!steamId3 || !appId) return;
 
+    clearTimeout(statsTimer);
     if (activeFsWatcher) {
       try { activeFsWatcher.close(); } catch (_) {}
       activeFsWatcher = null;
     }
 
-    syncSteamStatsBinToGoldberg(steamPath, steamId3, appId);
+    const sync=()=>{const task=(statsTask||Promise.resolve()).then(()=>syncSteamStatsBinToGoldberg(steamPath,steamId3,appId));statsTask=task;task.finally(()=>{if(statsTask===task)statsTask=null;});};
+    sync();
 
     const statsDir = path.join(steamPath, "appcache", "stats");
     const targetFile = `UserGameStats_${steamId3}_${appId}.bin`.toLowerCase();
@@ -471,7 +442,7 @@
       try {
         activeFsWatcher = fs.watch(statsDir, (_eventType, filename) => {
           if (filename && filename.toLowerCase() === targetFile) {
-            syncSteamStatsBinToGoldberg(steamPath, steamId3, appId);
+            clearTimeout(statsTimer);statsTimer=setTimeout(sync,250);
           }
         });
       } catch (e) {
@@ -484,6 +455,7 @@
   ipcMain.handle = function (channel, listener) {
     if (channel === "openGame" || channel === "launchGame") {
       return originalHandle(channel, async (event, ...args) => {
+        if(global.__NEXUS_RESTORE_ACTIVE__?.())throw Error('A game backup is being restored. Wait for the restore to finish before launching a game.');
         if(global.__HYDRA_NEXUS_ENABLED__?.("steam")===false)return listener(event,...args);
         try {
           let shop = "steam";
@@ -504,19 +476,20 @@
           const gameCfg = bindings[objectId] || bindings[`${shop}:${objectId}`];
 
           if (gameCfg && gameCfg.mode && gameCfg.mode !== "crack" && gameCfg.steamId64) {
+            // Compose the toast label with the privacy policy applied directly: the account
+            // cache can still be cold when a game is launched before any Steam panel opens.
+            const hideLogin = global.__NEXUS_STEAM_PRIVACY__?.();
+            const shownName = gameCfg.personaName || gameCfg.accountName || "";
+            const label = hideLogin && shownName === gameCfg.accountName ? "Steam account" : shownName;
             notifyRendererToast(
-              `Switching Steam to ${gameCfg.personaName || gameCfg.accountName} (${gameCfg.mode.toUpperCase()})...`
+              `Switching Steam to ${label} (${gameCfg.mode.toUpperCase()})...`
             );
-            await switchSteamAccountAndLaunch(
-              gameCfg.steamId64,
-              gameCfg.mode,
-              objectId,
-              Boolean(exePath)
-            );
+            await switchSteamAccountAndLaunch(gameCfg.steamId64,gameCfg.mode,objectId,Boolean(exePath));
           }
         } catch (err) {
           log("Error in pre-launch Steam switch:", err);
           notifyRendererToast("Steam Switch Error: " + (err.message || String(err)), true);
+          throw err; // Never fall through to the native launcher after a failed account switch.
         }
 
         return await listener(event, ...args);
@@ -526,7 +499,7 @@
   };
 
   function notifyRendererToast(msg, isError = false) {
-    if(global.__NEXUS_STEAM_PRIVACY__?.()){for(const a of getSteamAccounts())if(a.accountName)msg=String(msg).split(a.accountName).join("[private]");}
+    if(global.__NEXUS_STEAM_PRIVACY__?.()){for(const a of steamAccountsCache)if(a.accountName)msg=String(msg).split(a.accountName).join("[private]");}
     for (const win of BrowserWindow.getAllWindows()) {
       if (!win.isDestroyed()) {
         win.webContents
@@ -555,7 +528,7 @@
     win.webContents.on("did-finish-load", inject);
     win.webContents.on("did-navigate-in-page", inject);
 
-    win.webContents.on("console-message", (...eventArgs) => {
+    win.webContents.on("console-message", async (...eventArgs) => {
       if(global.__HYDRA_NEXUS_ENABLED__?.("steam")===false || global.__HYDRA_NEXUS_TRUSTED__?.(win)===false)return;
       const details=eventArgs.find(x=>x&&typeof x==="object"&&typeof x.message==="string");
       const message=details?details.message:eventArgs[2];
@@ -565,7 +538,7 @@
           const { action, payload } = JSON.parse(raw);
 
           if (action === "requestData") {
-            const accounts = publicSteam(getSteamAccounts());
+            const accounts = publicSteam(await getSteamAccounts());
             const bindings = publicBindings(loadBindings());
             win.webContents
               .executeJavaScript(
@@ -577,16 +550,18 @@
               .catch(() => {});
           } else if (action === "saveBinding") {
             if(!/^\d+$/.test(String(payload?.objectId))||!["crack","online","offline"].includes(payload?.mode))throw Error("Invalid Steam binding");
-            const bindings = loadBindings();
+            const change=bindingsQueue.then(async()=>{const bindings=loadBindings();
             bindings[payload.objectId] = {
               mode: payload.mode,
               steamId64: payload.steamId64,
-              accountName: getSteamAccounts().find(a=>a.steamId64===payload.steamId64)?.accountName||"",
+              accountName: (await getSteamAccounts()).find(a=>a.steamId64===payload.steamId64)?.accountName||"",
               personaName: payload.personaName,
               updatedAt: Date.now()
             };
-            saveBindings(bindings);
-            const accounts = publicSteam(getSteamAccounts());
+            await saveBindings(bindings);return bindings;});bindingsQueue=change.catch(()=>{});
+            let bindings;
+            try{bindings=await change;}catch(e){notifyRendererToast('Steam settings were not saved: '+(e.message||'the binding file could not be written'),true);throw e;}
+            const accounts = publicSteam(await getSteamAccounts());
             win.webContents
               .executeJavaScript(
                 `window.__hydraSteamReceive && window.__hydraSteamReceive(${JSON.stringify({
@@ -597,7 +572,7 @@
               .catch(() => {});
           } else if (action === "findExe") {
             if(!/^\d+$/.test(String(payload?.objectId)))throw Error("Invalid Steam app ID");
-            const found = findSteamGameExe(payload.objectId);
+            const found = await findSteamGameExe(payload.objectId);
             win.webContents
               .executeJavaScript(
                 `window.__hydraSteamReceive && window.__hydraSteamReceive(${JSON.stringify({
@@ -630,6 +605,7 @@
   });
 
   app.on("before-quit", () => {
+    clearTimeout(statsTimer);
     if (activeFsWatcher) {
       try { activeFsWatcher.close(); } catch (_) {}
       activeFsWatcher = null;

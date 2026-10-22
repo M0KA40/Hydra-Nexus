@@ -1,0 +1,23 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),fsp=fs.promises,path=require('node:path');
+const {BackupEngine}=require('../src/core.cjs');
+(async()=>{
+  const root=await fsp.mkdtemp(path.join(__dirname,'backup-performance-'));
+  const user=path.join(root,'user'),save=path.join(user,'Saved Games','Performance Game','save.dat');
+  await fsp.mkdir(path.dirname(save),{recursive:true});await fsp.writeFile(save,'one');
+  const game={title:'Performance Game',shop:'steam',objectId:'42'};
+  const adapter={listGames:async()=>[game],running:async()=>[],achievementFiles:async()=>[],exportGame:async()=>({}),importGame:async()=>{}};
+  const engine=await new BackupEngine({stateDir:path.join(root,'settings'),destination:path.join(root,'Backups'),roots:{User:user},adapter,scan:async()=>({'42':{files:{[save]:{bytes:3}}}})}).init();
+  const firstBackup=await engine.runBackup('steam:42');assert.equal(firstBackup.results[0].changed,true);
+  engine.invalidateSnapshots();
+  const realRead=engine.readManifest.bind(engine);let reads=0;engine.readManifest=async(...args)=>{reads++;return realRead(...args);};
+  const first=await engine.snapshots('steam:42');assert.equal(first.length,1);assert.ok(reads>0);
+  const afterFirstRead=reads;const second=await engine.snapshots('steam:42');assert.equal(second.length,1);assert.equal(reads,afterFirstRead,'cached scans must not reread unchanged manifests');
+  await fsp.writeFile(save,'two');const secondBackup=await engine.runBackup('steam:42');assert.equal(secondBackup.results[0].changed,true);
+  const third=await engine.snapshots('steam:42');assert.equal(third.length,2,'creating a snapshot must invalidate the cache');
+  const preview=await engine.previewRestore(third[1].folder);assert.equal(preview.paths[0].file.kind,'save');
+  await fsp.writeFile(save,'three');await engine.restoreMany([third[1].folder]);
+  assert.equal(await fsp.readFile(save,'utf8'),'one');
+  assert.equal((await fsp.readdir(path.dirname(save))).filter(name=>name.startsWith('.hydra-backup-')).length,0);
+  console.log('PASS: snapshot scans reuse unchanged manifests, invalidate on new versions, and restores keep verified target metadata and cleanup.');
+})().catch(error=>{console.error(error);process.exitCode=1;});

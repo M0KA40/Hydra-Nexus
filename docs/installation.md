@@ -30,6 +30,10 @@ Hydra updates can replace `app.asar`, removing the Nexus loader. Exit Hydra and 
 
 Exit Hydra, run the BAT and choose **Remove Nexus**. This removes the loader and leaves your notes, settings, backgrounds, history and game backups on disk. To reinstall, use Install / Update / Repair again.
 
+The patch changes Hydra's application archive, so installation disables Electron's embedded archive-integrity check (fuse 4). Archive-only loading (fuse 5) remains enabled. Removal restores the original fuse settings only when the saved executable matches the current build and no other patch requires the archive change. If that match cannot be verified, reinstall the official Hydra build rather than replacing a newer executable with an older backup.
+
+The in-app updater keeps recovery copies of the application archive and executable before installing. Installation, verification or reopen errors restore those copies; an error after the application has already started is outside that check. Keep recovery copies until the installation has been checked.
+
 ## Data locations
 
 | Data | Location |

@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.0.1
+
+- Fixed unnecessary background refreshes, repeated Steam-button redraws and idle Backup checks that caused avoidable resource use.
+- Restored the original Steam account-switching workflow, preserved saved accounts and online/offline modes, and fixed Steam settings sometimes needing more than one click. Steam startup failures now return an error instead of leaving an unhandled exception.
+- Redesigned **Game Notes** with a cleaner title bar, improved editor and clearer Edit/Read controls. Improved saving and exporting the latest edits.
+- Fixed **Backup and Updater navigation**, including pages remaining over the previous screen and multiple sidebar items appearing selected. Kept Hydra's original game shortcuts and context-menu commands.
+- Fixed copying existing backups to a newly selected **Google Drive for desktop** folder. Automatic failures stop after three attempts; local backups remain available.
+- Strengthened backup verification and restore recovery, with safety copies preserved when an operation fails. Blocked game launches through Hydra while a restore is replacing files.
+- Fixed installer compatibility errors and improved update verification and rollback after a failed installation.
+
+[Patch notes](docs/releases/1.0.1.md).
+
 ## 1.0.0
 
 ### Internal repair 2

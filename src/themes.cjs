@@ -2,16 +2,18 @@
 const fs=require('node:fs'),fsp=fs.promises,path=require('node:path'),crypto=require('node:crypto');
 const {pathToFileURL}=require('node:url');
 const MAX_CSS=1024*1024;
+function trustedCSSURL(value,base){const u=new URL(value,base);if(u.protocol!=='https:'||!['hydrathemes.shop','www.hydrathemes.shop'].includes(u.hostname)||u.username||u.password||(u.port&&u.port!=='443'))throw Error('Theme CSS resources must stay on hydrathemes.shop using HTTPS');return u;}
 function sourceURL(input){const url=new URL(String(input).trim());if(url.protocol!=='https:'||!['hydrathemes.shop','www.hydrathemes.shop'].includes(url.hostname)||url.username||url.password)throw Error('Paste a theme link from hydrathemes.shop');if(!url.pathname.endsWith('.css')){const parts=url.pathname.split('/').filter(Boolean);if(!['theme','themes'].includes(parts[0])||!parts[1])throw Error('Paste the link to a specific Hydra theme');url.pathname='/themes/'+parts[1]+'/theme.css';}url.search='';url.hash='';return url.toString();}
 async function atomicText(file,text){await fsp.mkdir(path.dirname(file),{recursive:true});const tmp=file+'.'+crypto.randomUUID()+'.tmp';try{await fsp.writeFile(tmp,text,'utf8');for(let attempt=0;;attempt++){try{await fsp.rename(tmp,file);break;}catch(e){if(!['EPERM','EBUSY','EACCES'].includes(e.code)||attempt>=4)throw e;await new Promise(resolve=>setTimeout(resolve,40*2**attempt));}}}catch(e){await fsp.rm(tmp,{force:true}).catch(()=>{});throw e;}}
 async function fetchCSS(url,fetcher,seen=new Set(),deadline=Date.now()+60000){
-  if(seen.has(url)||seen.size>=8)return '';seen.add(url);const u=new URL(url);if(u.protocol!=='https:')throw Error('Theme resources must use HTTPS');
+  const u=trustedCSSURL(url);url=u.href;if(seen.has(url))return '';if(seen.size>=8)throw Error('Too many theme imports');seen.add(url);
   if(Date.now()>=deadline)throw Error('Theme download timed out. Try again.');
   const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),Math.min(30000,deadline-Date.now()));let text='';
-  try{const response=await fetcher(url,{signal:controller.signal,credentials:'omit'});if(!response.ok)throw Error('Theme download failed ('+response.status+'). Check that the link contains theme CSS.');let length=0;const chunks=[];for await(const chunk of response.body){length+=chunk.length;if(length>MAX_CSS)throw Error('Theme CSS is too large');chunks.push(Buffer.from(chunk));}text=Buffer.concat(chunks).toString('utf8');}finally{clearTimeout(timeout);}
+  try{const response=await fetcher(url,{signal:controller.signal,credentials:'omit',redirect:'error'});if(response.redirected||response.url&&trustedCSSURL(response.url).href!==u.href)throw Error('Theme redirects are not supported');if(!response.ok)throw Error('Theme download failed ('+response.status+'). Check that the link contains theme CSS.');let length=0;const chunks=[];for await(const chunk of response.body){length+=chunk.length;if(length>MAX_CSS)throw Error('Theme CSS is too large');chunks.push(Buffer.from(chunk));}text=Buffer.concat(chunks).toString('utf8');}finally{clearTimeout(timeout);}
   const imports=[...text.matchAll(/@import\s+(?:url\(\s*)?["']([^"']+)["']\s*\)?\s*;/gi)];
   for(const match of imports){const imported=new URL(match[1],url).toString();text=text.replace(match[0],await fetchCSS(imported,fetcher,seen,deadline));}
-  text=text.replace(/url\(\s*(["']?)([^"')]+)\1\s*\)/gi,(full,_quote,value)=>{if(/^(data:|#)/i.test(value))return full;const absolute=new URL(value.trim(),url);if(absolute.protocol!=='https:')throw Error('Theme contains an unsupported resource URL');return 'url('+JSON.stringify(absolute.toString())+')';});
+  if(/@import/i.test(text))throw Error('Unsupported theme import syntax');
+  text=text.replace(/url\(\s*(["']?)([^"')]+)\1\s*\)/gi,(full,_quote,value)=>{if(/^(data:|#)/i.test(value))return full;const absolute=trustedCSSURL(value.trim(),url);return 'url('+JSON.stringify(absolute.toString())+')';});
   if(Buffer.byteLength(text)>MAX_CSS)throw Error('Combined theme CSS is too large');return text;
 }
 class ThemeStore{
