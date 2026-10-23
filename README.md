@@ -14,8 +14,6 @@ Hydra Nexus adds game tools to Hydra Launcher: backups, notes, tabs, play histor
 
 **[Download the installer](https://github.com/M0KA40/Hydra-Nexus/releases/latest/download/Hydra_Nexus.bat)** · [Installation](docs/installation.md) · [Feature guide](docs/features.md) · [Report a problem](https://github.com/M0KA40/Hydra-Nexus/issues/new/choose)
 
-**1.2.1 maintenance update:** fixes update-helper startup/cancellation and the Invisible Mode announcement image. [Release notes](docs/releases/1.2.1.md).
-
 ## Invisible Mode — play on your terms
 
 <p align="center"><img src="assets/announcements/invisible-mode-1.2.0.png" alt="Invisible Mode — appear offline in Hydra and keep your library connected" width="100%"></p>

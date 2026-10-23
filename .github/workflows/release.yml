@@ -40,13 +40,3 @@ jobs:
           gh release create "v$version" "dist/Hydra_Nexus.bat" "dist/Hydra-Nexus-$version-source.zip" "dist/SHA256SUMS.txt" --repo "$env:GITHUB_REPOSITORY" --target "$env:GITHUB_SHA" --title "Hydra Nexus $version" --notes-file "docs/releases/$version.md" --latest
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - name: Add artwork to the 1.2.0 release notes
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: pwsh
-        run: |
-          $version = node -p "require('./src/brand.cjs').version"
-          if ($version -eq '1.2.1') {
-            gh release edit v1.2.0 --repo "$env:GITHUB_REPOSITORY" --notes-file docs/releases/1.2.0.md
-            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          }
