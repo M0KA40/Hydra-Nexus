@@ -129,7 +129,7 @@ function installNexusUI(bootstrap){
   let installedNotes=null,notesClosed=false,closedNotesId=null;
   function showInstalledNotes(value){installedNotes=value;notesClosed=!!value&&value.id===closedNotesId;syncReleaseNotes();}
   function syncReleaseNotes(){
-    const value=installedNotes&&!notesClosed?{id:installedNotes.id,announcement:installedNotes.version==='1.2.0'&&config.announcementUrl?{url:config.announcementUrl,alt:tr('Invisible Mode'),title:tr('Play on your terms.'),description:tr('Appear offline in Hydra while keeping game images and your interface available.')}:null,title:tr('What’s new in Hydra Nexus'),description:tr('Installed update: {version}',{version:installedNotes.version}),html:renderNotes(installedNotes.notes),closeLabel:tr('Got it'),sourceLabel:tr('View release on GitHub'),language:locale(),dir:window.__nexusI18n?.direction||'ltr'}:null;
+    const value=installedNotes&&!notesClosed?{id:installedNotes.id,announcement:['1.2.0','1.2.1'].includes(installedNotes.version)&&config.announcementUrl?{url:config.announcementUrl,alt:tr('Invisible Mode'),title:tr('Play on your terms.'),description:tr('Appear offline in Hydra while keeping game images and your interface available.')}:null,title:tr('What’s new in Hydra Nexus'),description:tr('Installed update: {version}',{version:installedNotes.version}),html:renderNotes(installedNotes.notes),closeLabel:tr('Got it'),sourceLabel:tr('View release on GitHub'),language:locale(),dir:window.__nexusI18n?.direction||'ltr'}:null;
     window.__nexusReleaseControl={snapshot:value,dismiss:async()=>{const id=installedNotes?.id;closedNotesId=id;notesClosed=true;syncReleaseNotes();try{await request('dismissReleaseNotes',{id});}catch(e){window.__hydraSteamShowToast?.(e.message,true);}},open:()=>request('openReleasePage').catch(()=>{})};
     document.dispatchEvent(new Event('nexus-release-notes'));
   }
@@ -137,6 +137,8 @@ function installNexusUI(bootstrap){
     const inline=text=>esc(text).replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
     const blocks=[];let list=null;
     for(const line of String(markdown||tr("No release notes.")).slice(0,16000).split(/\r?\n/)){
+      // The official feature artwork is already rendered from the bundled asset.
+      if(line.trim()==='![Invisible Mode — play on your terms](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/v1.2.0/assets/announcements/invisible-mode-1.2.0.png)')continue;
       const item=line.match(/^\s*(?:[-*] |(\d+)\. )(.*)$/);if(item){const tag=item[1]?'ol':'ul';if(list!==tag){if(list)blocks.push('</'+list+'>');blocks.push('<'+tag+'>');list=tag;}blocks.push('<li>'+inline(item[2])+'</li>');continue;}
       if(list){blocks.push('</'+list+'>');list=null;}if(!line.trim())continue;const heading=line.match(/^#{1,6}\s+(.+)$/);blocks.push(heading?'<h3>'+inline(heading[1])+'</h3>':'<p>'+inline(line)+'</p>');
     }if(list)blocks.push('</'+list+'>');return blocks.join('');

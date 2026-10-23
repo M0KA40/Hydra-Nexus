@@ -4,7 +4,7 @@ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),asse
  const directory=fs.mkdtempSync(path.join(__dirname,'media-fixture-')),source=path.join(__dirname,'../src');
  let finishInit;const gate=new Promise(resolve=>finishInit=resolve);let registered=false,handler;
  const app=new EventEmitter();app.whenReady=()=>Promise.resolve();app.getPath=()=>directory;app.getAppPath=()=>directory;
- const wc=new EventEmitter(),win=new EventEmitter(),messages=[];wc.getURL=()=> 'file:///C:/Hydra/out/renderer/index.html';wc.isLoading=()=>false;wc.send=()=>{};wc.executeJavaScript=async code=>{if(code.startsWith('window.__nexusReceive'))messages.push(JSON.parse(code.slice(code.indexOf('(')+1,-1)));};win.webContents=wc;win.isDestroyed=()=>false;
+ const wc=new EventEmitter(),win=new EventEmitter(),messages=[];let bootstrap;wc.getURL=()=> 'file:///C:/Hydra/out/renderer/index.html';wc.isLoading=()=>false;wc.send=()=>{};wc.executeJavaScript=async code=>{if(code.startsWith('window.__nexusReceive'))messages.push(JSON.parse(code.slice(code.indexOf('(')+1,-1)));else if(code.includes('function installNexusUI('))bootstrap=JSON.parse(code.slice(code.lastIndexOf(')(')+2,-1));};win.webContents=wc;win.isDestroyed=()=>false;
  const electron={app,BrowserWindow:{getAllWindows:()=>[win]},dialog:{},shell:{},net:{fetch:async url=>({url})},protocol:{registerSchemesAsPrivileged(){},handle(name,value){assert.equal(name,'nexus-media');registered=true;handler=value;}}};
  const themes=require('../src/themes.cjs'),brand=require('../src/brand.cjs');
  function load(id){
@@ -20,6 +20,7 @@ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),asse
  try{
   for(let i=0;i<100&&!messages.some(x=>x.event==='releaseNotes');i++)await new Promise(r=>setTimeout(r,10));
   assert.ok(messages.some(x=>x.event==='releaseNotes'));assert.equal(registered,true,'media is ready while history/Notes initialization is still blocked');
+  assert.equal(bootstrap.config.announcementUrl,'./assets/nexus-invisible-mode.png','announcement uses the native self origin allowed by Hydra CSP');
   const asset=path.join(directory,'out/renderer/assets/nexus-invisible-mode.png');fs.mkdirSync(path.dirname(asset),{recursive:true});fs.writeFileSync(asset,'fixture');
   assert.match((await handler({url:'nexus-media://brand/invisible-mode.png'})).url,/nexus-invisible-mode\.png$/);
   assert.equal((await handler({url:'nexus-media://brand/unknown.png'})).status,404);

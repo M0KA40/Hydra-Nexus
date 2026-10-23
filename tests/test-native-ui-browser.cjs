@@ -8,12 +8,12 @@ const {catalogs,rendererScript}=require('../src/i18n.cjs'),root=path.join(__dirn
  const browser=await chromium.launch({headless:true,executablePath:process.env.HYDRA_BROWSER_EXE});
  try{
   const page=await browser.newPage({viewport:{width:1280,height:850}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
-  await page.setContent('<html lang="en"><head><style>body{background:#181818;color:#ddd;font:14px Arial}button{color:inherit;background:#222;padding:10px;border:0}.settings__content{display:flex}.settings__sidebar{width:200px}.settings__panel{width:750px}.sidebar-profile__dropdown-item{display:flex;align-items:center;width:280px}.hero-panel__actions{display:flex}</style></head><body><div id="root"></div></body></html>');
+  await page.setContent('<html lang="en"><head><base href="http://nexus.test/renderer/"><meta http-equiv="Content-Security-Policy" content="default-src &#39;self&#39; &#39;unsafe-inline&#39; * data: local: blob:; media-src &#39;self&#39; &#39;unsafe-inline&#39; * data: local: blob:;"><style>body{background:#181818;color:#ddd;font:14px Arial}button{color:inherit;background:#222;padding:10px;border:0}.settings__content{display:flex}.settings__sidebar{width:200px}.settings__panel{width:750px}.sidebar-profile__dropdown-item{display:flex;align-items:center;width:280px}.hero-panel__actions{display:flex}</style></head><body><div id="root"></div></body></html>');
   await page.addScriptTag({path:process.env.HYDRA_NATIVE_REACT});await page.addScriptTag({path:path.join(root,'src/native-ui.js')});
   await page.evaluate(()=>{
    installNativeNexusCommit();
    const nativeObserve=MutationObserver.prototype.observe;window.bodyObservers=0;MutationObserver.prototype.observe=function(target,options){if(target===document.body)bodyObservers++;return nativeObserve.call(this,target,options);};
-   window.config={version:'1.2.0',announcementUrl:'https://nexus.test/announcement.png',plugins:{steam:true,backup:true,activity:true,tabs:true,mods:true,notes:true,hardware:false,lowResource:false,invisible:false},theme:{},privacy:{supported:true,requested:false,active:false,held:1},autoCheckUpdates:false};
+   window.config={version:'1.2.0',announcementUrl:'./assets/nexus-invisible-mode.png',plugins:{steam:true,backup:true,activity:true,tabs:true,mods:true,notes:true,hardware:false,lowResource:false,invisible:false},theme:{},privacy:{supported:true,requested:false,active:false,held:1},autoCheckUpdates:false};
    window.games=[{key:'steam:42',shop:'steam',objectId:'42',title:'Fixture',lifetimeMs:1}];window.calls=[];window.friendClicks=0;
    console.info=message=>{
     if(message.startsWith('__HYDRA_NEXUS__')){
@@ -63,14 +63,16 @@ const {catalogs,rendererScript}=require('../src/i18n.cjs'),root=path.join(__dirn
   await page.evaluate(()=>renderNative());await page.locator('[data-nexus-tab=plugins]').click();await plugin.waitFor();assert.equal(await page.locator('#nexus-settings-group').count(),1);
   await page.waitForTimeout(400);await page.evaluate(()=>{calls=[];window.privacyEvents=0;document.addEventListener('nexus-privacy',()=>privacyEvents++);});await page.waitForTimeout(600);
   assert.equal(await page.evaluate(()=>privacyEvents),0);assert.deepEqual(await page.evaluate(()=>calls),[],'idle native UI does not repeatedly request backend data');assert.deepEqual(errors,[]);
-  await page.route('https://nexus.test/announcement.png',route=>route.fulfill({status:200,contentType:'image/png',body:fs.readFileSync(path.join(root,'assets/announcements/invisible-mode-1.2.0.png'))}));
-  await page.evaluate(()=>window.__nexusReceive({event:'releaseNotes',value:{id:'1.2.0:5',version:'1.2.0',notes:'## Changes\n- **Fixed privacy**\n<img src=x onerror=window.injected=true>'}}));
+  await page.evaluate(()=>{document.addEventListener('securitypolicyviolation',event=>window.blockedMedia=event.blockedURI,{once:true});const image=document.createElement('img');image.id='old-media-policy-probe';image.src='nexus-media://brand/invisible-mode.png';document.body.append(image);});
+  await page.waitForFunction(()=>/^nexus-media(?::|$)/.test(window.blockedMedia||''));await page.locator('#old-media-policy-probe').evaluate(el=>el.remove());
+  await page.route('http://nexus.test/renderer/assets/nexus-invisible-mode.png',route=>route.fulfill({status:200,contentType:'image/png',body:fs.readFileSync(path.join(root,'assets/announcements/invisible-mode-1.2.0.png'))}));
+  await page.evaluate(()=>window.__nexusReceive({event:'releaseNotes',value:{id:'1.2.1:1',version:'1.2.1',notes:'## Changes\n- **Fixed privacy**\n<img src=x onerror=window.injected=true>'}}));
   await page.locator('.nexus-installed-notes, [role=dialog]').waitFor();
   assert.equal(await page.locator('[role=dialog] article strong').innerText(),'Fixed privacy');assert.equal(await page.locator('[role=dialog] article img').count(),0);
   const announcement=page.locator('[data-nexus-announcement] img');await announcement.waitFor();await page.waitForFunction(()=>document.querySelector('[data-nexus-announcement] img')?.naturalWidth>0);assert.equal(await announcement.isVisible(),true);
   for(const language of Object.keys(catalogs)){await page.evaluate(l=>document.documentElement.lang=l,language);await page.waitForFunction(l=>window.__nexusReleaseControl.snapshot?.language===l,language);assert.equal(await page.locator('[role=dialog]>h3').innerText(),catalogs[language]['What’s new in Hydra Nexus']);}
-  await page.locator('[role=dialog] .button--primary').click();await page.locator('[role=dialog]').waitFor({state:'detached'});assert.equal(await page.evaluate(()=>calls.some(r=>r.action==='dismissReleaseNotes'&&r.data.id==='1.2.0:5')),true);
-  await page.evaluate(()=>window.__nexusReceive({event:'releaseNotes',value:{id:'1.2.0:5',version:'1.2.0',notes:'duplicate'}}));assert.equal(await page.locator('[role=dialog]').count(),0,'duplicate notifications cannot reopen an acknowledged popup');
+  await page.locator('[role=dialog] .button--primary').click();await page.locator('[role=dialog]').waitFor({state:'detached'});assert.equal(await page.evaluate(()=>calls.some(r=>r.action==='dismissReleaseNotes'&&r.data.id==='1.2.1:1')),true);
+  await page.evaluate(()=>window.__nexusReceive({event:'releaseNotes',value:{id:'1.2.1:1',version:'1.2.1',notes:'duplicate'}}));assert.equal(await page.locator('[role=dialog]').count(),0,'duplicate notifications cannot reopen an acknowledged popup');
   if(process.env.HYDRA_NATIVE_UI_PREVIEW)await page.screenshot({path:process.env.HYDRA_NATIVE_UI_PREVIEW});
   console.log('PASS: real Hydra React runtime; native settings and account controls; all eight languages; independent plugin/mode; complete hide/disable; distinct colored on/off icons; native commands; repeated mount/unmount; Steam/Notes/Mods/Backup native commits; zero body observers and no idle requests.');
  }finally{await browser.close();}

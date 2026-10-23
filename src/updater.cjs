@@ -6,7 +6,7 @@ const sha=bytes=>crypto.createHash('sha256').update(bytes).digest('hex');
 function newer(a,b){const parse=v=>/^\d+\.\d+\.\d+$/.test(v)?v.split('.').map(Number):null,x=parse(a),y=parse(b);if(!x||!y)return false;for(let i=0;i<3;i++){if(x[i]!==y[i])return x[i]>y[i];}return false;}
 function releaseVersion(bytes){const text=bytes.toString('utf8');const version=text.match(/^:: HYDRA_NEXUS_RELEASE (\d+\.\d+\.\d+)\r?$/m)?.[1];if(!version||!text.includes(':: === HYDRA_SUITE_PS_START ===')||!text.includes('hydra-nexus-bridge.cjs'))throw Error('Choose an official Hydra Nexus BAT release');return version;}
 function releaseRevision(bytes){return Number(bytes.toString('utf8').match(/^:: HYDRA_NEXUS_REVISION (\d+)\r?$/m)?.[1]||1);}
-function createUpdater({directory,version,revision=1,getRepository,fetcher,app,dialog}){
+function createUpdater({directory,version,revision=1,getRepository,fetcher,app,dialog,startupTimeoutMs=45000}){
   if(!Number.isSafeInteger(revision)||revision<1)throw Error('Invalid installed release revision');
   dialog=i18n.localizedDialog(dialog);
   let release=null,staged=null,busy=false,pruned=false;const folder=path.join(directory,'updates'),job=path.join(folder,'installation-status.txt');
@@ -28,16 +28,19 @@ function createUpdater({directory,version,revision=1,getRepository,fetcher,app,d
     if(newer(version,staged.version)||(staged.version===version&&(staged.revision||1)<revision))throw Error('This installer is older than your installed Nexus version. Choose a newer release.');
     const response=await dialog.showMessageBox(win,{type:'question',title:'Update Hydra Nexus',message:i18n.main.t('Install Hydra Nexus {version} and restart Hydra?',{version:staged.version}),detail:i18n.main.t('Source:')+' '+i18n.main.message(staged.source)+'\nSHA-256: '+staged.sha256+'\n\n'+i18n.main.t('Save any open work first. Hydra will exit normally, the update will install, and Hydra will reopen once. Your preferences, notes, history and game backups are preserved.'),buttons:['Cancel','Install & restart'],defaultId:0,cancelId:0,noLink:true});if(response.response!==1)return {cancelled:true};
     if(sha(await fsp.readFile(staged.file))!==staged.sha256)throw Error('The staged updater changed. Choose it again.');
-    const hydraExe=app.getPath('exe'),hydraDir=path.dirname(hydraExe),script=path.join(folder,'install-restart-'+staged.sha256.slice(0,12)+'.ps1'),ready=script+'.ready',readyToken=crypto.randomUUID(),startupLog=path.join(folder,'installation-startup.log'),startupError=path.join(folder,'installation-startup-errors.log');
+    const hydraExe=app.getPath('exe'),hydraDir=path.dirname(hydraExe),readyToken=crypto.randomUUID(),script=path.join(folder,'install-restart-'+staged.sha256.slice(0,12)+'-'+readyToken.replace(/-/g,'')+'.ps1'),ready=script+'.ready',proceed=script+'.proceed',cancel=script+'.cancel',startupLog=path.join(folder,'installation-startup.log'),startupError=path.join(folder,'installation-startup-errors.log');
     const ps=`$ErrorActionPreference='Stop'
 $nexusManager=${quote(staged.file)}
 $nexusHydraDir=${quote(hydraDir)}
 $nexusHydraExe=${quote(hydraExe)}
+$nexusProcessNames=@(${[...new Set([path.basename(hydraExe,path.extname(hydraExe)),'hydralauncher'])].map(quote).join(',')})
 $nexusJobStatus=${quote(job)}
 $nexusExpected=${quote(staged.sha256)}
 $nexusUpdatesDir=${quote(folder)}
 $nexusReady=${quote(ready)}
 $nexusReadyToken=${quote(readyToken)}
+$nexusProceed=${quote(proceed)}
+$nexusCancel=${quote(cancel)}
 $nexusMutex=$null
 $nexusMutexHeld=$false
 $nexusRollback=$null
@@ -47,6 +50,9 @@ function Restore-NexusInstallation {
   foreach($item in @(@('app.asar',(Join-Path (Join-Path $nexusHydraDir 'resources') 'app.asar')),@('Hydra.exe',$nexusHydraExe))){
     $saved=Join-Path $nexusRollback $item[0]
     if(!(Test-Path -LiteralPath $saved)){throw 'Recovery copy is missing: '+$saved}
+    # A preflight failure may not have changed either file. Never replace an
+    # identical archive/executable while Hydra is using it.
+    if((Test-Path -LiteralPath $item[1]) -and (Get-NexusFileHash $saved) -ceq (Get-NexusFileHash $item[1])){continue}
     $temp=$item[1]+'.nexus-recovery-'+[guid]::NewGuid().ToString('N')
     [IO.File]::Copy($saved,$temp,$false)
     if(Test-Path -LiteralPath $item[1]){[IO.File]::Replace($temp,$item[1],[System.Management.Automation.Language.NullString]::Value)}else{[IO.File]::Move($temp,$item[1])}
@@ -57,16 +63,26 @@ try{
   $nexusMutex=New-Object Threading.Mutex($false,'Local\\HydraNexusInstallV1')
   $nexusMutexHeld=$nexusMutex.WaitOne(0)
   if(!$nexusMutexHeld){throw 'Another installer is active. Retry after it finishes.'}
-  # Retire stale Nexus workers from older releases, confined to this data directory.
-  try{Get-CimInstance Win32_Process -Filter "Name='powershell.exe'" -ErrorAction Stop | Where-Object {$_.ProcessId -ne $PID -and $_.CommandLine -and $_.CommandLine.Contains($nexusUpdatesDir) -and ($_.CommandLine.Contains('install-after-close.ps1') -or $_.CommandLine.Contains('install-restart-'))} | ForEach-Object {Stop-Process -Id $_.ProcessId -ErrorAction SilentlyContinue}}catch{}
+  # Do not put optional WMI discovery on the readiness path. The mutex owns
+  # installation exclusion; each attempt has its own approval/cancellation token.
+  if(Test-Path -LiteralPath $nexusCancel){throw 'Update cancelled before installation.'}
   [IO.File]::WriteAllText($nexusJobStatus,'Waiting for Hydra to exit normally. Do not reopen it manually.')
   [IO.File]::WriteAllText($nexusReady,$nexusReadyToken)
+  $nexusApprovalDeadline=[DateTime]::UtcNow.AddSeconds(60)
+  while($true){
+    if(Test-Path -LiteralPath $nexusCancel){throw 'Update cancelled before installation.'}
+    if((Test-Path -LiteralPath $nexusProceed) -and [IO.File]::ReadAllText($nexusProceed).Trim() -ceq $nexusReadyToken){break}
+    if([DateTime]::UtcNow -ge $nexusApprovalDeadline){throw 'Update cancelled before installation.'}
+    Start-Sleep -Milliseconds 100
+  }
   $nexusDeadline=[DateTime]::UtcNow.AddMinutes(5)
   while([DateTime]::UtcNow -lt $nexusDeadline){
-    $nexusProcesses=@(Get-Process Hydra,hydralauncher -ErrorAction SilentlyContinue | Where-Object {try{$_.Path -ieq $nexusHydraExe}catch{$false}})
+    if(Test-Path -LiteralPath $nexusCancel){throw 'Update cancelled before installation.'}
+    # Match the installer's own exclusion rule, including other Hydra instances.
+    $nexusProcesses=@(Get-Process -Name $nexusProcessNames -ErrorAction SilentlyContinue)
     if($nexusProcesses.Count){Start-Sleep -Milliseconds 500;continue}
     Start-Sleep -Seconds 1
-    if(@(Get-Process Hydra,hydralauncher -ErrorAction SilentlyContinue | Where-Object {try{$_.Path -ieq $nexusHydraExe}catch{$false}}).Count){continue}
+    if(@(Get-Process -Name $nexusProcessNames -ErrorAction SilentlyContinue).Count){continue}
     $nexusHasher=[Security.Cryptography.SHA256]::Create();$nexusStream=[IO.File]::OpenRead($nexusManager);try{$nexusActual=[BitConverter]::ToString($nexusHasher.ComputeHash($nexusStream)).Replace('-','').ToLowerInvariant()}finally{$nexusStream.Dispose();$nexusHasher.Dispose()};if($nexusActual -cne $nexusExpected){throw 'Installer checksum changed'}
     [IO.File]::WriteAllText($nexusJobStatus,'Installing the verified update…')
     $env:HYDRA_SUITE_SELF=$nexusManager
@@ -78,12 +94,14 @@ try{
     [IO.Directory]::CreateDirectory($nexusRollback)|Out-Null
     [IO.File]::Copy((Join-Path (Join-Path $nexusHydraDir 'resources') 'app.asar'),(Join-Path $nexusRollback 'app.asar'),$false)
     [IO.File]::Copy($nexusHydraExe,(Join-Path $nexusRollback 'Hydra.exe'),$false)
+    if(Test-Path -LiteralPath $nexusCancel){throw 'Update cancelled before installation.'}
+    if(@(Get-Process -Name $nexusProcessNames -ErrorAction SilentlyContinue).Count){continue}
     $nexusTouched=$true
     Invoke-BuiltInPatch ($script:BuiltInPatches | Where-Object Id -eq 'nexus') Install *> ${quote(path.join(folder,'installation-output.txt'))}
     $nexusPatch=$script:BuiltInPatches | Where-Object Id -eq 'nexus'
     if((Get-PatchStatus $nexusPatch $nexusHydraDir) -cne 'Installed'){throw 'Post-installation verification failed. Read installation-output.txt'}
     [IO.File]::WriteAllText($nexusJobStatus,'Hydra Nexus ${staged.version} installed successfully.')
-    Start-Process -FilePath $nexusHydraExe
+    Start-Process -FilePath $nexusHydraExe -WorkingDirectory $nexusHydraDir -WindowStyle Hidden
     $nexusTouched=$false
     Remove-Item -LiteralPath ${quote(path.join(folder,'staged.json'))} -Force -ErrorAction SilentlyContinue
     exit 0
@@ -104,14 +122,14 @@ finally{if($nexusMutexHeld){try{$nexusMutex.ReleaseMutex()}catch{}};if($nexusMut
     const bootstrap="$ErrorActionPreference='Stop';Start-Process -WindowStyle Hidden -FilePath "+quote(powershell)+" -ArgumentList @('-NoLogo','-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',"+quote('"'+script+'"')+") -RedirectStandardOutput "+quote(startupLog)+" -RedirectStandardError "+quote(startupError);
     const output=await fsp.open(path.join(folder,'installation-bootstrap.log'),'w');let child;
     try{
-      await new Promise((resolve,reject)=>{let settled=false,timer;const deadline=Date.now()+15000,finish=error=>{if(settled)return;settled=true;clearTimeout(timer);child?.removeListener('exit',exited);if(error){try{child?.kill();}catch{}reject(error);}else{child.unref();resolve();}};
+      await new Promise((resolve,reject)=>{let settled=false,timer;const deadline=Date.now()+startupTimeoutMs,finish=error=>{if(settled)return;settled=true;clearTimeout(timer);child?.removeListener('exit',exited);if(error){try{child?.kill();}catch{}reject(error);}else{child.unref();resolve();}};
         const failed=error=>finish(error),exited=code=>{if(code!==0)finish(Error('The update helper exited before it was ready (code '+code+'). See '+startupError));};
         const poll=async()=>{if(settled)return;if(Date.now()>=deadline)return finish(Error('The update helper did not become ready. Hydra was kept open. See '+startupError));try{if((await fsp.readFile(ready,'utf8')).trim()===readyToken)return finish();}catch{}if(!settled)timer=setTimeout(poll,100);};
         child=cp.spawn(powershell,['-NoLogo','-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-WindowStyle','Hidden','-EncodedCommand',Buffer.from(bootstrap,'utf16le').toString('base64')],{windowsHide:true,detached:false,stdio:['ignore',output.fd,output.fd]});
         child.once('error',failed);child.once('exit',exited);child.once('spawn',poll);
       });
-    }catch(error){await atomicText(job,'Update needs attention: '+error.message);throw error;}finally{await output.close();}
-    const result=await status();setTimeout(()=>app.quit(),500).unref?.();return result;
+      const result=await status();await atomicText(proceed,readyToken);setTimeout(()=>app.quit(),500).unref?.();return result;
+    }catch(error){await atomicText(cancel,readyToken);await atomicText(job,'Update needs attention: '+error.message);throw error;}finally{await output.close();}
   }
 
   return {installedNotes,action:async(win,name)=>{if(name==='updateStatus')return status();if(busy)throw Error('An update operation is already running');busy=true;try{if(name==='checkUpdates')return await check();if(name==='chooseUpdate'){const result=await dialog.showOpenDialog(win,{title:'Choose Hydra Nexus BAT',properties:['openFile'],filters:[{name:'Hydra Nexus installer',extensions:['bat']}]});if(result.canceled)return {cancelled:true};const stat=await fsp.stat(result.filePaths[0]);if(stat.size>8*1024*1024)throw Error('Installer is too large');return await stage(await fsp.readFile(result.filePaths[0]),'Local file: '+path.basename(result.filePaths[0]));}if(name==='installUpdate')return await install(win);throw Error('Unknown update action');}finally{busy=false;}}};

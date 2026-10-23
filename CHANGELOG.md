@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.2.1 — 2026-10-23
+
+- Fixed slow update-helper startup and late workers continuing after a failed readiness deadline.
+- Added explicit helper approval/cancellation and consistent process exclusion before installation.
+- Avoided unnecessary rollback replacements when a preflight failure left the installation unchanged.
+- Fixed native announcement image loading under Hydra's content security policy and included artwork in GitHub release notes.
+
+[Release notes](docs/releases/1.2.1.md).
+
 ## 1.2.0 — 2026-10-23
 
 - Added optional Invisible Mode with a native account-menu control, clear on/off states and persistent private activity holds.
