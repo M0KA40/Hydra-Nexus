@@ -554,5 +554,15 @@ module.exports={
   "Got it": "Понятно",
   "View release on GitHub": "Посмотреть выпуск на GitHub",
   "Play on your terms.": "Играйте на своих условиях.",
-  "Appear offline in Hydra while keeping game images and your interface available.": "Отображайтесь не в сети в Hydra, сохраняя доступ к изображениям игр и интерфейсу."
+  "Appear offline in Hydra while keeping game images and your interface available.": "Отображайтесь не в сети в Hydra, сохраняя доступ к изображениям игр и интерфейсу.",
+  "Save any open work first. Hydra will save your data, install the verified update and reopen once.": "Сначала сохраните работу. Hydra сохранит данные, установит проверенное обновление и откроется один раз.",
+  "This Hydra version does not support a safe update restart. Close Hydra and run the installer.": "Эта версия Hydra не поддерживает безопасный перезапуск для обновления. Закройте Hydra и запустите установщик.",
+  "Saving before the update did not finish. Hydra was kept open.": "Сохранение перед обновлением не завершилось. Hydra осталась открыта.",
+  "Pause downloads before restarting to update.": "Приостановите загрузки перед перезапуском для обновления.",
+  "Wait for library synchronization to finish before updating.": "Дождитесь завершения синхронизации библиотеки перед обновлением.",
+  "Verified update": "Обновление проверено",
+  "Save your data": "Сохранить данные",
+  "Install update": "Установить обновление",
+  "Restart Hydra": "Перезапустить Hydra",
+  "Update details": "Сведения об обновлении"
 };

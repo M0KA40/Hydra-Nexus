@@ -554,5 +554,15 @@ module.exports={
   "Got it": "Got it",
   "View release on GitHub": "View release on GitHub",
   "Play on your terms.": "Play on your terms.",
-  "Appear offline in Hydra while keeping game images and your interface available.": "Appear offline in Hydra while keeping game images and your interface available."
+  "Appear offline in Hydra while keeping game images and your interface available.": "Appear offline in Hydra while keeping game images and your interface available.",
+  "Save any open work first. Hydra will save your data, install the verified update and reopen once.": "Save any open work first. Hydra will save your data, install the verified update and reopen once.",
+  "This Hydra version does not support a safe update restart. Close Hydra and run the installer.": "This Hydra version does not support a safe update restart. Close Hydra and run the installer.",
+  "Saving before the update did not finish. Hydra was kept open.": "Saving before the update did not finish. Hydra was kept open.",
+  "Pause downloads before restarting to update.": "Pause downloads before restarting to update.",
+  "Wait for library synchronization to finish before updating.": "Wait for library synchronization to finish before updating.",
+  "Verified update": "Verified update",
+  "Save your data": "Save your data",
+  "Install update": "Install update",
+  "Restart Hydra": "Restart Hydra",
+  "Update details": "Update details"
 };

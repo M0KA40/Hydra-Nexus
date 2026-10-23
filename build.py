@@ -14,8 +14,9 @@ for name in ['core.cjs','drive-folder.cjs','achievements.cjs','ui.js','bridge.cj
     modules['./'+name]=text
 steam=(source/'steam.cjs').read_text(encoding='utf8')
 modules['./steam.cjs']=steam
-for name in ['activity.cjs','themes.cjs','nexus-ui.js','updater.cjs','controller.cjs','notes.cjs','notes-ui.js','hardware.cjs','services.cjs','workspace-ui.js','steam-vdf.cjs','steam-ui.js','mod-catalog.cjs','game-links.cjs','ratings.cjs','requirements.cjs','brand.cjs','privacy.cjs','release-notes.cjs']:
+for name in ['activity.cjs','themes.cjs','nexus-ui.js','updater.cjs','controller.cjs','notes.cjs','notes-ui.js','hardware.cjs','services.cjs','workspace-ui.js','steam-vdf.cjs','steam-ui.js','mod-catalog.cjs','game-links.cjs','ratings.cjs','requirements.cjs','brand.cjs','privacy.cjs','release-notes.cjs','update-job.cjs','update-shutdown.cjs','update-assets.cjs','update-confirmation.cjs']:
     modules['./'+name]=(source/name).read_text(encoding='utf-8').replace('__NEXUS_REPOSITORY__',json.dumps('M0KA40/Hydra-Nexus')).replace('__NEXUS_BRAND_ICON__','data:image/svg+xml;base64,'+base64.b64encode((root/'assets/brand/Hydra-Nexus-transparent.svg').read_bytes()).decode()).replace('__NEXUS_BRAND_WINDOW_ICON__','data:image/png;base64,'+base64.b64encode((root/'assets/brand/Hydra-Nexus-transparent.png').read_bytes()).decode()).replace('__NEXUS_MODS_ICON__','data:image/png;base64,'+base64.b64encode((root/'assets/nexus-mods.png').read_bytes()).decode())
+modules['./update-assets.cjs']="'use strict';module.exports={worker:"+json.dumps((root/'installer/update-worker.ps1').read_text(encoding='utf8'))+"};"
 for file in [source/'i18n.cjs',*sorted((source/'locales').glob('*.cjs'))]:
     modules['./'+file.relative_to(source).as_posix()]=file.read_text(encoding='utf-8')
 missing=set()
@@ -90,6 +91,15 @@ function Get-NexusAdapter([string]$Text){
     if($Text -match '\\bclass\\s+WindowManager\\b'){$adapter=$adapter.Replace('__HYDRA_NEXUS_BIND__({','__HYDRA_NEXUS_BIND__({windowManager:WindowManager,')}
     if($Text -match '\\bclass\\s+HydraApi\\b' -and $Text -match '\\bclass\\s+SSEClient\\b' -and $Text -match '\\bconst\\s+achievementSyncWorker\\b' -and $Text -match '\\bconst\\s+groupedSouvenirWorker\\b' -and $Text -match '\\bconst\\s+PendingGroupedSouvenirStore\\b'){
         $adapter=$adapter.Replace('__HYDRA_NEXUS_BIND__({','__HYDRA_NEXUS_BIND__({privacy:{api:HydraApi,realtime:SSEClient,achievementWorker:achievementSyncWorker,souvenirWorker:groupedSouvenirWorker,souvenirStore:PendingGroupedSouvenirStore},')
+    }
+    # A confirmed update saves native work explicitly before app.exit; the
+    # normal Hydra quit/torrent path is not changed or globally intercepted.
+    $required=@('DownloadManager','DownloadOrchestrator','PowerSaveBlockerManager','libraryWriteQueue','WindowManager','db','shutdownEpicIntegration','clearGamesPlaytime','stopAllEmulatorSouvenirCaptureSessions','isRemoteLibrarySyncing')
+    $supported=$true
+    foreach($name in $required){if($Text -notmatch ('\\b'+[regex]::Escape($name)+'\\b')){$supported=$false}}
+    if($supported){
+        $exit='updateExit:{assertIdle:()=>{if(DownloadManager.hasActiveDownload())throw Error("Pause downloads before restarting to update.");if(isRemoteLibrarySyncing())throw Error("Wait for library synchronization to finish before updating.");},prepare:async()=>{await shutdownEpicIntegration();DownloadOrchestrator.cancelPendingDebridPreparations();PowerSaveBlockerManager.reset();await clearGamesPlaytime();await stopAllEmulatorSouvenirCaptureSessions();await libraryWriteQueue.drain();const w=WindowManager.mainWindow;if(w&&!w.isDestroyed()){const b=w.getBounds();const m=w.isMaximized();const initial=WindowManager.initialConfigInitializationMainWindow;await WindowManager.saveScreenConfig(m?{width:initial?.width||b.width,height:initial?.height||b.height,isMaximized:true}:{...b,isMaximized:false});}},close:async()=>{await libraryWriteQueue.drain();await db.close();},reopen:async()=>{await db.open();}},'
+        $adapter=$adapter.Replace('__HYDRA_NEXUS_BIND__({','__HYDRA_NEXUS_BIND__({'+$exit)
     }
     return $adapter
 }

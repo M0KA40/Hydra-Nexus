@@ -74,7 +74,7 @@ if(!global.__HYDRA_NEXUS__){
     else throw Error('This theme editing feature has been removed. Only custom backgrounds are supported.');
     broadcast();return publicConfig();
   }
-  async function action(win,name,data={}){await ready;
+  async function action(win,name,data={}){await ready;if(updateShutdown.busy()&&!['updateStatus','status'].includes(name))throw Error('An update operation is already running');
     if(name==='status')return {...publicConfig(),games:(await library()).map(publicGame)};
     if(name==='game'){if(!validKey(data.key))throw Error('Invalid game');let game;if(binding.games?.get){try{game=await binding.games.get(data.key);}catch(e){if(e.code!=='LEVEL_NOT_FOUND'&&!e.notFound)throw e;}}else game=(await library()).find(g=>g.shop+':'+g.objectId===data.key);return {game:game&&!game.isDeleted?publicGame(game):null,...activity.summary(data.key,{history:data.history!==false}),enabled:config.plugins.activity};}
     if(name==='feature'){const task=mutation.then(()=>feature(data.name,data.enabled));mutation=task.catch(()=>{});return task;}
@@ -89,17 +89,19 @@ if(!global.__HYDRA_NEXUS__){
     if(name==='invisibleMode'){const task=mutation.then(async()=>{if(configError)throw Error(configError);if(typeof data.enabled!=='boolean'||!config.plugins.invisible)throw Error(i18n.main.t('Enable Invisible Mode in Plugins first.'));await privacy.change(data.enabled,async()=>{const next={...config,invisibleMode:data.enabled};await atomicText(configFile,JSON.stringify(next,null,2));config=next;});return {privacy:privacy.status()};});mutation=task.catch(()=>{});return task;}
     if(name==='resumePrivateSharing'){if(configError)throw Error(configError);const task=mutation.then(async()=>{const result=await privacy.resume(win,dialog);return result.cancelled?result:publicConfig();});mutation=task.catch(()=>{});return task;}
     if(name==='dismissReleaseNotes')return releaseNotes.dismiss(data.id);
+    if(name==='confirmUpdate')return updateConfirmation.respond(win,data);
     if(name==='openReleasePage')return shell.openExternal('https://github.com/M0KA40/Hydra-Nexus/releases/tag/v'+VERSION);
     if(name==='openRepository')return shell.openExternal('https://github.com/M0KA40/Hydra-Nexus');
     if(name==='gameBackup'||name==='gameImport'){if(!config.plugins.backup)throw Error('Enable Backup first');if(!validKey(data.key)||(await library()).every(g=>g.shop+':'+g.objectId!==data.key))throw Error('Unknown library game');return global.__NEXUS_BACKUP_ACTION__(win,name==='gameBackup'?'backup':'gameImport',data);}
     if(/^(notes|hardware|verifyHardware|nexusOpen|nexusKey|nexusHelp)/.test(name)){if(configError)throw Error(configError);const perform=async()=>{const result=await services.action(win,name,data);if(['notesChoose','notesShortcut'].includes(name))services.shortcut();return result;};if(!['notesChoose','notesRestore','notesShortcut','hardwareSave','nexusKey'].includes(name))return perform();const task=mutation.then(perform);mutation=task.catch(()=>{});return task;}
     if(name==='openData')return shell.openPath(directory);
     if(name==='installUpdate'&&((binding.running?binding.running():running).length||global.__NEXUS_BACKUP_BUSY__?.()))throw Error('Close games and finish backup operations before restarting to update');
-    if(name==='installUpdate')await services.flushNotes();
     if(name==='updateStatus'||name==='checkUpdates'||name==='installUpdate'||name==='chooseUpdate')return updater.action(win,name,data);
     throw Error('Unknown Nexus action');
   }
-  const updater=require('./updater.cjs').createUpdater({directory,version:VERSION,revision:brand.revision||1,getRepository:()=>config.repository,fetcher:(url,options)=>net.fetch(url,options),app,dialog});
+  const updateShutdown=require('./update-shutdown.cjs').createUpdateShutdown({app,getNative:()=>binding.updateExit,guard:()=>{if((binding.running?binding.running():running).length||global.__NEXUS_BACKUP_BUSY__?.())throw Error('Close games and finish backup operations before restarting to update');binding.updateExit?.assertIdle();},flush:async()=>{await mutation;await services.flushNotes();await privacy.flush();await activity.queue;await activity.stop();}});
+  const updateConfirmation=require('./update-confirmation.cjs').createUpdateConfirmation({send,trusted,dialog});
+  const updater=require('./updater.cjs').createUpdater({directory,version:VERSION,revision:brand.revision||1,getRepository:()=>config.repository,fetcher:(url,options)=>net.fetch(url,options),app,dialog,shutdown:updateShutdown,confirm:updateConfirmation.confirm});
   const releaseNotes=require('./release-notes.cjs').createReleaseNotes({directory,version:VERSION,revision:brand.revision||1,load:()=>updater.installedNotes(),log,changed:value=>{for(const win of windows.keys())send(win,{event:'releaseNotes',value});}});
   let automaticChecking=false,lastUpdateNotice=null,nextUpdateNotice=0,pendingUpdateNotice=null;
   async function automaticUpdateCheck(){

@@ -554,5 +554,15 @@ module.exports={
   "Got it": "Anladım",
   "View release on GitHub": "Sürümü GitHub’da görüntüle",
   "Play on your terms.": "Kendi koşullarında oyna.",
-  "Appear offline in Hydra while keeping game images and your interface available.": "Oyun görselleri ve arayüz kullanılabilir kalırken Hydra’da çevrimdışı görün."
+  "Appear offline in Hydra while keeping game images and your interface available.": "Oyun görselleri ve arayüz kullanılabilir kalırken Hydra’da çevrimdışı görün.",
+  "Save any open work first. Hydra will save your data, install the verified update and reopen once.": "Önce çalışmanızı kaydedin. Hydra verilerinizi kaydeder, doğrulanan güncellemeyi yükler ve bir kez yeniden açılır.",
+  "This Hydra version does not support a safe update restart. Close Hydra and run the installer.": "Bu Hydra sürümü güvenli güncelleme yeniden başlatmasını desteklemiyor. Hydra’yı kapatıp yükleyiciyi çalıştırın.",
+  "Saving before the update did not finish. Hydra was kept open.": "Güncellemeden önce kaydetme tamamlanmadı. Hydra açık bırakıldı.",
+  "Pause downloads before restarting to update.": "Güncelleme için yeniden başlatmadan önce indirmeleri duraklatın.",
+  "Wait for library synchronization to finish before updating.": "Güncellemeden önce kütüphane eşitlemesinin bitmesini bekleyin.",
+  "Verified update": "Doğrulanmış güncelleme",
+  "Save your data": "Verilerinizi kaydet",
+  "Install update": "Güncellemeyi yükle",
+  "Restart Hydra": "Hydra’yı yeniden başlat",
+  "Update details": "Güncelleme ayrıntıları"
 };

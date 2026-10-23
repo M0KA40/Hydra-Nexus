@@ -60,9 +60,36 @@ function HydraNexusReleaseNotes(){
         React.createElement('button',{className:'button button--outline',onClick:()=>window.__nexusReleaseControl.open()},state.sourceLabel),
         React.createElement('button',{className:'button button--primary',onClick:()=>window.__nexusReleaseControl.dismiss()},state.closeLabel))));
 }
+function HydraNexusUpdateDialog(){
+  const React=reactExports$1;
+  const subscribe=React.useCallback(listener=>{document.addEventListener('nexus-update-confirmation',listener);return()=>document.removeEventListener('nexus-update-confirmation',listener);},[]);
+  const snapshot=React.useCallback(()=>window.__nexusUpdateControl?.snapshot||null,[]);
+  const state=React.useSyncExternalStore(subscribe,snapshot,snapshot);
+  const cancelRef=React.useRef(null);
+  React.useEffect(()=>{if(state?.id)cancelRef.current?.focus();},[state?.id]);
+  if(!state)return null;
+  const reply=accepted=>window.__nexusUpdateControl.respond(accepted);
+  return React.createElement(Modal$1,{visible:true,title:state.title,description:state.question,onClose:()=>reply(false),className:'nexus-update-confirmation'},
+    React.createElement('div',{lang:state.language,dir:state.dir,style:{display:'flex',flexDirection:'column',gap:24,minWidth:0}},
+      React.createElement('div',{style:{display:'flex',alignItems:'center',gap:16}},
+        React.createElement('span',{'aria-hidden':true,style:{display:'grid',placeItems:'center',width:48,height:48,border:'1px solid currentColor',borderRadius:12,flexShrink:0,opacity:0.65}},
+          React.createElement('svg',{width:24,height:24,viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:1.6,strokeLinecap:'round',strokeLinejoin:'round'},React.createElement('path',{d:'M12 3v12m-4-4 4 4 4-4M5 16v4h14v-4'}))),
+        React.createElement('div',{style:{minWidth:0}},React.createElement('strong',{style:{fontSize:20}},'Hydra Nexus ',React.createElement('bdi',null,state.version)),React.createElement('p',{style:{margin:'6px 0 0',opacity:0.7,fontSize:13}},state.verifiedLabel))),
+      React.createElement('ol',{className:'nexus-update-steps',style:{display:'flex',flexWrap:'wrap',gap:12,listStyle:'none',padding:0,margin:0}},
+        ...state.steps.map((label,index)=>React.createElement('li',{key:index,style:{display:'flex',alignItems:'center',gap:10,flex:'1 1 140px',minWidth:0,padding:'14px 0',borderBlockStart:'1px solid rgba(128,128,128,.2)',fontSize:13}},
+          React.createElement('span',{'aria-hidden':true,style:{display:'grid',placeItems:'center',width:24,height:24,border:'1px solid currentColor',borderRadius:'50%',opacity:0.6,flexShrink:0}},index+1),label))),
+      React.createElement('p',{style:{margin:0,lineHeight:1.7,opacity:0.8}},state.description),
+      React.createElement('details',{style:{fontSize:12,opacity:0.7,minWidth:0}},React.createElement('summary',{style:{cursor:'pointer',width:'fit-content'}},state.detailsLabel),
+        React.createElement('div',{style:{display:'flex',flexDirection:'column',gap:10,paddingTop:12,minWidth:0}},
+          React.createElement('div',null,state.sourceLabel,' ',React.createElement('bdi',null,state.source)),
+          React.createElement('code',{dir:'ltr',style:{display:'block',overflowWrap:'anywhere',userSelect:'text'}},'SHA-256: ',state.sha256))),
+      React.createElement('div',{style:{display:'flex',justifyContent:'flex-end',gap:12,flexWrap:'wrap'}},
+        React.createElement('button',{ref:cancelRef,type:'button',className:'button button--outline',disabled:state.pending,onClick:()=>reply(false)},state.cancelLabel),
+        React.createElement('button',{type:'button',className:'button button--primary',disabled:state.pending,onClick:()=>reply(true)},state.installLabel))));
+}
 function installNativeNexusCommit(){
   window.__nexusNativeHost=true;
   let scheduled=false;
   window.__nexusNativeCommit=()=>{if(scheduled)return;scheduled=true;queueMicrotask(()=>{scheduled=false;document.dispatchEvent(new Event('nexus-native-commit'));});};
 }
-if(typeof module!=='undefined')module.exports={HydraNexusInvisibleMenu,HydraNexusSettingsGroup,HydraNexusHost,HydraNexusReleaseNotes,installNativeNexusCommit};
+if(typeof module!=='undefined')module.exports={HydraNexusInvisibleMenu,HydraNexusSettingsGroup,HydraNexusHost,HydraNexusReleaseNotes,HydraNexusUpdateDialog,installNativeNexusCommit};

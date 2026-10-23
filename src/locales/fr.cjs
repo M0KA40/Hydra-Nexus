@@ -554,5 +554,15 @@ module.exports={
   "Got it": "Compris",
   "View release on GitHub": "Voir la version sur GitHub",
   "Play on your terms.": "Jouez à votre façon.",
-  "Appear offline in Hydra while keeping game images and your interface available.": "Apparaissez hors ligne dans Hydra tout en conservant les images des jeux et l’accès à l’interface."
+  "Appear offline in Hydra while keeping game images and your interface available.": "Apparaissez hors ligne dans Hydra tout en conservant les images des jeux et l’accès à l’interface.",
+  "Save any open work first. Hydra will save your data, install the verified update and reopen once.": "Enregistrez votre travail. Hydra enregistrera vos données, installera la mise à jour vérifiée et se rouvrira une fois.",
+  "This Hydra version does not support a safe update restart. Close Hydra and run the installer.": "Cette version de Hydra ne permet pas un redémarrage sûr pour la mise à jour. Fermez Hydra et lancez le programme d’installation.",
+  "Saving before the update did not finish. Hydra was kept open.": "L’enregistrement avant la mise à jour n’a pas terminé. Hydra est resté ouvert.",
+  "Pause downloads before restarting to update.": "Mettez les téléchargements en pause avant de redémarrer pour la mise à jour.",
+  "Wait for library synchronization to finish before updating.": "Attendez la fin de la synchronisation de la bibliothèque avant la mise à jour.",
+  "Verified update": "Mise à jour vérifiée",
+  "Save your data": "Enregistrer vos données",
+  "Install update": "Installer la mise à jour",
+  "Restart Hydra": "Redémarrer Hydra",
+  "Update details": "Détails de la mise à jour"
 };

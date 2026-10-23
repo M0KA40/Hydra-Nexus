@@ -24,6 +24,10 @@ If you installed an earlier development build numbered 2.x, close Hydra and run 
 
 ## After a Hydra update
 
+For Nexus updates, open **Nexus → Updater**, check for updates and choose **Download & install update**. The confirmation uses Hydra's current theme. Review the version, expand **Update details** for the source and SHA-256 if needed, then choose **Install & restart**. Pause active downloads and close games first. Hydra saves pending data, closes, installs the verified update and reopens once.
+
+If an older updater cannot close or reopen Hydra, exit Hydra completely and run the latest BAT once using **Install / Update / Repair**. This installs the replacement updater for subsequent updates and preserves Nexus data.
+
 Hydra updates can replace `app.asar`, removing the Nexus loader. Exit Hydra and re-run the Nexus BAT. Existing Nexus data stays outside the application archive. There is no fixed-version whitelist, but a future Hydra change can require an updated adapter. If installation reports an unsupported structure, keep the recovery copy and report the version instead of forcing a different patch.
 
 ## Remove Nexus

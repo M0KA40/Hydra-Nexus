@@ -5,10 +5,10 @@
 - Added optional Invisible Mode with a native account-menu control, clear on/off states and persistent private activity holds.
 - Added eight interface languages with live switching, English fallback and Arabic RTL.
 - Fixed saved Steam account switching from existing Desktop shortcuts, competing launch requests and localized progress feedback.
-- Fixed in-app update worker readiness and Windows process-discovery compatibility.
+- Rebuilt the updater handoff, fixed stalled restarts and added a themed install-and-restart confirmation with expandable verification details.
 - Integrated native Nexus navigation and corrected production renderer selection.
 - Reduced repeated UI work, indexed privacy checks and batched persistence.
-- Fixed private souvenir status visibility, duplicate private-game counts and announcement media availability during startup.
+- Fixed private souvenir status visibility and duplicate private-game counts; bundled the announcement image so it displays reliably inside release notes.
 
 [Full release notes](docs/releases/1.2.0.md).
 

@@ -3,6 +3,10 @@ from pathlib import Path
 import hashlib,re,zipfile
 root=Path(__file__).resolve().parent
 version=re.search(r"version:'([^']+)'",(root/'src/brand.cjs').read_text(encoding='utf8')).group(1)
+revision=int(re.search(r'revision:(\d+)',(root/'src/brand.cjs').read_text(encoding='utf8')).group(1))
+notes=(root/f'docs/releases/{version}.md').read_text(encoding='utf8')
+assert f'<!-- HYDRA_NEXUS_REVISION {revision} -->' in notes, 'Release notes must match the exact installer revision'
+assert not re.search(r'[\u0600-\u06ff]',notes), 'Public release notes must be English only'
 out=root/'dist'
 files=[p for p in root.iterdir() if p.is_file()]
 for folder in ['src','docs','assets','installer','.github']:
