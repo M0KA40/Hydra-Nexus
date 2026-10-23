@@ -1,25 +1,34 @@
 'use strict';
 const fs=require('node:fs'),fsp=fs.promises,path=require('node:path'),crypto=require('node:crypto'),cp=require('node:child_process');
 const {atomicText}=require('./themes.cjs');
+const i18n=require('./i18n.cjs');
 const sha=bytes=>crypto.createHash('sha256').update(bytes).digest('hex');
 function newer(a,b){const parse=v=>/^\d+\.\d+\.\d+$/.test(v)?v.split('.').map(Number):null,x=parse(a),y=parse(b);if(!x||!y)return false;for(let i=0;i<3;i++){if(x[i]!==y[i])return x[i]>y[i];}return false;}
 function releaseVersion(bytes){const text=bytes.toString('utf8');const version=text.match(/^:: HYDRA_NEXUS_RELEASE (\d+\.\d+\.\d+)\r?$/m)?.[1];if(!version||!text.includes(':: === HYDRA_SUITE_PS_START ===')||!text.includes('hydra-nexus-bridge.cjs'))throw Error('Choose an official Hydra Nexus BAT release');return version;}
 function releaseRevision(bytes){return Number(bytes.toString('utf8').match(/^:: HYDRA_NEXUS_REVISION (\d+)\r?$/m)?.[1]||1);}
 function createUpdater({directory,version,revision=1,getRepository,fetcher,app,dialog}){
   if(!Number.isSafeInteger(revision)||revision<1)throw Error('Invalid installed release revision');
+  dialog=i18n.localizedDialog(dialog);
   let release=null,staged=null,busy=false,pruned=false;const folder=path.join(directory,'updates'),job=path.join(folder,'installation-status.txt');
   const quote=s=>"'"+s.replace(/'/g,"''")+"'";
   async function pruneStaging(){try{await fsp.mkdir(folder,{recursive:true});let current=null;try{const candidate=JSON.parse(await fsp.readFile(path.join(folder,'staged.json'),'utf8'));if(typeof candidate.file==='string'){const file=path.resolve(candidate.file);if(path.dirname(file)===path.resolve(folder))current=file;}}catch{}for(const name of await fsp.readdir(folder)){const full=path.join(folder,name);if(name==='staged.json'||path.resolve(full)===current)continue;const st=await fsp.lstat(full);if(!st.isFile()||st.isSymbolicLink()||Date.now()-st.mtimeMs<7*86400000)continue;if(/^install-(?:after-close|restart-[a-f0-9]+)\.ps1$/i.test(name)||/^Hydra_Nexus-.*\.bat$/i.test(name))await fsp.rm(full,{force:true}).catch(()=>{});}pruned=true;}catch{}}
   async function download(url,max){const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),60000);try{const response=await fetcher(url,{signal:controller.signal,credentials:'omit',headers:{Accept:'application/vnd.github+json','User-Agent':'Hydra-Nexus'}});if(!response.ok)throw Error(response.status===404?'No published Nexus release is available yet':'Update download failed ('+response.status+')');let size=0;const chunks=[];for await(const chunk of response.body){size+=chunk.length;if(size>max)throw Error('Update download exceeded its size limit');chunks.push(Buffer.from(chunk));}return Buffer.concat(chunks);}finally{clearTimeout(timer);}}
   async function status(){if(!pruned)await pruneStaging();if(!staged)try{const candidate=JSON.parse(await fsp.readFile(path.join(folder,'staged.json'),'utf8'));if(typeof candidate.file==='string'&&typeof candidate.source==='string'&&/^[a-f0-9]{64}$/.test(candidate.sha256)&&path.dirname(path.resolve(candidate.file))===path.resolve(folder)){const st=await fsp.lstat(candidate.file);if(st.isFile()&&!st.isSymbolicLink()&&st.size<=8*1024*1024){const bytes=await fsp.readFile(candidate.file);if(releaseVersion(bytes)===candidate.version&&sha(bytes)===candidate.sha256)staged={...candidate,revision:releaseRevision(bytes)};}}}catch{}let installation=null;try{installation=(await fsp.readFile(job,'utf8')).slice(0,2000);}catch{}return {current:version,revision,repository:getRepository()||null,release,staged:staged?{version:staged.version,revision:staged.revision||1,sha256:staged.sha256,source:staged.source}:null,busy,installation};}
   async function check(){const repo=getRepository();if(!repo||!/^[-\w.]+\/[-\w.]+$/.test(repo))throw Error('The release channel is not configured yet. You can update from a local Nexus BAT file.');const data=JSON.parse((await download('https://api.github.com/repos/'+repo+'/releases/latest',1024*1024)).toString('utf8'));const asset=data.assets?.find(x=>x.name==='Hydra_Nexus.bat'),sum=data.assets?.find(x=>x.name==='SHA256SUMS.txt');const target=String(data.tag_name||'').replace(/^v/,'');if(!/^\d+\.\d+\.\d+$/.test(target)||!asset||!sum)throw Error('This release is missing its installer or checksum file');for(const item of [asset,sum])if(!String(item.browser_download_url).startsWith('https://github.com/'+repo+'/releases/download/'))throw Error('Unexpected release download location');const remoteRevision=Number(String(data.body||'').match(/<!-- HYDRA_NEXUS_REVISION (\d+) -->/)?.[1]||1);if(!Number.isSafeInteger(remoteRevision)||remoteRevision<1)throw Error('Invalid internal release revision');release={version:target,revision:remoteRevision,newer:newer(target,version)||(target===version&&remoteRevision>revision),notes:String(data.body||'').slice(0,16000),url:data.html_url,installer:asset.browser_download_url,checksums:sum.browser_download_url};return status();}
+  async function installedNotes(){
+    const repo=getRepository();if(!repo||!/^[-\w.]+\/[-\w.]+$/.test(repo))return null;
+    const data=JSON.parse((await download('https://api.github.com/repos/'+repo+'/releases/tags/v'+version,1024*1024)).toString('utf8'));
+    const remoteRevision=Number(String(data.body||'').match(/<!-- HYDRA_NEXUS_REVISION (\d+) -->/)?.[1]||1);
+    if(data.draft||data.prerelease||String(data.tag_name||'').replace(/^v/,'')!==version||remoteRevision!==revision)return null;
+    return {version,revision,notes:String(data.body||'').slice(0,16000)};
+  }
   async function stage(bytes,source,expected,expectedVersion,expectedRevision){const target=releaseVersion(bytes),build=releaseRevision(bytes),hash=sha(bytes);if(expectedRevision&&build!==expectedRevision)throw Error('The downloaded internal revision does not match the release. Nothing was installed.');if(expectedVersion&&target!==expectedVersion)throw Error('The downloaded installer version does not match the release. Nothing was installed.');if(expected&&hash!==expected.toLowerCase())throw Error('The update checksum did not match. Nothing was installed.');await fsp.mkdir(folder,{recursive:true});const file=path.join(folder,'Hydra_Nexus-'+target+'-'+hash.slice(0,12)+'.bat');await atomicText(file,bytes.toString('utf8'));staged={file,version:target,revision:build,sha256:hash,source};await atomicText(path.join(folder,'staged.json'),JSON.stringify(staged));pruned=false;return status();}
   async function install(win){if(!staged){if(!release?.newer)throw Error('Check for a newer release or choose a local Nexus BAT first');const checksums=(await download(release.checksums,64*1024)).toString('utf8'),expected=checksums.match(/^([a-f0-9]{64})\s+\*?Hydra_Nexus\.bat\r?$/im)?.[1];if(!expected)throw Error('The release checksum is missing');await stage(await download(release.installer,8*1024*1024),'GitHub: '+getRepository(),expected,release.version,release.revision);}
     if(staged.source.startsWith('GitHub:')&&(staged.source!=='GitHub: '+getRepository()||(release&&(staged.version!==release.version||(staged.revision||1)!==release.revision))))throw Error('The downloaded installer version does not match the release. Nothing was installed.');
     if(newer(version,staged.version)||(staged.version===version&&(staged.revision||1)<revision))throw Error('This installer is older than your installed Nexus version. Choose a newer release.');
-    const response=await dialog.showMessageBox(win,{type:'question',title:'Update Hydra Nexus',message:'Install Hydra Nexus '+staged.version+' and restart Hydra?',detail:'Source: '+staged.source+'\nSHA-256: '+staged.sha256+'\n\nSave any open work first. Hydra will exit normally, the update will install, and Hydra will reopen once. Your preferences, notes, history and game backups are preserved.',buttons:['Cancel','Install & restart'],defaultId:0,cancelId:0,noLink:true});if(response.response!==1)return {cancelled:true};
+    const response=await dialog.showMessageBox(win,{type:'question',title:'Update Hydra Nexus',message:i18n.main.t('Install Hydra Nexus {version} and restart Hydra?',{version:staged.version}),detail:i18n.main.t('Source:')+' '+i18n.main.message(staged.source)+'\nSHA-256: '+staged.sha256+'\n\n'+i18n.main.t('Save any open work first. Hydra will exit normally, the update will install, and Hydra will reopen once. Your preferences, notes, history and game backups are preserved.'),buttons:['Cancel','Install & restart'],defaultId:0,cancelId:0,noLink:true});if(response.response!==1)return {cancelled:true};
     if(sha(await fsp.readFile(staged.file))!==staged.sha256)throw Error('The staged updater changed. Choose it again.');
-    const hydraExe=app.getPath('exe'),hydraDir=path.dirname(hydraExe),script=path.join(folder,'install-restart-'+staged.sha256.slice(0,12)+'.ps1');
+    const hydraExe=app.getPath('exe'),hydraDir=path.dirname(hydraExe),script=path.join(folder,'install-restart-'+staged.sha256.slice(0,12)+'.ps1'),ready=script+'.ready',readyToken=crypto.randomUUID(),startupLog=path.join(folder,'installation-startup.log'),startupError=path.join(folder,'installation-startup-errors.log');
     const ps=`$ErrorActionPreference='Stop'
 $nexusManager=${quote(staged.file)}
 $nexusHydraDir=${quote(hydraDir)}
@@ -27,6 +36,10 @@ $nexusHydraExe=${quote(hydraExe)}
 $nexusJobStatus=${quote(job)}
 $nexusExpected=${quote(staged.sha256)}
 $nexusUpdatesDir=${quote(folder)}
+$nexusReady=${quote(ready)}
+$nexusReadyToken=${quote(readyToken)}
+$nexusMutex=$null
+$nexusMutexHeld=$false
 $nexusRollback=$null
 $nexusTouched=$false
 function Get-NexusFileHash([string]$file){$h=[Security.Cryptography.SHA256]::Create();$stream=[IO.File]::OpenRead($file);try{return [BitConverter]::ToString($h.ComputeHash($stream))}finally{$stream.Dispose();$h.Dispose()}}
@@ -40,12 +53,14 @@ function Restore-NexusInstallation {
     if((Get-NexusFileHash $saved) -cne (Get-NexusFileHash $item[1])){throw 'Recovery verification failed: '+$item[1]}
   }
 }
-$nexusMutex=New-Object Threading.Mutex($false,'Local\\HydraNexusInstallV1')
-if(!$nexusMutex.WaitOne(0)){[IO.File]::WriteAllText($nexusJobStatus,'Another installer is active. Retry after it finishes.');exit 1}
 try{
+  $nexusMutex=New-Object Threading.Mutex($false,'Local\\HydraNexusInstallV1')
+  $nexusMutexHeld=$nexusMutex.WaitOne(0)
+  if(!$nexusMutexHeld){throw 'Another installer is active. Retry after it finishes.'}
   # Retire stale Nexus workers from older releases, confined to this data directory.
-  Get-CimInstance Win32_Process -Filter "Name='powershell.exe'" | Where-Object {$_.ProcessId -ne $PID -and $_.CommandLine -and $_.CommandLine.Contains($nexusUpdatesDir) -and ($_.CommandLine.Contains('install-after-close.ps1') -or $_.CommandLine.Contains('install-restart-'))} | ForEach-Object {Stop-Process -Id $_.ProcessId -ErrorAction SilentlyContinue}
+  try{Get-CimInstance Win32_Process -Filter "Name='powershell.exe'" -ErrorAction Stop | Where-Object {$_.ProcessId -ne $PID -and $_.CommandLine -and $_.CommandLine.Contains($nexusUpdatesDir) -and ($_.CommandLine.Contains('install-after-close.ps1') -or $_.CommandLine.Contains('install-restart-'))} | ForEach-Object {Stop-Process -Id $_.ProcessId -ErrorAction SilentlyContinue}}catch{}
   [IO.File]::WriteAllText($nexusJobStatus,'Waiting for Hydra to exit normally. Do not reopen it manually.')
+  [IO.File]::WriteAllText($nexusReady,$nexusReadyToken)
   $nexusDeadline=[DateTime]::UtcNow.AddMinutes(5)
   while([DateTime]::UtcNow -lt $nexusDeadline){
     $nexusProcesses=@(Get-Process Hydra,hydralauncher -ErrorAction SilentlyContinue | Where-Object {try{$_.Path -ieq $nexusHydraExe}catch{$false}})
@@ -79,13 +94,26 @@ try{
   if($nexusTouched){try{Restore-NexusInstallation;$failure+=' Previous installation restored; recovery copies: '+$nexusRollback}catch{$failure+=' ROLLBACK NEEDS ATTENTION: '+$_.Exception.Message+' Recovery copies: '+$nexusRollback}}
   [IO.File]::WriteAllText($nexusJobStatus,'Update needs attention: '+$failure);exit 1
 }
-finally{try{$nexusMutex.ReleaseMutex()}catch{};$nexusMutex.Dispose()}
+finally{if($nexusMutexHeld){try{$nexusMutex.ReleaseMutex()}catch{}};if($nexusMutex){$nexusMutex.Dispose()}}
 `;
-    await atomicText(script,'\ufeff'+ps);await atomicText(job,'Update confirmed. Preparing a normal Hydra restart.');
-    await new Promise((resolve,reject)=>{const child=cp.spawn(path.join(process.env.SystemRoot||'C:\\Windows','System32','WindowsPowerShell','v1.0','powershell.exe'),['-NoLogo','-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-WindowStyle','Hidden','-File',script],{windowsHide:true,detached:true,stdio:'ignore'});child.once('error',reject);child.once('spawn',()=>{child.unref();resolve();});});
+    await atomicText(script,'\ufeff'+ps);await fsp.rm(ready,{force:true});await atomicText(job,'Update confirmed. Preparing a normal Hydra restart.');
+    // Windows PowerShell can exit without executing -File when started detached.
+    // Start-Process gives the worker its own Windows lifetime. The short bootstrap
+    // runs without Node's detached flag; readiness comes from the worker itself.
+    const powershell=path.join(process.env.SystemRoot||'C:\\Windows','System32','WindowsPowerShell','v1.0','powershell.exe');
+    const bootstrap="$ErrorActionPreference='Stop';Start-Process -WindowStyle Hidden -FilePath "+quote(powershell)+" -ArgumentList @('-NoLogo','-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',"+quote('"'+script+'"')+") -RedirectStandardOutput "+quote(startupLog)+" -RedirectStandardError "+quote(startupError);
+    const output=await fsp.open(path.join(folder,'installation-bootstrap.log'),'w');let child;
+    try{
+      await new Promise((resolve,reject)=>{let settled=false,timer;const deadline=Date.now()+15000,finish=error=>{if(settled)return;settled=true;clearTimeout(timer);child?.removeListener('exit',exited);if(error){try{child?.kill();}catch{}reject(error);}else{child.unref();resolve();}};
+        const failed=error=>finish(error),exited=code=>{if(code!==0)finish(Error('The update helper exited before it was ready (code '+code+'). See '+startupError));};
+        const poll=async()=>{if(settled)return;if(Date.now()>=deadline)return finish(Error('The update helper did not become ready. Hydra was kept open. See '+startupError));try{if((await fsp.readFile(ready,'utf8')).trim()===readyToken)return finish();}catch{}if(!settled)timer=setTimeout(poll,100);};
+        child=cp.spawn(powershell,['-NoLogo','-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-WindowStyle','Hidden','-EncodedCommand',Buffer.from(bootstrap,'utf16le').toString('base64')],{windowsHide:true,detached:false,stdio:['ignore',output.fd,output.fd]});
+        child.once('error',failed);child.once('exit',exited);child.once('spawn',poll);
+      });
+    }catch(error){await atomicText(job,'Update needs attention: '+error.message);throw error;}finally{await output.close();}
     const result=await status();setTimeout(()=>app.quit(),500).unref?.();return result;
   }
 
-  return {action:async(win,name)=>{if(name==='updateStatus')return status();if(busy)throw Error('An update operation is already running');busy=true;try{if(name==='checkUpdates')return await check();if(name==='chooseUpdate'){const result=await dialog.showOpenDialog(win,{title:'Choose Hydra Nexus BAT',properties:['openFile'],filters:[{name:'Hydra Nexus installer',extensions:['bat']}]});if(result.canceled)return {cancelled:true};const stat=await fsp.stat(result.filePaths[0]);if(stat.size>8*1024*1024)throw Error('Installer is too large');return await stage(await fsp.readFile(result.filePaths[0]),'Local file: '+path.basename(result.filePaths[0]));}if(name==='installUpdate')return await install(win);throw Error('Unknown update action');}finally{busy=false;}}};
+  return {installedNotes,action:async(win,name)=>{if(name==='updateStatus')return status();if(busy)throw Error('An update operation is already running');busy=true;try{if(name==='checkUpdates')return await check();if(name==='chooseUpdate'){const result=await dialog.showOpenDialog(win,{title:'Choose Hydra Nexus BAT',properties:['openFile'],filters:[{name:'Hydra Nexus installer',extensions:['bat']}]});if(result.canceled)return {cancelled:true};const stat=await fsp.stat(result.filePaths[0]);if(stat.size>8*1024*1024)throw Error('Installer is too large');return await stage(await fsp.readFile(result.filePaths[0]),'Local file: '+path.basename(result.filePaths[0]));}if(name==='installUpdate')return await install(win);throw Error('Unknown update action');}finally{busy=false;}}};
 }
 module.exports={createUpdater,newer,releaseVersion,releaseRevision,sha};

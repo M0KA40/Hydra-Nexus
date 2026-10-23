@@ -1,6 +1,28 @@
 # Changelog
 
+## 1.2.0 — 2026-10-23
+
+- Added optional Invisible Mode with a native account-menu control, clear on/off states and persistent private activity holds.
+- Added eight interface languages with live switching, English fallback and Arabic RTL.
+- Fixed saved Steam account switching from existing Desktop shortcuts, competing launch requests and localized progress feedback.
+- Fixed in-app update worker readiness and Windows process-discovery compatibility.
+- Integrated native Nexus navigation and corrected production renderer selection.
+- Reduced repeated UI work, indexed privacy checks and batched persistence.
+- Fixed private souvenir status visibility, duplicate private-game counts and announcement media availability during startup.
+
+[Full release notes](docs/releases/1.2.0.md).
+
 ## 1.0.1
+
+### Internal repair 2
+
+Local repair only; it was not published as 1.0.1 revision 2 and is now included in the 1.2.0 candidate.
+
+- Fixed **Install & restart** closing Hydra without installing the update or reopening the application on affected Windows systems.
+- Hydra now waits for the update helper to confirm it is ready before exiting. If startup fails, Hydra stays open and reports the error; helper output is retained for diagnosis.
+- Preserved checksum verification, normal shutdown, installation backups and rollback protections.
+
+### Maintenance update
 
 - Fixed unnecessary background refreshes, repeated Steam-button redraws and idle Backup checks that caused avoidable resource use.
 - Restored the original Steam account-switching workflow, preserved saved accounts and online/offline modes, and fixed Steam settings sometimes needing more than one click. Steam startup failures now return an error instead of leaving an unhandled exception.

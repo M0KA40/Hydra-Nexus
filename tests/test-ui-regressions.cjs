@@ -9,7 +9,7 @@ const checks=[
   ['settings drafts are restored after rerender',/Object\.hasOwn\(formDrafts,el\.id\)\)el\.value=formDrafts\[el\.id\]/],
   ['the updater retries an update request after an unrelated action',/function continueInstall\(\)\{if\(pendingInstall&&!busy&&section&&selected==='updater'\)\{pendingInstall=false;act\('installUpdate'\);}}/],
   ['the update notice records the install intent before opening settings',/pendingInstall=true;if\(document\.getElementById\('nexus-settings-group'\)\)openSection\('updater'\)/],
-  ['only the update check button shows its own busy label',/activeAction==='checkUpdates'\?'Checking[^']*':'Check for updates'/],
+  ['only the update check button shows its own busy label',/activeAction==='checkUpdates'\?tr\("Checking…"\):tr\("Check for updates"\)/],
   ['stale hardware comparison responses cannot replace a newer dialog',/if\(modal!==loading\|\|key\(\)!==k\)return;/],
   ['dialogs restore focus to the opener',/const previous=modalReturn;modal\?\.remove\(\);modal=null;modalReturn=null;if\(previous\?\.isConnected\)previous\.focus\(\{preventScroll:true\}\);/],
   ['keyboard focus remains inside open dialogs',/e\.key==='Tab'[\s\S]*?getClientRects\(\)\.length[\s\S]*?list\.at\(-1\)\?\.focus\(\)[\s\S]*?list\[0\]\?\.focus\(\)/]

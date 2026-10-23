@@ -451,55 +451,72 @@
     }
   }
 
+  // One preparation owns Steam until its native launch callback has finished.
+  // Identical clicks share that operation; other requests are rejected, never queued
+  // to switch accounts underneath a game that the first request just launched.
+  let activeSteamLaunch = null;
+  function assertLaunchAllowed() {
+    if(global.__NEXUS_RESTORE_ACTIVE__?.())throw Error('A game backup is being restored. Wait for the restore to finish before launching a game.');
+  }
+  async function runSteamLaunch(event, args, listener) {
+    assertLaunchAllowed();
+    const options = args[0] && typeof args[0] === "object" ? args[0] :
+      {shop:args[0],objectId:args[1],executablePath:args[2],launchOptions:args[3]};
+    const shop = String(options.shop || "steam");
+    const objectId = String(options.objectId || options.gameId || "");
+    const exePath = options.executablePath || "";
+    const bindings = loadBindings();
+    const gameCfg = global.__HYDRA_NEXUS_ENABLED__?.("steam") !== false && shop === "steam" ?
+      (bindings[`${shop}:${objectId}`] || bindings[objectId]) : null;
+    const switches = !!(gameCfg && gameCfg.mode && gameCfg.mode !== "crack" && gameCfg.steamId64);
+    const signature = JSON.stringify([shop,objectId,exePath,options.launchOptions||"",gameCfg?.steamId64,gameCfg?.mode]);
+    if (activeSteamLaunch) {
+      if (switches && activeSteamLaunch.signature === signature) return activeSteamLaunch.task;
+      const error = Error('Another Steam launch is being prepared. Try again shortly.');
+      notifyRendererToast(error.message, true);
+      throw error;
+    }
+    if (!switches) return await listener(event, ...args);
+
+    const operation = {signature,task:null};
+    activeSteamLaunch = operation;
+    operation.task = (async () => {
+      try {
+        // Do not expose a saved login name while the account cache is still cold.
+        const hideLogin = global.__NEXUS_STEAM_PRIVACY__?.();
+        const shownName = gameCfg.personaName || gameCfg.accountName || "";
+        const account = !shownName || hideLogin && shownName === gameCfg.accountName ? null : shownName;
+        // Keep account/mode data raw so an in-flight toast follows live language changes.
+        notifyRendererToast({kind:'steam-switch',account,mode:gameCfg.mode});
+        await switchSteamAccountAndLaunch(gameCfg.steamId64,gameCfg.mode,objectId,Boolean(exePath));
+      } catch (err) {
+        log("Error in pre-launch Steam switch:", err);
+        notifyRendererToast("Steam Switch Error: " + (err.message || String(err)), true);
+        throw err;
+      }
+      assertLaunchAllowed();
+      return await listener(event, ...args);
+    })();
+    try { return await operation.task; }
+    finally { if (activeSteamLaunch === operation) activeSteamLaunch = null; }
+  }
+  global.__NEXUS_STEAM_NATIVE_LAUNCH__ = (nativeLaunch, options) =>
+    runSteamLaunch(null, [options], () => nativeLaunch(options));
+
   const originalHandle = ipcMain.handle.bind(ipcMain);
   ipcMain.handle = function (channel, listener) {
     if (channel === "openGame" || channel === "launchGame") {
-      return originalHandle(channel, async (event, ...args) => {
-        if(global.__NEXUS_RESTORE_ACTIVE__?.())throw Error('A game backup is being restored. Wait for the restore to finish before launching a game.');
-        if(global.__HYDRA_NEXUS_ENABLED__?.("steam")===false)return listener(event,...args);
-        try {
-          let shop = "steam";
-          let objectId = "";
-          let exePath = "";
-
-          if (args[0] && typeof args[0] === "object") {
-            shop = args[0].shop || "steam";
-            objectId = String(args[0].objectId || args[0].gameId || "");
-            exePath = args[0].executablePath || "";
-          } else {
-            shop = String(args[0] || "steam");
-            objectId = String(args[1] || "");
-            exePath = String(args[2] || "");
-          }
-
-          const bindings = loadBindings();
-          const gameCfg = bindings[objectId] || bindings[`${shop}:${objectId}`];
-
-          if (gameCfg && gameCfg.mode && gameCfg.mode !== "crack" && gameCfg.steamId64) {
-            // Compose the toast label with the privacy policy applied directly: the account
-            // cache can still be cold when a game is launched before any Steam panel opens.
-            const hideLogin = global.__NEXUS_STEAM_PRIVACY__?.();
-            const shownName = gameCfg.personaName || gameCfg.accountName || "";
-            const label = hideLogin && shownName === gameCfg.accountName ? "Steam account" : shownName;
-            notifyRendererToast(
-              `Switching Steam to ${label} (${gameCfg.mode.toUpperCase()})...`
-            );
-            await switchSteamAccountAndLaunch(gameCfg.steamId64,gameCfg.mode,objectId,Boolean(exePath));
-          }
-        } catch (err) {
-          log("Error in pre-launch Steam switch:", err);
-          notifyRendererToast("Steam Switch Error: " + (err.message || String(err)), true);
-          throw err; // Never fall through to the native launcher after a failed account switch.
-        }
-
-        return await listener(event, ...args);
-      });
+      return originalHandle(channel, (event, ...args) => runSteamLaunch(event, args, listener));
     }
     return originalHandle(channel, listener);
   };
 
   function notifyRendererToast(msg, isError = false) {
-    if(global.__NEXUS_STEAM_PRIVACY__?.()){for(const a of steamAccountsCache)if(a.accountName)msg=String(msg).split(a.accountName).join("[private]");}
+    if(global.__NEXUS_STEAM_PRIVACY__?.()){
+      const redact=value=>{for(const a of steamAccountsCache)if(a.accountName)value=String(value).split(a.accountName).join("[private]");return value;};
+      if(msg?.kind==='steam-switch')msg={...msg,account:msg.account==null?null:redact(msg.account)};
+      else msg=redact(msg);
+    }
     for (const win of BrowserWindow.getAllWindows()) {
       if (!win.isDestroyed()) {
         win.webContents
@@ -511,7 +528,7 @@
     }
   }
 
-  const UI_INJECTION_SCRIPT = "("+require("./steam-ui.js").toString()+")();";
+  const UI_INJECTION_SCRIPT = require('./i18n.cjs').rendererScript()+"("+require("./steam-ui.js").toString()+")();";
 
   function attachToWindow(win) {
     if (!win || win.isDestroyed() || win.__hsbAttached) return;
@@ -525,6 +542,7 @@
       }
     };
 
+    win.webContents.on("dom-ready", inject);
     win.webContents.on("did-finish-load", inject);
     win.webContents.on("did-navigate-in-page", inject);
 

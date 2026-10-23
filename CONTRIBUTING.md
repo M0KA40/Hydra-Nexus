@@ -1,6 +1,6 @@
 # Contributing
 
-For a bug, use the issue template and include a short reproduction. For a code change, describe the behavior being fixed and the checks you ran. Keep application text in English and reuse Hydra's native control styles.
+For a bug, use the issue template and include a short reproduction. For a code change, describe the behavior being fixed and the checks you ran. Reuse Hydra's native control styles. All new or changed interface copy must ship in the eight supported languages; read [localization](docs/localization.md) and `AGENTS.md` before adding a feature.
 
 ## Layout
 

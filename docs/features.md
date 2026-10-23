@@ -63,7 +63,11 @@ Open the **Steam** button beside game actions. Choose a launch mode and, for Ste
 
 Select **Save settings** to keep the choice for that game. **Copy executable path** copies the detected game executable when available.
 
+In the local 1.2.0 candidate, Hydra's native Desktop shortcuts use these same saved settings, whether Hydra is closed or already running. Shortcuts created before this update also work without recreation: the existing `hydralauncher://run` route reads the current game binding and waits for Steam preparation before native launch. Without a binding, the game launches normally. This is part of the Steam plugin; no extra shortcut plugin or account selection is added. Apply the updated installer for the repair to take effect.
+
 Steam modes use the original forced-switch workflow: stop Steam, mark the selected saved account for auto-login, apply the online/offline preference and restart Steam before launching. The newer shutdown option, account-picker notice and account-status polling are removed. This legacy shutdown terminates Steam's process tree and may close Steam-launched applications or games. Account-file validation, recovery copies and atomic writes remain.
+
+Repeated requests for the same game/account/executable/options during Steam preparation share one launch. A competing request is rejected with a localized retry message; it is not queued to switch accounts after the first game starts. Native Steam and LaunchBox Desktop shortcuts respect the Nexus restore guard, including when the Steam plugin is disabled.
 
 **Hide Steam login usernames** is optional. It hides login names in Nexus account lists, badges and messages while keeping display names visible. The saved metadata stays local so switching can still work. Nexus does not ask for your Steam password. Close running games before changing the plugin.
 
@@ -105,3 +109,9 @@ The installer download is checked against the release's SHA-256 checksum and ver
 The repository link is always available. Checksums detect changed downloads; they are not a publisher signature. Read [troubleshooting](troubleshooting.md) if installation does not finish.
 
 Internal repairs can keep the same public version. The updater also compares an internal revision marker, so a later repair of 1.0.0 can still be offered as an update.
+
+## Invisible Mode
+
+An optional Plugins toggle pauses Hydra realtime presence/chat and activity uploads while retaining covers, achievement icons and local progress. Affected activity stays local after turning it off until explicitly resumed. Steam visibility is separate; a second-account check is still required to confirm friends see Offline. See [behavior, controls and limitations](invisible-mode.md).
+
+Revision 5 separates Invisible Mode plugin availability from its account-menu on/off control, with native React navigation, distinct colored icons and corrected indexed/durable privacy processing. Owner-reported second-account presence was Offline; game notifications are not confirmed. [Installed-update release notes](release-notes.md) show matching GitHub notes once.

@@ -63,7 +63,7 @@ const sampleVdf=String.raw`"users"
   const failingThemes={atomicText:async()=>{throw Error('disk is full');}};
   let themes=failingThemes;
   const electron={app,ipcMain:{handle:(name,fn)=>handlers.set(name,fn)},BrowserWindow:{getAllWindows:()=>[win]}};
-  const ctx={require:id=>id==='electron'?electron:id==='child_process'?fakeCP:id==='./themes.cjs'?themes:id==='./steam-vdf.cjs'?vdf:id==='./steam-ui.js'?require('../src/steam-ui.js'):require(id),process:{platform:'win32',env:{APPDATA:appData}},console:{log(){}},setTimeout:(fn,ms,...args)=>setTimeout(fn,[1800,4500].includes(ms)?0:ms,...args),clearTimeout,setImmediate,Buffer,global:null};
+  const ctx={require:id=>id==='./i18n.cjs'?require('../src/i18n.cjs'):id==='electron'?electron:id==='child_process'?fakeCP:id==='./themes.cjs'?themes:id==='./steam-vdf.cjs'?vdf:id==='./steam-ui.js'?require('../src/steam-ui.js'):require(id),process:{platform:'win32',env:{APPDATA:appData}},console:{log(){}},setTimeout:(fn,ms,...args)=>setTimeout(fn,[1800,4500].includes(ms)?0:ms,...args),clearTimeout,setImmediate,Buffer,global:null};
   ctx.global=ctx;ctx.__NEXUS_STEAM_PRIVACY__=()=>true;vm.createContext(ctx);
   vm.runInContext(fs.readFileSync(path.join(__dirname,'../src/steam.cjs'),'utf8'),ctx);
   await new Promise(r=>setImmediate(r));
@@ -78,7 +78,7 @@ const sampleVdf=String.raw`"users"
   ctx.__NEXUS_STEAM_PRIVACY__=()=>true;
   await handlers.get('openGame')({sender:wc},'steam','777','');
   assert.equal(launches,1);
-  assert.ok(toasts().some(t=>t.includes('Switching Steam to Steam account (ONLINE)')));
+  assert.ok(toasts().some(t=>{const value=JSON.parse(t);return value.kind==='steam-switch'&&value.account===null&&value.mode==='online';}));
   assert.ok(toasts().every(t=>!String(t).includes('tester'))); // cold cache must not leak the login name
   const savedVdf=await fsp.readFile(path.join(steamRoot,'config','loginusers.vdf'),'utf8');
   const saved=vdf.accountList(savedVdf);
@@ -89,7 +89,7 @@ const sampleVdf=String.raw`"users"
   assert.ok(await fsp.access(path.join(steamRoot,'config','loginusers.vdf.hydra.bak')).then(()=>true,()=>false)); // rollback backup kept
   ctx.__NEXUS_STEAM_PRIVACY__=()=>false;
   await handlers.get('openGame')({sender:wc},'steam','777','');
-  assert.ok(toasts().some(t=>t.includes('Switching Steam to tester (ONLINE)'))); // privacy off keeps the informative label
+  assert.ok(toasts().some(t=>{const value=JSON.parse(t);return value.kind==='steam-switch'&&value.account==='tester'&&value.mode==='online';})); // privacy off keeps the informative label
   assert.ok(commands.every(c=>!c.options||c.options.timeout===undefined||c.options.timeout<=10000));
   const lastVdf=await fsp.readFile(path.join(steamRoot,'config','loginusers.vdf'),'utf8'),launchCount=launches;
   assert.ok(commands.some(c=>c.file==='taskkill.exe'&&JSON.stringify(c.args)===JSON.stringify(['/F','/IM','steam.exe','/T'])),'restored legacy forced switch');

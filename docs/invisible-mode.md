@@ -1,0 +1,23 @@
+# Invisible Mode
+
+In Settings > Hydra Nexus > Plugins, enable **Invisible Mode** to make the account-menu control available. This does not turn privacy on. Open the account dropdown and use the control directly below **Friends**. A bright green check with **On** means privacy is active; a dim minus with **Off** means it is inactive. Both controls follow Hydra's language and theme. Disabling the plugin turns privacy off and removes the account-menu control. Existing revision-4 enabled settings migrate to both availability and mode on, preserving protection.
+
+While active, Nexus closes native realtime presence/chat and prevents reconnects; selective gates block playtime, game-create/batch, achievement and chat uploads. Image/interface reads and native cloud-artifact endpoints remain available. Local achievements, playtime, souvenir files and backups are retained. Steam visibility is separate.
+
+Private activity stays protected after disabling privacy or the plugin and after restarting. Affected games' future activity uploads also remain held until **Resume activity sharing** is explicitly confirmed in Plugins with privacy off and no running games. That confirmation can publish previously private activity. Cancellation or an account change keeps the holds. Per-account/environment holds contain identifiers, not tokens or activity payloads. Corrupt data stays preserved and blocked.
+
+Revision 5 uses indexed hold lookup, in-place record insertion, batched writes, cached scope hashes and small deduplicated status broadcasts. Native achievement pending rows are retained rather than dropped; an in-flight suppressed achievement upload is rejected rather than acknowledged. Workers resume safely when privacy is turned off. A normal-exit checkpoint protects records queued during an asynchronous save; it is consumed after the next successful base save. No process memory measurements were run, and no RAM reduction percentage is claimed.
+
+The account control and Nexus settings navigation are native React components in the inspected Hydra renderer. The four main UI adapters react to native host commits instead of body-wide mutation observers in supported native builds. Existing compatibility adapters remain for source-only fixtures/older environments. No second React runtime is shipped. Install, repair and removal transform the native renderer in the same verified archive transaction as the main bridge; removal restores the original text exactly.
+
+The owner manually observed their account becoming Offline from a second account on revision 4. This is user-reported evidence for that trial, not a universal server guarantee. A valid game-notification baseline was unavailable, so game notifications remain unverified. Other signed-in devices and server behavior can affect presence. Already sent activity or notifications cannot be recalled.
+
+Validation: all 22 default scripts passed on Node 24.22.1; all five Edge suites passed, including the real inspected Hydra React runtime, eight languages, independent availability/mode toggles, icons, native commands, route mounting, no body-wide observers on the native path and no idle requests. Native Hydra 4.2.0 main/renderer syntax, exact cleanup and idempotent repair passed without running the application. No live accounts/games/saves were used. Full Node 22 tests were not repeated for revision 5.
+
+## Revision 6 loader correction
+
+The owner reported that revision 5 showed the enabled plugin but no account-menu control. Native source inspection confirmed production WindowManager prefers the hosted renderer; the bundled renderer patched by revision 5 was only a fallback. Revision 6 selects the patched bundled renderer while Nexus is installed. It preserves the native development path and restores the original hosted/local fallback when Nexus is removed. This is required for all native Nexus components to run. The earlier component-only browser fixtures did not cover renderer selection. A new generated-installer/VM regression test covers reachable-CDN selection, hash preservation, absent-Nexus/development behavior, exact cleanup and idempotent repair. The user must apply the new installer; this task did not install into the live app.
+
+## 1.2.0 final corrections
+
+The souvenir store's default list remains complete for Hydra's local synchronization status and details. Only the native grouped worker's upload, expiry and retry-scheduling reads request the filtered view. Held records and screenshots remain local until explicitly released. Local and remote identifiers of the same game count once in the private-game total, including after reloading saved state. Announcement media registration precedes asynchronous history/Notes initialization.

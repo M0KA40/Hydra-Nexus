@@ -4,7 +4,7 @@ const fsp = fs.promises;
 const path = require('node:path');
 const crypto = require('node:crypto');
 const {execFile} = require('node:child_process');
-const VERSION = '1.0.1';
+const VERSION = '1.2.0';
 const digest = x => crypto.createHash('sha256').update(x).digest('hex');
 const clone = x => JSON.parse(JSON.stringify(x));
 const exists = async p => {try {await fsp.access(p); return true;} catch(e) {if(e.code==='ENOENT')return false;throw e;}};
