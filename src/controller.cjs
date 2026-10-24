@@ -47,7 +47,7 @@ if(!global.__HYDRA_NEXUS__){
   const log=e=>{try{fs.mkdirSync(directory,{recursive:true});fs.appendFileSync(path.join(directory,'nexus.log'),new Date().toISOString()+' '+String(e?.message||e).slice(0,800)+'\n');}catch{}};
   const ready=app.whenReady().then(async()=>{if(cleanPluginSettings)await atomicText(configFile,JSON.stringify(config,null,2));await activity.init();await themes.init();await services.init();services.shortcut();broadcast();}).catch(e=>{configError=e.message;log(e);});
   function send(win,data){if(!win.isDestroyed()&&trusted(win))win.webContents.executeJavaScript('window.__nexusReceive&&window.__nexusReceive('+JSON.stringify(data)+')').catch(log);}
-  const publicConfig=()=>({version:VERSION,brandIcon:brand.icon,plugins:config.plugins,autoCheckUpdates:config.autoCheckUpdates!==false,repository:config.repository,theme:themes.public(),steamPrivacy:config.steamPrivacy===true,privacy:privacy.status(),announcementUrl:'./assets/nexus-invisible-mode.png',notesFile:config.notesFile||null,notesShortcut:config.notesShortcut,hardwareProfile:config.hardwareProfile||null,trackingSince:activity.data.trackingSince,error:configError});
+  const publicConfig=()=>({version:VERSION,longGameOperations:true,brandIcon:brand.icon,plugins:config.plugins,autoCheckUpdates:config.autoCheckUpdates!==false,repository:config.repository,theme:themes.public(),steamPrivacy:config.steamPrivacy===true,privacy:privacy.status(),announcementUrl:'./assets/nexus-invisible-mode.png',notesFile:config.notesFile||null,notesShortcut:config.notesShortcut,hardwareProfile:config.hardwareProfile||null,trackingSince:activity.data.trackingSince,error:configError});
   function broadcast(){for(const win of windows.keys())send(win,{event:'config',value:publicConfig()});}
   let lastPrivacy='';
   const privacy=require('./privacy.cjs').createPrivacy({directory,getConfig:()=>config,log,changed:()=>{const value=privacy.status(),key=JSON.stringify(value);if(key===lastPrivacy)return;lastPrivacy=key;for(const win of windows.keys())send(win,{event:'privacy',value});}});
@@ -74,7 +74,19 @@ if(!global.__HYDRA_NEXUS__){
     else throw Error('This theme editing feature has been removed. Only custom backgrounds are supported.');
     broadcast();return publicConfig();
   }
-  async function action(win,name,data={}){await ready;if(updateShutdown.busy()&&!['updateStatus','status'].includes(name))throw Error('An update operation is already running');
+  const gameOperations=new Map();
+  function gameOperation(win,id){const operation=gameOperations.get(id);if(!operation||operation.win!==win)throw Error('Unknown Nexus action');return operation;}
+  async function action(win,name,data={}){await ready;if(updateShutdown.busy()&&!['updateStatus','status','gameOperation'].includes(name))throw Error('An update operation is already running');
+    if(name==='startGameOperation'){
+      if(!['gameBackup','gameImport'].includes(data.action)||!validKey(data.key)||!config.plugins.backup)throw Error('Unknown Nexus action');
+      for(const operation of gameOperations.values())if(operation.win===win&&operation.action===data.action&&operation.key===data.key&&operation.state==='running')return {operation:operation.id};
+      for(const [id,operation]of gameOperations)if(operation.state!=='running'&&(gameOperations.size>=32||operation.win.isDestroyed()))gameOperations.delete(id);
+      if(gameOperations.size>=32)throw Error('Too many pending requests. Try again shortly.');
+      const operation={id:crypto.randomBytes(24).toString('hex'),win,key:data.key,action:data.action,state:'running'};gameOperations.set(operation.id,operation);
+      Promise.resolve().then(()=>action(win,data.action,{key:data.key})).then(result=>Object.assign(operation,{state:'done',result}),error=>Object.assign(operation,{state:'failed',error:error.message})).finally(()=>{if(win.isDestroyed())gameOperations.delete(operation.id);});
+      return {operation:operation.id};
+    }
+    if(name==='gameOperation'){const operation=gameOperation(win,data.id);return {state:operation.state,result:operation.result,error:operation.error};}
     if(name==='status')return {...publicConfig(),games:(await library()).map(publicGame)};
     if(name==='game'){if(!validKey(data.key))throw Error('Invalid game');let game;if(binding.games?.get){try{game=await binding.games.get(data.key);}catch(e){if(e.code!=='LEVEL_NOT_FOUND'&&!e.notFound)throw e;}}else game=(await library()).find(g=>g.shop+':'+g.objectId===data.key);return {game:game&&!game.isDeleted?publicGame(game):null,...activity.summary(data.key,{history:data.history!==false}),enabled:config.plugins.activity};}
     if(name==='feature'){const task=mutation.then(()=>feature(data.name,data.enabled));mutation=task.catch(()=>{});return task;}
@@ -95,13 +107,15 @@ if(!global.__HYDRA_NEXUS__){
     if(name==='gameBackup'||name==='gameImport'){if(!config.plugins.backup)throw Error('Enable Backup first');if(!validKey(data.key)||(await library()).every(g=>g.shop+':'+g.objectId!==data.key))throw Error('Unknown library game');return global.__NEXUS_BACKUP_ACTION__(win,name==='gameBackup'?'backup':'gameImport',data);}
     if(/^(notes|hardware|verifyHardware|nexusOpen|nexusKey|nexusHelp)/.test(name)){if(configError)throw Error(configError);const perform=async()=>{const result=await services.action(win,name,data);if(['notesChoose','notesShortcut'].includes(name))services.shortcut();return result;};if(!['notesChoose','notesRestore','notesShortcut','hardwareSave','nexusKey'].includes(name))return perform();const task=mutation.then(perform);mutation=task.catch(()=>{});return task;}
     if(name==='openData')return shell.openPath(directory);
-    if(name==='installUpdate'&&((binding.running?binding.running():running).length||global.__NEXUS_BACKUP_BUSY__?.()))throw Error('Close games and finish backup operations before restarting to update');
+    if(name==='installUpdate'&&([...gameOperations.values()].some(operation=>operation.state==='running')||(binding.running?binding.running():running).length||global.__NEXUS_BACKUP_BUSY__?.()))throw Error('Close games and finish backup operations before restarting to update');
     if(name==='updateStatus'||name==='checkUpdates'||name==='installUpdate'||name==='chooseUpdate')return updater.action(win,name,data);
     throw Error('Unknown Nexus action');
   }
-  const updateShutdown=require('./update-shutdown.cjs').createUpdateShutdown({app,getNative:()=>binding.updateExit,guard:()=>{if((binding.running?binding.running():running).length||global.__NEXUS_BACKUP_BUSY__?.())throw Error('Close games and finish backup operations before restarting to update');binding.updateExit?.assertIdle();},flush:async()=>{await mutation;await services.flushNotes();await privacy.flush();await activity.queue;await activity.stop();}});
+  const updateShutdown=require('./update-shutdown.cjs').createUpdateShutdown({app,getNative:()=>binding.updateExit,guard:()=>{if([...gameOperations.values()].some(operation=>operation.state==='running')||(binding.running?binding.running():running).length||global.__NEXUS_BACKUP_BUSY__?.())throw Error('Close games and finish backup operations before restarting to update');binding.updateExit?.assertIdle();},flush:async signal=>{const check=()=>{if(signal?.aborted)throw Error('Saving before the update did not finish. Hydra was kept open.');};check();await mutation;check();await services.flushNotes();check();await privacy.flush();check();await activity.queue;check();await activity.stop();check();}});
+  global.__NEXUS_UPDATE_BUSY__=()=>updateShutdown.busy();
   const updateConfirmation=require('./update-confirmation.cjs').createUpdateConfirmation({send,trusted,dialog});
   const updater=require('./updater.cjs').createUpdater({directory,version:VERSION,revision:brand.revision||1,getRepository:()=>config.repository,fetcher:(url,options)=>net.fetch(url,options),app,dialog,shutdown:updateShutdown,confirm:updateConfirmation.confirm});
+  app.whenReady().then(async()=>{await ready;if(!configError)await updater.started();}).catch(log);
   const releaseNotes=require('./release-notes.cjs').createReleaseNotes({directory,version:VERSION,revision:brand.revision||1,load:()=>updater.installedNotes(),log,changed:value=>{for(const win of windows.keys())send(win,{event:'releaseNotes',value});}});
   let automaticChecking=false,lastUpdateNotice=null,nextUpdateNotice=0,pendingUpdateNotice=null;
   async function automaticUpdateCheck(){

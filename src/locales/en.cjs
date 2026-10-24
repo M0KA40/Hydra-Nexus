@@ -564,5 +564,10 @@ module.exports={
   "Save your data": "Save your data",
   "Install update": "Install update",
   "Restart Hydra": "Restart Hydra",
-  "Update details": "Update details"
+  "Update details": "Update details",
+  "Previous recovery point is damaged. A new backup will be created.": "Previous recovery point is damaged. A new backup will be created.",
+  "Steam settings are damaged. The original file was preserved.": "Steam settings are damaged. The original file was preserved.",
+  "Backup needs attention: {error}": "Backup needs attention: {error}",
+  "Partial recovery point": "Partial recovery point",
+  "Store synchronization is paused until you resume activity sharing.": "Store synchronization is paused until you resume activity sharing."
 };

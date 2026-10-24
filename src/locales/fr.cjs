@@ -564,5 +564,10 @@ module.exports={
   "Save your data": "Enregistrer vos données",
   "Install update": "Installer la mise à jour",
   "Restart Hydra": "Redémarrer Hydra",
-  "Update details": "Détails de la mise à jour"
+  "Update details": "Détails de la mise à jour",
+  "Previous recovery point is damaged. A new backup will be created.": "Le point de restauration précédent est endommagé. Une nouvelle sauvegarde sera créée.",
+  "Steam settings are damaged. The original file was preserved.": "Les paramètres Steam sont endommagés. Le fichier d’origine a été conservé.",
+  "Backup needs attention: {error}": "La sauvegarde nécessite votre attention : {error}",
+  "Partial recovery point": "Point de restauration partiel",
+  "Store synchronization is paused until you resume activity sharing.": "La synchronisation des boutiques est suspendue jusqu’à la reprise du partage d’activité."
 };

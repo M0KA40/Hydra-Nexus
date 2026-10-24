@@ -4,7 +4,7 @@ const fsp = fs.promises;
 const path = require('node:path');
 const crypto = require('node:crypto');
 const {execFile} = require('node:child_process');
-const VERSION = '1.2.0';
+const VERSION = '1.2.1';
 const digest = x => crypto.createHash('sha256').update(x).digest('hex');
 const clone = x => JSON.parse(JSON.stringify(x));
 const exists = async p => {try {await fsp.access(p); return true;} catch(e) {if(e.code==='ENOENT')return false;throw e;}};
@@ -77,7 +77,7 @@ class BackupEngine {
           const m=await this.readManifest(folder,false);if(gameKey&&m.key!==gameKey)continue;
           const sources=m.files.filter(f=>f.location);const metadata=JSON.parse(await readText(child(folder,'achievements/hydra.json')));const unlocked=unlockedCount(metadata);
           if(!sources.length&&!unlocked&&m.reason!=='BeforeRestore'){this.snapshotCache.delete(folder);continue;}
-          const snapshot={folder,id:m.id,game:m.game,key:m.key,created:m.created,reason:m.reason,bytes:m.totalBytes,files:m.files.length,saveFiles:sources.filter(f=>f.kind==='save').length,achievementFiles:sources.filter(f=>f.kind==='achievement-source').length,unlockedAchievements:unlocked};
+          const snapshot={folder,id:m.id,game:m.game,key:m.key,created:m.created,reason:m.reason,complete:m.complete!==false,bytes:m.totalBytes,files:m.files.length,saveFiles:sources.filter(f=>f.kind==='save').length,achievementFiles:sources.filter(f=>f.kind==='achievement-source').length,unlockedAchievements:unlocked};
           this.snapshotCache.set(folder,{stamp,snapshot});result.push(snapshot);
         }catch{this.snapshotCache.delete(folder);}
       }
@@ -91,9 +91,9 @@ class BackupEngine {
     for(const item of await this.adapter.achievementFiles(g)){const p=typeof item==='string'?item:item.filePath;if(p)await add(p,'achievement-source');}
     const matched=scan?.[g.objectId]||scan?.[g.title]||scan?.[keyOf(g)];if(matched){for(const [p,info]of Object.entries(matched.files||{})){if(info.failed)throw Error('Save discovery failed: '+p);if(!info.ignored&&info.change!=='Removed')await add(p,'save');}}
     return Array.from(selected.values());}
-  async createSnapshot(g,sourceFiles,metadata,reason,previous,force=false){const game=normalizeGame(g);const folderBase=path.join(this.settings.destination,'Games',gameFolder(game),'Snapshots');await plain(folderBase);await fsp.mkdir(folderBase,{recursive:true});const stamp=new Date().toISOString().replace(/[:.]/g,'-');const id=stamp+'-'+crypto.randomUUID().slice(0,8);const stage=path.join(folderBase,'.partial-'+id),destination=path.join(folderBase,id);const files=[];let totalBytes=0;let copied=0,reused=0;
+  async createSnapshot(g,sourceFiles,metadata,reason,previous,force=false,complete=true){const game=normalizeGame(g);const folderBase=path.join(this.settings.destination,'Games',gameFolder(game),'Snapshots');await plain(folderBase);await fsp.mkdir(folderBase,{recursive:true});const stamp=new Date().toISOString().replace(/[:.]/g,'-');const id=stamp+'-'+crypto.randomUUID().slice(0,8);const stage=path.join(folderBase,'.partial-'+id),destination=path.join(folderBase,id);const files=[];let totalBytes=0;let copied=0,reused=0;
     // An unchanged check hashes inputs without copying any file or creating a version.
-    if(previous&&!force){
+    if(previous&&!force&&(previous.manifest.complete!==false)===complete){
       const record={title:game.title,shop:game.shop,objectId:game.objectId,platform:game.platform,playTimeInMilliseconds:game.playTimeInMilliseconds,lastTimePlayed:game.lastTimePlayed,achievementCount:game.achievementCount,unlockedAchievementCount:game.unlockedAchievementCount};
       const candidates=[{payload:'game.json',sha256:digest(Buffer.from(JSON.stringify(record,null,2)))},{payload:'achievements/hydra.json',sha256:digest(Buffer.from(stable(metadata||{})))}];
       for(const file of sourceFiles){this.checkCancelled();const location=this.portable(file.source);const relative=location.root==='Absolute'?path.join('Absolute',slug(path.parse(file.source).root),file.source.slice(path.parse(file.source).root.length)):path.join(location.root,location.relative);candidates.push({payload:path.join(file.kind==='achievement-source'?'achievements/sources':'saves',relative).split(path.sep).join('/'),sha256:await hashFile(file.source),location});}
@@ -107,9 +107,9 @@ class BackupEngine {
       if(await hashFile(output)!==before||(source&&await hashFile(source)!==before))throw Error('A save changed while it was being copied. Close the game and retry.');files.push({payload,kind,size,sha256:before,...(location?{location}:{} )});totalBytes+=size;};
     try{const safeRecord={title:game.title,shop:game.shop,objectId:game.objectId,platform:game.platform,playTimeInMilliseconds:game.playTimeInMilliseconds,lastTimePlayed:game.lastTimePlayed,achievementCount:game.achievementCount,unlockedAchievementCount:game.unlockedAchievementCount};await put('game.json',Buffer.from(JSON.stringify(safeRecord,null,2)),null,null,'metadata');await put('achievements/hydra.json',Buffer.from(stable(metadata||{})),null,null,'hydra-achievements');
       for(const file of sourceFiles){this.checkCancelled();const loc=this.portable(file.source);const relative=loc.root==='Absolute'?path.join('Absolute',slug(path.parse(file.source).root),file.source.slice(path.parse(file.source).root.length)):path.join(loc.root,loc.relative);const payload=path.join(file.kind==='achievement-source'?'achievements/sources':'saves',relative).split(path.sep).join('/');await put(payload,null,file.source,loc,file.kind);}
-      files.sort((a,b)=>a.payload.localeCompare(b.payload));const stateHash=digest(stable(files.map(f=>({payload:f.payload,sha256:f.sha256,location:f.location}))));if(!force&&previous?.manifest.stateHash===stateHash){await fsp.rm(stage,{recursive:true,force:true});return {changed:false,folder:previous.folder,game,files:files.length,bytes:totalBytes};}
+      files.sort((a,b)=>a.payload.localeCompare(b.payload));const stateHash=digest(stable(files.map(f=>({payload:f.payload,sha256:f.sha256,location:f.location}))));if(!force&&previous?.manifest.stateHash===stateHash&&(previous.manifest.complete!==false)===complete){await fsp.rm(stage,{recursive:true,force:true});return {changed:false,folder:previous.folder,game,files:files.length,bytes:totalBytes};}
       if(reason!=='BeforeRestore'&&(await this.adapter.running()).some(item=>(typeof item==='string'?item:item.id||keyOf(item))===keyOf(game)))throw Error('The game started during backup. Retry after closing it.');
-      this.checkCancelled();const manifest={format:'HydraBackupGame',version:2,engineVersion:VERSION,id,key:keyOf(game),game:{title:game.title,shop:game.shop,objectId:game.objectId},created:new Date().toISOString(),reason,stateHash,totalBytes,files};const text=JSON.stringify(manifest,null,2);await fsp.writeFile(child(stage,'manifest.json'),text);await fsp.writeFile(child(stage,'COMPLETE'),digest(text));await fsp.rename(stage,destination);this.invalidateSnapshots();return {changed:true,folder:destination,game,files:files.length,bytes:totalBytes,copied,reused};
+      this.checkCancelled();const manifest={format:'HydraBackupGame',version:2,engineVersion:VERSION,id,key:keyOf(game),game:{title:game.title,shop:game.shop,objectId:game.objectId},created:new Date().toISOString(),reason,complete,stateHash,totalBytes,files};const text=JSON.stringify(manifest,null,2);await fsp.writeFile(child(stage,'manifest.json'),text);await fsp.writeFile(child(stage,'COMPLETE'),digest(text));await fsp.rename(stage,destination);this.invalidateSnapshots();return {changed:true,folder:destination,game,files:files.length,bytes:totalBytes,copied,reused};
     }catch(e){await fsp.rm(stage,{recursive:true,force:true}).catch(()=>{});throw e;}}
   async runBackup(key=null,reason='Manual'){
     if(this.busy)throw Error('A backup or restore is already running');
@@ -125,15 +125,15 @@ class BackupEngine {
       const eligible=games.filter(g=>!runningKeys.has(keyOf(g)));
       if(!eligible.length)throw Error('All selected games are currently running');
       await plain(this.settings.destination);await fsp.mkdir(this.settings.destination,{recursive:true});
-      let scanned={};
+      let scanned={},scanComplete=true;
       try{scanned=await this.options.scan(eligible,{signal:this.controller.signal});}
-      catch(e){this.checkCancelled();errors.push({game:'Save detection',message:e.message+' Known save locations and achievements were still checked.'});}
+      catch(e){this.checkCancelled();scanComplete=false;errors.push({game:'Save detection',message:e.message+' Known save locations and achievements were still checked.'});}
       this.checkCancelled();const previous=await this.snapshots();
       for(let i=0;i<eligible.length;i++){
         this.checkCancelled();const g=eligible[i],gameKey=keyOf(g);this.emit('copying',{game:g.title,index:i+1,total:eligible.length});
         try{
-          const prev=previous.find(x=>x.key===gameKey&&x.reason!=='BeforeRestore');
-          const prior=prev?{folder:prev.folder,manifest:await this.readManifest(prev.folder,false)}:null;
+          const prev=previous.find(x=>x.key===gameKey&&x.reason!=='BeforeRestore'&&x.complete!==false);
+          let prior=null;if(prev)try{prior={folder:prev.folder,manifest:await this.readManifest(prev.folder,true)};}catch(e){errors.push({game:g.title,message:'Previous recovery point is damaged. A new backup will be created.'});}
           const sources=await this.collect(g,scanned);let metadata=await this.adapter.exportGame(g);
           // A catalogue, playtime, and a library entry are not backup content.
           const hasCurrentContent=sources.length>0||unlockedCount(metadata)>0;
@@ -145,9 +145,9 @@ class BackupEngine {
             const saved=JSON.parse(await fsp.readFile(source,'utf8')).achievementData;
             if(saved)metadata={...metadata,achievementData:saved};
           }
-          const result=await this.createSnapshot(g,sources,metadata,reason,prior);results.push(result);
+          const result=await this.createSnapshot(g,sources,metadata,reason,prior,false,scanComplete);result.complete=scanComplete;results.push(result);
           gameStatus[gameKey]={status:result.changed?'saved':'unchanged',saveFiles:sources.filter(f=>f.kind==='save').length,achievementFiles:sources.filter(f=>f.kind==='achievement-source').length,unlockedAchievements:unlockedCount(metadata)};
-          if(result.changed)await this.prune(g);
+          if(result.changed)await this.prune(g,{partial:!scanComplete});
         }catch(e){this.checkCancelled();errors.push({game:g.title,message:e.message});gameStatus[gameKey]={status:'error',message:e.message};}
       }
       for(const g of active){skipped.push({key:keyOf(g),game:g.title,reason:'Game is running'});gameStatus[keyOf(g)]={status:'running'};}
@@ -156,7 +156,7 @@ class BackupEngine {
     }catch(e){const message=this.cancelRequested?'Backup cancelled. Completed recovery points are safe.':e.message;this.last={...this.last,error:message};this.emit(this.cancelRequested?'cancelled':'error',{message});throw Error(message);}
     finally{this.busy=false;this.operation=null;this.controller=null;this.emit('idle');}
   }
-  async prune(g){const list=(await this.snapshots(keyOf(g))).filter(s=>s.key===keyOf(g)&&s.reason!=='BeforeRestore');for(const snapshot of list.slice(this.settings.keepVersions)){const root=path.join(this.settings.destination,'Games');if(!inside(root,snapshot.folder)||path.basename(path.dirname(snapshot.folder))!=='Snapshots')throw Error('Unsafe retention path');const m=await this.readManifest(snapshot.folder,false);if(m.key!==keyOf(g))throw Error('Retention identity mismatch');await plain(snapshot.folder);await fsp.rm(snapshot.folder,{recursive:true,force:true});this.invalidateSnapshots(snapshot.folder);}}
+  async prune(g,{partial=false}={}){const list=(await this.snapshots(keyOf(g))).filter(s=>s.key===keyOf(g)&&s.reason!=='BeforeRestore'&&(partial?s.complete===false:s.complete!==false));for(const snapshot of list.slice(this.settings.keepVersions)){const root=path.join(this.settings.destination,'Games');if(!inside(root,snapshot.folder)||path.basename(path.dirname(snapshot.folder))!=='Snapshots')throw Error('Unsafe retention path');const m=await this.readManifest(snapshot.folder,false);if(m.key!==keyOf(g))throw Error('Retention identity mismatch');await plain(snapshot.folder);await fsp.rm(snapshot.folder,{recursive:true,force:true});this.invalidateSnapshots(snapshot.folder);}}
   async validateExternalTargets(manifest){const g=(await this.games()).find(g=>keyOf(g)===manifest.key);if(!g)throw Error('Add this game to your library before importing its backup');let scanned={};try{scanned=await this.options.scan([g],{});}catch{}const matched=scanned?.[g.objectId]||scanned?.[g.title]||scanned?.[keyOf(g)];const exact=new Set(Object.entries(matched?.files||{}).filter(([,v])=>!v.ignored&&!v.failed).map(([p])=>path.resolve(p).toLowerCase()));for(const f of await this.adapter.achievementFiles(g)){const p=typeof f==='string'?f:f.filePath;if(p)exact.add(path.resolve(p).toLowerCase());}const roots=[...this.staticRoots(g),...(this.settings.extraPaths[keyOf(g)]||[])];for(const f of manifest.files.filter(f=>f.location)){const p=this.target(f.location);if(!exact.has(p.toLowerCase())&&!roots.some(r=>inside(r,p)))throw Error('Unrecognized restore location: '+p+'. Add this game’s save folder in Backup > Games before importing. No files were restored.');}}
   async previewRestore(folder,{external=false}={}){const manifest=await this.readManifest(folder,true);if(external)await this.validateExternalTargets(manifest);const recordText=await readText(child(folder,'game.json'),1024*1024),metadataText=await readText(child(folder,'achievements/hydra.json'));if(digest(recordText)!==manifest.files.find(f=>f.payload==='game.json').sha256||digest(metadataText)!==manifest.files.find(f=>f.payload==='achievements/hydra.json').sha256)throw Error('Backup metadata changed during preview');const record=JSON.parse(recordText),metadata=JSON.parse(metadataText);if(keyOf(record)!==manifest.key||(metadata.game&&keyOf(metadata.game)!==manifest.key))throw Error('Backup metadata game identity mismatch');if(metadata.achievementData){const d=metadata.achievementData;if(!Array.isArray(d.achievements)||!Array.isArray(d.unlockedAchievements)||d.achievements.some(a=>!a||typeof a.name!=='string')||d.unlockedAchievements.some(a=>!a||typeof a.name!=='string'||!Number.isFinite(Number(a.unlockTime))))throw Error('Invalid achievement metadata');}return {manifest,record,metadata,paths:manifest.files.filter(f=>f.location).map(f=>({payload:f.payload,target:this.target(f.location),file:f}))};}
   async restoreMany(folders,{external=false}={}){if(!Array.isArray(folders)||!folders.length)throw Error('No recovery points selected');if(this.busy)throw Error('A backup or restore is already running');this.busy=true;this.cancelRequested=false;this.operation={kind:'restore',started:Date.now(),phase:'restoring'};const operations=[],metadataUndo=[],safetySnapshots=[];const transaction=crypto.randomUUID();const recovery=path.join(this.stateDir,'recovery-'+transaction+'.json');try{if((await this.adapter.running()).length)throw Error('Close all games before restoring');const previews=[];for(const folder of folders)previews.push({folder,...await this.previewRestore(folder,{external:external||!inside(this.settings.destination,folder)})});const seen=new Map();for(const p of previews)for(const item of p.paths){const key=item.target.toLowerCase();if(seen.has(key)&&seen.get(key)!==item.file.sha256)throw Error('Selected games contain conflicting shared save files. Restore them separately.');seen.set(key,item.file.sha256);}this.emit('restoring');

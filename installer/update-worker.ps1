@@ -29,10 +29,10 @@ function Start-NexusOnce {
   if($nexusStarted){return}
   # Persist the launch intent before starting the executable; no retry loop can
   # open several windows. A manual reopen wins over the helper's relaunch.
-  $nexusStarted=$true
   if(@(Get-Process -Name $nexusJob.processNames -ErrorAction SilentlyContinue).Count){return}
   [IO.File]::WriteAllText((Join-Path $nexusJobDir 'launch-once'),'1')
-  Start-Process -FilePath $nexusJob.exe -WorkingDirectory (Split-Path -Parent $nexusJob.exe) -WindowStyle Hidden
+  Start-Process -FilePath $nexusJob.exe -WorkingDirectory (Split-Path -Parent $nexusJob.exe) -WindowStyle Hidden -ErrorAction Stop
+  $nexusStarted=$true
 }
 try{
   $nexusJob=Get-Content -LiteralPath $JobFile -Raw|ConvertFrom-Json
@@ -77,6 +77,7 @@ try{
   [IO.File]::Copy($nexusArchive,(Join-Path $nexusBackup 'app.asar'),$false)
   [IO.File]::Copy($nexusJob.exe,(Join-Path $nexusBackup 'Hydra.exe'),$false)
   if((Get-NexusHash $nexusArchive) -cne (Get-NexusHash (Join-Path $nexusBackup 'app.asar')) -or (Get-NexusHash $nexusJob.exe) -cne (Get-NexusHash (Join-Path $nexusBackup 'Hydra.exe'))){throw 'Recovery copy verification failed'}
+  [IO.File]::WriteAllText((Join-Path $nexusBackup 'hashes.json'),(@{'app.asar'=(Get-NexusHash (Join-Path $nexusBackup 'app.asar'));'Hydra.exe'=(Get-NexusHash (Join-Path $nexusBackup 'Hydra.exe'))}|ConvertTo-Json -Compress),[Text.UTF8Encoding]::new($false))
   Assert-NexusUnlocked
   if(Test-NexusCancelled){throw 'Update cancelled before installation.'}
   $nexusChanged=$true
@@ -91,10 +92,10 @@ try{
     $actual=[HydraSuiteAsar]::ReadFile($nexusArchive,$archiveState.Offset,[long]$node.offset,[int]$node.size)
     if((Get-Integrity $actual).hash -cne (Get-Integrity ([Convert]::FromBase64String($patch.BridgeBase64))).hash){throw 'Installed bridge verification failed'}
   }
-  $nexusChanged=$false
   Remove-Item -LiteralPath (Join-Path (Split-Path -Parent $nexusJobDir) 'staged.json') -Force -ErrorAction SilentlyContinue
   Set-NexusState 'installed' ('Hydra Nexus '+$nexusJob.version+' installed successfully.')
   Start-NexusOnce
+  $nexusChanged=$false
   exit 0
 }catch{
   $failure=$_.Exception.Message

@@ -1,0 +1,7 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),fsp=fs.promises,path=require('node:path'),cp=require('node:child_process');
+const {version}=require('../src/brand.cjs');
+(async()=>{const root=path.join(__dirname,'..'),names=['.env','PRIVATE_AUDIT_HANDOFF.md','private-local.log'];for(const name of names)await fsp.writeFile(path.join(root,name),'HYDRA_REPAIR_CANARY_NOT_A_SECRET',{flag:'wx'});try{
+ const python=process.env.HYDRA_PYTHON||'python';await new Promise((resolve,reject)=>cp.execFile(python,[path.join(root,'release.py')],{windowsHide:true,timeout:30000},(e,out,err)=>e?reject(Error(err||e.message)):resolve(out)));
+ const verify='import zipfile,json,sys;from pathlib import Path;r=Path(sys.argv[1]);z=zipfile.ZipFile(r/("dist/Hydra-Nexus-"+sys.argv[2]+"-source.zip"));names={n.removeprefix("Hydra-Nexus/") for n in z.namelist()};expected=set(json.loads((r/"release-files.json").read_text(encoding="utf8")));assert names==expected;assert z.testzip() is None;print(len(names))';const count=cp.execFileSync(python,['-c',verify,root,version],{windowsHide:true,encoding:'utf8'}).trim();console.log('PASS: F14 source package contains exactly '+count+' explicitly allowed files; untracked .env/private handoff/log canaries excluded; ZIP CRC passed.');
+ }finally{for(const name of names)await fsp.unlink(path.join(root,name));}})().catch(e=>{console.error(e);process.exitCode=1;});

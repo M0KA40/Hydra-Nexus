@@ -83,6 +83,20 @@ public static class HydraSuiteAsar {
             input.Position=oldOffset; input.CopyTo(output); writer.Write(appended); output.Flush(true);
         }
     }
+    public static void WriteCompacted(string source,int oldOffset,string destination,string header,byte[] appended,long[] offsets,int[] sizes) {
+        if(offsets.Length!=sizes.Length)throw new InvalidDataException("Invalid ASAR copy plan.");
+        var json=Encoding.UTF8.GetBytes(header);int pad=(4-json.Length%4)%4;
+        using(var input=File.OpenRead(source))using(var output=new FileStream(destination,FileMode.CreateNew,FileAccess.Write))using(var writer=new BinaryWriter(output)) {
+            writer.Write((uint)4);writer.Write((uint)(json.Length+pad+8));writer.Write((uint)(json.Length+pad+4));writer.Write((uint)json.Length);writer.Write(json);if(pad!=0)writer.Write(new byte[pad]);
+            long oldLength=input.Length-oldOffset;var buffer=new byte[1024*1024];
+            for(int i=0;i<offsets.Length;i++){
+                long offset=offsets[i];int remaining=sizes[i];if(offset<0||remaining<0)throw new InvalidDataException("Invalid ASAR payload.");
+                if(offset>=oldLength){long at=offset-oldLength;if(at>appended.LongLength-remaining)throw new InvalidDataException("ASAR replacement out of bounds.");writer.Write(appended,(int)at,remaining);}
+                else {if(offset>oldLength-remaining)throw new InvalidDataException("ASAR source out of bounds.");input.Position=oldOffset+offset;while(remaining>0){int n=input.Read(buffer,0,Math.Min(buffer.Length,remaining));if(n==0)throw new EndOfStreamException();writer.Write(buffer,0,n);remaining-=n;}}
+            }
+            output.Flush(true);
+        }
+    }
     private static int FuseWireStart(byte[] bytes) {
         var marker=Encoding.ASCII.GetBytes("dL7pKGdnNz796PbbjQWNKmHXBZaB9tsX"); int found=-1;
         for(int i=0;i<=bytes.Length-marker.Length-2;i++) {
@@ -239,12 +253,23 @@ function Remove-PatchHooks([string]$Text, $Patch) {
 }
 
 function Get-PatchStatus($Patch, [string]$Directory) {
-    $state = Get-ArchiveState (Join-Path $Directory 'resources\app.asar')
-    $hasEntry = $null -ne $state.Files.PSObject.Properties[$Patch.BridgeName]
-    $hasHook = (Remove-PatchHooks $state.Text $Patch) -cne $state.Text
-    if ($hasEntry -and $hasHook) { return 'Installed' }
-    if ($hasEntry -or $hasHook) { return 'Partial installation - use Install / Update to repair' }
-    return 'Not installed'
+    try {
+        $archive=Join-Path $Directory 'resources\app.asar';$state=Get-ArchiveState $archive
+        $hasEntry=$null -ne $state.Files.PSObject.Properties[$Patch.BridgeName];$hasHook=(Remove-PatchHooks $state.Text $Patch) -cne $state.Text
+        if(!$hasEntry -and !$hasHook){return 'Not installed'}
+        if(!$hasEntry -or !$hasHook){return 'Partial installation - use Install / Update to repair'}
+        if($Patch.Id -eq 'nexus'){
+            $node=$state.Files.($Patch.BridgeName);if($node.link -or $node.unpacked){return 'Partial installation - use Install / Update to repair'}
+            $bytes=[HydraSuiteAsar]::ReadFile($archive,$state.Offset,[long]$node.offset,[int]$node.size)
+            if((Get-Integrity $bytes).hash -cne (Get-Integrity ([Convert]::FromBase64String($Patch.BridgeBase64))).hash){return 'Partial installation - use Install / Update to repair'}
+            $clean=Remove-NexusHooks $state.Text $Patch;$clean=Add-NexusWindowHook (Add-NexusPrivacyHooks (Add-NexusNativeLaunchHooks $clean))
+            $isEsm=$state.Name -eq 'index.mjs' -or $clean.Substring(0,[Math]::Min(2000,$clean.Length)) -match '\bimport\s'
+            $hook=if($isEsm){$Patch.EsmHook}else{$Patch.CjsHook}
+            $expected=$hook+"`n"+$clean+(Get-NexusAdapter $clean)
+            if($state.Text -cne $expected -or @(Get-NexusRendererEdits $state $archive 'Install').Count){return 'Partial installation - use Install / Update to repair'}
+        }
+        return 'Installed'
+    }catch{return 'Partial installation - use Install / Update to repair'}
 }
 
 function Close-HydraForUpdate([string]$Directory) {
@@ -269,6 +294,18 @@ function Close-HydraForUpdate([string]$Directory) {
     }
 }
 
+function Get-PackedNodes($Files,[string]$Prefix='') {
+    foreach($property in @($Files.PSObject.Properties|Sort-Object Name)){
+        $node=$property.Value;$name=$Prefix+$property.Name
+        if($node.files){Get-PackedNodes $node.files ($name+'/')}
+        elseif(!$node.unpacked -and !$node.link -and $null -ne $node.size){[pscustomobject]@{Node=$node;Offset=[long]$node.offset;Size=[int]$node.size;Name=$name}}
+    }
+}
+function Write-CompactArchive([string]$Archive,$State,[string]$Destination,[byte[]]$Appended) {
+    $plan=@(Get-PackedNodes $State.Header.files);$offsets=[long[]]@($plan|ForEach-Object {$_.Offset});$sizes=[int[]]@($plan|ForEach-Object {$_.Size});$cursor=0L
+    foreach($item in $plan){$item.Node.offset=[string]$cursor;$cursor+=$item.Size}
+    [HydraSuiteAsar]::WriteCompacted($Archive,$State.Offset,$Destination,($State.Header|ConvertTo-Json -Depth 100 -Compress),$Appended,$offsets,$sizes)
+}
 function Invoke-BuiltInPatch($Patch, [ValidateSet('Install','Remove')][string]$Operation, [switch]$Testing) {
     $directory = Resolve-HydraDirectory
     $engineDir = $null
@@ -319,7 +356,7 @@ function Invoke-BuiltInPatch($Patch, [ValidateSet('Install','Remove')][string]$O
     $executable=Join-Path $directory 'Hydra.exe'
     try {
         Write-Host ('  Preparing '+$Patch.Name+'...') -ForegroundColor Cyan
-        [HydraSuiteAsar]::Write($archive,$state.Offset,$temporary,($state.Header | ConvertTo-Json -Depth 100 -Compress),$appended)
+        Write-CompactArchive $archive $state $temporary $appended
         $check = Get-ArchiveState $temporary
         $verifiedMain = $utf8.GetBytes($check.Text)
         if ((Get-Integrity $verifiedMain).hash -ne (Get-Integrity $mainBytes).hash) { throw 'Main entry verification failed. The original archive was not replaced.' }
@@ -404,7 +441,7 @@ function Write-BackupInstallation([string]$Directory) {
         $settings=[pscustomobject]@{destination=(Join-Path $script:SuiteRoot 'Hydra_Backups');autoBackup=$false;autoUpload=$false;keepVersions=10;delaySeconds=10;discoverSaves=$true;extraPaths=[pscustomobject]@{}}
         [IO.File]::WriteAllText($settingsFile,($settings | ConvertTo-Json -Depth 8),$utf8)
     }
-    $installation=[pscustomobject]@{version='2.1.0';hydraDir=$Directory;manager=(Join-Path $script:SuiteRoot 'Hydra_Patch_Manager.bat');defaultDestination=(Join-Path $script:SuiteRoot 'Hydra_Backups')}
+    $installation=[pscustomobject]@{version='__NEXUS_RELEASE_VERSION__';revision='__NEXUS_RELEASE_REVISION__';hydraDir=$Directory;manager=(Join-Path $script:SuiteRoot 'Hydra_Nexus.bat');defaultDestination=(Join-Path $script:SuiteRoot 'Hydra_Backups')}
     [IO.File]::WriteAllText((Join-Path $dataDir 'installation.json'),($installation | ConvertTo-Json),$utf8)
 }
 

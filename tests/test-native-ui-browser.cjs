@@ -75,6 +75,16 @@ const {catalogs,rendererScript}=require('../src/i18n.cjs'),root=path.join(__dirn
   for(const language of Object.keys(catalogs)){await page.evaluate(l=>document.documentElement.lang=l,language);await page.waitForFunction(l=>window.__nexusReleaseControl.snapshot?.language===l,language);assert.equal(await page.locator('[role=dialog]>h3').innerText(),catalogs[language]['What’s new in Hydra Nexus']);}
   await page.locator('[role=dialog] .button--primary').click();await page.locator('[role=dialog]').waitFor({state:'detached'});assert.equal(await page.evaluate(()=>calls.some(r=>r.action==='dismissReleaseNotes'&&r.data.id==='1.2.0:9')),true);
   await page.evaluate(()=>window.__nexusReceive({event:'releaseNotes',value:{id:'1.2.0:9',version:'1.2.0',notes:'duplicate'}}));assert.equal(await page.locator('[role=dialog]').count(),0,'duplicate notifications cannot reopen an acknowledged popup');
+  const finalNotes=fs.readFileSync(path.join(root,'docs/releases/1.2.1.md'),'utf8').replace(/<!--[\s\S]*?-->/g,'').trim();
+  await page.evaluate(notes=>window.__nexusReceive({event:'releaseNotes',value:{id:'1.2.1:1',version:'1.2.1',notes}}),finalNotes);
+  await page.locator('[role=dialog]').waitFor();assert.ok(await page.evaluate(()=>window.__nexusReleaseControl.snapshot?.announcement),'1.2.1 retains the bundled Invisible Mode announcement');
+  await page.waitForFunction(()=>document.querySelector('[data-nexus-announcement] img')?.naturalWidth>0);
+  const finalArticle=await page.locator('[role=dialog] article').innerText();assert.match(finalArticle,/^Hydra Nexus 1\.2\.0/);assert.ok(finalArticle.indexOf('Invisible Mode')<finalArticle.indexOf('1.2.1 — Fixes and improvements'));assert.ok(finalArticle.indexOf('Your existing Nexus settings')<finalArticle.indexOf('1.2.1 — Fixes and improvements'));
+  assert.equal(await page.evaluate(()=>{const host=document.querySelector('[data-nexus-notes-content]');return host.firstElementChild.hasAttribute('data-nexus-announcement')&&host.firstElementChild.nextElementSibling.tagName==='ARTICLE';}),true);
+  for(const language of Object.keys(catalogs)){await page.evaluate(l=>document.documentElement.lang=l,language);await page.waitForFunction(l=>window.__nexusReleaseControl.snapshot?.language===l,language);assert.equal(await page.locator('[data-nexus-announcement] img').isVisible(),true);}
+  await page.evaluate(()=>document.documentElement.lang='en');await page.waitForFunction(()=>window.__nexusReleaseControl.snapshot?.language==='en');
+  if(process.env.HYDRA_NOTES_121_PREVIEW)await page.screenshot({path:process.env.HYDRA_NOTES_121_PREVIEW});
+  await page.locator('[role=dialog] .button--primary').click();await page.locator('[role=dialog]').waitFor({state:'detached'});
   if(process.env.HYDRA_NATIVE_UI_PREVIEW)await page.screenshot({path:process.env.HYDRA_NATIVE_UI_PREVIEW});
   console.log('PASS: real Hydra React runtime; native settings and account controls; all eight languages; independent plugin/mode; complete hide/disable; distinct colored on/off icons; native commands; repeated mount/unmount; Steam/Notes/Mods/Backup native commits; zero body observers and no idle requests.');
  }finally{await browser.close();}

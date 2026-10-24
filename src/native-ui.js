@@ -65,6 +65,7 @@ function HydraNexusUpdateDialog(){
   const subscribe=React.useCallback(listener=>{document.addEventListener('nexus-update-confirmation',listener);return()=>document.removeEventListener('nexus-update-confirmation',listener);},[]);
   const snapshot=React.useCallback(()=>window.__nexusUpdateControl?.snapshot||null,[]);
   const state=React.useSyncExternalStore(subscribe,snapshot,snapshot);
+  React.useLayoutEffect(()=>{window.__nexusI18n?.controls?.(document.querySelector('.nexus-update-confirmation'));});
   const cancelRef=React.useRef(null);
   React.useEffect(()=>{if(state?.id)cancelRef.current?.focus();},[state?.id]);
   if(!state)return null;
@@ -85,7 +86,7 @@ function HydraNexusUpdateDialog(){
           React.createElement('code',{dir:'ltr',style:{display:'block',overflowWrap:'anywhere',userSelect:'text'}},'SHA-256: ',state.sha256))),
       React.createElement('div',{style:{display:'flex',justifyContent:'flex-end',gap:12,flexWrap:'wrap'}},
         React.createElement('button',{ref:cancelRef,type:'button',className:'button button--outline',disabled:state.pending,onClick:()=>reply(false)},state.cancelLabel),
-        React.createElement('button',{type:'button',className:'button button--primary',disabled:state.pending,onClick:()=>reply(true)},state.installLabel))));
+        React.createElement('button',{type:'button',className:'button button--primary',disabled:state.pending,'aria-busy':state.pending||undefined,'data-nexus-pending':state.pending?'':undefined,onClick:()=>reply(true)},state.installLabel))));
 }
 function installNativeNexusCommit(){
   window.__nexusNativeHost=true;

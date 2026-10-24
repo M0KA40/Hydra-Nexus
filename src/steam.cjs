@@ -29,14 +29,14 @@
 
   function loadBindings() {
     try {
-      const p = getConfigPath();
-      if (fs.existsSync(p)) {
-        return JSON.parse(fs.readFileSync(p, "utf8"));
-      }
+      const data=JSON.parse(fs.readFileSync(getConfigPath(), "utf8"));
+      if(!data||Array.isArray(data)||typeof data!=="object"||Object.entries(data).some(([key,row])=>!/^(?:steam:)?\d+$/.test(key)||!row||Array.isArray(row)||typeof row!=="object"||!["crack","online","offline"].includes(row.mode)||row.steamId64!=null&&!/^\d{17}$/.test(row.steamId64)||[row.accountName,row.personaName].some(value=>value!=null&&(typeof value!=="string"||value.length>300))))throw Error("Invalid Steam binding data");
+      return data;
     } catch (e) {
-      log("Error loading bindings:", e);
+      if(e.code==='ENOENT')return {};
+      log("Error loading bindings:",e);
+      throw Error("Steam settings are damaged. The original file was preserved.");
     }
-    return {};
   }
 
   async function saveBindings(data) {
@@ -456,6 +456,7 @@
   // to switch accounts underneath a game that the first request just launched.
   let activeSteamLaunch = null;
   function assertLaunchAllowed() {
+    if(global.__NEXUS_UPDATE_BUSY__?.())throw Error('An update operation is already running');
     if(global.__NEXUS_RESTORE_ACTIVE__?.())throw Error('A game backup is being restored. Wait for the restore to finish before launching a game.');
   }
   async function runSteamLaunch(event, args, listener) {
@@ -465,7 +466,7 @@
     const shop = String(options.shop || "steam");
     const objectId = String(options.objectId || options.gameId || "");
     const exePath = options.executablePath || "";
-    const bindings = loadBindings();
+    const bindings = global.__HYDRA_NEXUS_ENABLED__?.("steam") !== false && shop === "steam" ? loadBindings() : {};
     const gameCfg = global.__HYDRA_NEXUS_ENABLED__?.("steam") !== false && shop === "steam" ?
       (bindings[`${shop}:${objectId}`] || bindings[objectId]) : null;
     const switches = !!(gameCfg && gameCfg.mode && gameCfg.mode !== "crack" && gameCfg.steamId64);

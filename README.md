@@ -10,7 +10,7 @@
 
 Hydra Nexus adds game tools to Hydra Launcher: backups, notes, tabs, play history, Steam launch settings and more. Features live in Hydra's settings and game pages, with controls that follow your installed theme.
 
-**Hydra Nexus 1.2.0** adds English, Português (Brasil), Español, Русский, العربية, Français, Deutsch and Türkçe. Nexus follows Hydra's chosen language, switches live and falls back to English for unsupported languages. [Language support and contribution rules](docs/localization.md).
+**Language support introduced in Hydra Nexus 1.2.0:** English, Português (Brasil), Español, Русский, العربية, Français, Deutsch and Türkçe. Nexus follows Hydra's chosen language, switches live and falls back to English for unsupported languages. [Language support and contribution rules](docs/localization.md).
 
 **[Download the installer](https://github.com/M0KA40/Hydra-Nexus/releases/latest/download/Hydra_Nexus.bat)** · [Installation](docs/installation.md) · [Feature guide](docs/features.md) · [Report a problem](https://github.com/M0KA40/Hydra-Nexus/issues/new/choose)
 

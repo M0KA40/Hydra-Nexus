@@ -1,5 +1,30 @@
 # Changelog
 
+## 1.2.1 — theme compatibility
+
+Final release following experimental 1.2.01. Retains the Invisible Mode announcement and the 1.2.0 notes above the appended 1.2.1 fixes. Includes the theme/dropdown/Backup fixes, readable pending updater buttons and the preserved revision-10 repairs. [Release notes](docs/releases/1.2.1.md).
+
+## 1.2.01 — theme compatibility, local testing candidate
+
+- Fix unreadable Steam dropdown options across light, dark and translucent themes.
+- Keep Nexus modal fields and action buttons readable using colors resolved from the active native theme.
+- Render Backup as one native sidebar button with a visible label and icon, including themes that target the final sidebar item. Click opens settings; hold three seconds runs backup.
+- Preserve focus, selected accounts, launch modes, pending saves, native controls, eight languages and Arabic RTL.
+- Carry forward the completed 1.2.0 revision-10 repairs. The separate second-audit backend follow-ups remain deferred at the owner's request.
+
+[1.2.01 notes](docs/releases/1.2.01.md) · [Theme acceptance](docs/theme-compatibility.md).
+
+## 1.2.0 revision 10 — local repair candidate, 2026-10-24
+
+Unpublished and not installed into live Hydra. [Completed isolated validation](docs/repair-validation.md).
+
+- Protect store integration activity and persist unknown-game synchronization holds until explicit sharing resumption.
+- Separate partial/complete backup retention; verify prior payloads before unchanged results; preserve corrupt history and Steam settings.
+- Bound update shutdown and recovery waits, prevent conflicting work and late approval, and roll back a rejected relaunch.
+- Compact ASAR payloads, validate full installation components and record current installer identity.
+- Track long game operations, show accurate failure results, prevent duplicate long-press actions and explicitly select source-package files.
+- Retain two verified, startup-confirmed successful update recoveries while preserving failed or unresolved jobs.
+
 ## 1.2.0 — 2026-10-23
 
 - Added optional Invisible Mode with a native account-menu control, clear on/off states and persistent private activity holds.

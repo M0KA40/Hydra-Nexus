@@ -1,6 +1,6 @@
 """Package the tested installer and intentionally selected repository sources."""
 from pathlib import Path
-import hashlib,re,zipfile
+import hashlib,re,zipfile,json
 root=Path(__file__).resolve().parent
 version=re.search(r"version:'([^']+)'",(root/'src/brand.cjs').read_text(encoding='utf8')).group(1)
 revision=int(re.search(r'revision:(\d+)',(root/'src/brand.cjs').read_text(encoding='utf8')).group(1))
@@ -8,12 +8,17 @@ notes=(root/f'docs/releases/{version}.md').read_text(encoding='utf8')
 assert f'<!-- HYDRA_NEXUS_REVISION {revision} -->' in notes, 'Release notes must match the exact installer revision'
 assert not re.search(r'[\u0600-\u06ff]',notes), 'Public release notes must be English only'
 out=root/'dist'
-files=[p for p in root.iterdir() if p.is_file()]
-for folder in ['src','docs','assets','installer','.github']:
-    files.extend(p for p in (root/folder).rglob('*') if p.is_file() and not any(part.startswith('audit-') for part in p.relative_to(root).parts))
-files.extend((root/'tests').glob('*.cjs'))
-files.append(root/'tests/check.py')
-files.extend((root/'tests/fixtures').glob('*.json'))
+manifest=json.loads((root/'release-files.json').read_text(encoding='utf8'))
+if not isinstance(manifest,list) or len(manifest)!=len(set(manifest)):raise SystemExit('Invalid release file manifest')
+files=[]
+for relative in manifest:
+    if not isinstance(relative,str) or not relative or '\\' in relative or ':' in relative or any(part in ('','.','..') for part in relative.split('/')):raise SystemExit('Unsafe release source path')
+    file=root/relative
+    if not file.is_file() or any(p.is_symlink() for p in [file,*file.parents] if p!=root and root in p.parents) or root.resolve() not in file.resolve().parents:raise SystemExit('Missing or linked release source: '+relative)
+    if any(part.startswith('audit-') for part in file.relative_to(root).parts):raise SystemExit('Private audit files cannot be packaged')
+    files.append(file)
+required={p.relative_to(root).as_posix() for p in (root/'src').rglob('*') if p.is_file() and p.suffix in ('.js','.cjs')}
+if not required.issubset(manifest):raise SystemExit('Runtime source is missing from release manifest')
 with zipfile.ZipFile(out/f'Hydra-Nexus-{version}-source.zip','w',zipfile.ZIP_DEFLATED,compresslevel=9) as archive:
     for file in sorted(set(files)):
         archive.write(file,'Hydra-Nexus/'+file.relative_to(root).as_posix())

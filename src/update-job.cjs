@@ -49,7 +49,7 @@ function createUpdateJobs({folder,app,shutdown,startupTimeoutMs=45000}){
       // Recheck the actual payload after potentially slow Notes/native saves.
       if(crypto.createHash('sha256').update(await fsp.readFile(staged.file)).digest('hex')!==staged.sha256)throw Error('The staged updater changed. Choose it again.');
       if((await readState(active))?.phase!=='ready')throw Error('The update helper stopped before restart. Hydra was kept open.');
-      await prepared.commit(()=>atomicText(path.join(dir,'approved'),token));committed=true;
+      await prepared.commit(async signal=>{if(signal?.aborted)throw Error('Saving before the update did not finish. Hydra was kept open.');await atomicText(path.join(dir,'approved'),token);if(signal?.aborted){await fsp.rm(path.join(dir,'approved'),{force:true});throw Error('Saving before the update did not finish. Hydra was kept open.');}},async()=>{await fsp.rm(path.join(dir,'approved'),{force:true});await atomicText(path.join(dir,'cancel'),token);});committed=true;
       return {current:null,busy:true,installation:'Waiting for Hydra to exit normally. Do not reopen it manually.'};
     }catch(error){
       shutdown?.cancel?.();

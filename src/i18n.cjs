@@ -35,7 +35,42 @@ function installRendererI18n(create,catalogs,language,followHydra=true){
     [dir=rtl] #hsb-setup-note{border-left-width:1px;border-inline-start-width:4px}
     .nexus-section :is(input[type=password],input[id=nexus-notes-shortcut]),.hb-path,.notes-titlebar strong{unicode-bidi:plaintext}
     #nexus-workspace-dialog :is(input[id=nexus-pc-cpu],input[id=nexus-pc-gpu]),#hsb-dialog [id=hsb-account]{unicode-bidi:plaintext}
+
+    :is(#hsb-dialog,#nexus-workspace-dialog,#hbk-native-header,#hbk-panel,.nexus-section,#nexus-update-toast,.nexus-update-confirmation) button{transition-property:background-color,border-color,box-shadow,opacity,transform!important}
+    :is(#nexus-settings-panel,.nexus-update-confirmation,#nexus-update-toast) button:disabled{opacity:1!important;filter:none!important;border-style:dashed;cursor:not-allowed}
+    :is(#nexus-settings-panel,.nexus-update-confirmation) button[data-nexus-pending]{cursor:progress}
+    :is(#nexus-settings-panel,.nexus-update-confirmation) button[data-nexus-pending]::before{content:'';display:inline-block;width:12px;height:12px;flex:0 0 12px;box-sizing:border-box;border:2px solid currentColor;border-inline-end-color:transparent;border-radius:50%;animation:nexus-control-pending .8s linear infinite}
+    @keyframes nexus-control-pending{to{transform:rotate(360deg)}}
+    @media(prefers-reduced-motion:reduce){:is(#nexus-settings-panel,.nexus-update-confirmation) button[data-nexus-pending]::before{animation:none}}
+    #nexus-settings-panel{color:var(--nexus-text,inherit)!important}
+    [data-nexus-surface]{background:var(--nexus-surface)!important;color:var(--nexus-text)!important;color-scheme:var(--nexus-scheme)}
+    :is(#hsb-dialog,#nexus-workspace-dialog,#hbk-panel,.nexus-section) :is(select,input:not([type=checkbox]):not([type=range]),textarea){color:var(--nexus-text,CanvasText)!important;background-color:var(--nexus-field,Canvas)!important;color-scheme:var(--nexus-scheme,normal);border-color:var(--nexus-border,ButtonBorder)}
+    :is(#hsb-dialog,#nexus-workspace-dialog,#hbk-panel,.nexus-section) :is(option,optgroup){color:var(--nexus-text,CanvasText)!important;background:var(--nexus-field,Canvas)!important}
+    :is(#hsb-dialog,#nexus-workspace-dialog) :is(input,select,button):focus-visible{outline:2px solid currentColor;outline-offset:3px}
+    :is(#hsb-dialog,#nexus-workspace-dialog)>section{min-width:0;overflow-wrap:anywhere}
+    :is(#hsb-dialog,#nexus-workspace-dialog) select{min-width:0;max-width:100%;text-overflow:ellipsis}
+    @media(max-width:600px){:is(#hsb-dialog,#nexus-workspace-dialog){padding:12px!important}:is(#hsb-dialog,#nexus-workspace-dialog)>section{padding:18px!important;max-height:calc(100dvh - 24px)!important}:is(#hsb-dialog,#nexus-workspace-dialog) header{flex-wrap:wrap;gap:10px!important}}
   `;document.head.append(style);
+  // Resolve translucent native theme layers to an opaque, readable Nexus surface.
+  // Only Nexus-owned elements receive these variables; native theme rules stay scoped.
+  const rgb=value=>{const m=String(value).match(/^rgba?\(([^)]+)\)$/);if(!m)return null;const v=m[1].split(/[ ,/]+/).filter(Boolean).map(Number);return v.length>=3&&v.every(Number.isFinite)?[...v.slice(0,3),v.length>3?v[3]:1]:null;};
+  const luminance=c=>c.slice(0,3).map(v=>{v/=255;return v<=.04045?v/12.92:((v+.055)/1.055)**2.4;}).reduce((n,v,i)=>n+v*[.2126,.7152,.0722][i],0);
+  const ratio=(a,b)=>(Math.max(luminance(a),luminance(b))+.05)/(Math.min(luminance(a),luminance(b))+.05);
+  const paint=c=>'rgb('+c.slice(0,3).map(v=>Math.round(v)).join(', ')+')';
+  api.palette=anchor=>{
+    anchor=anchor||document.querySelector('.sidebar')||document.body;
+    let fg=rgb(getComputedStyle(anchor).color)||[240,241,247,1];
+    let bg=luminance(fg)>.45?[28,31,37]:[248,249,251],layers=[];
+    for(let node=anchor;node;node=node.parentElement){const c=rgb(getComputedStyle(node).backgroundColor);if(c)layers.push(c);}
+    for(const c of layers.reverse())bg=bg.map((v,i)=>v*(1-c[3])+c[i]*c[3]);
+    fg=bg.map((v,i)=>fg[i]*fg[3]+v*(1-fg[3]));
+    if(ratio(bg,fg)<4.5)fg=ratio(bg,[255,255,255])>ratio(bg,[0,0,0])?[255,255,255]:[0,0,0];
+    const field=bg.map((v,i)=>v*.96+fg[i]*.04);
+    return {background:paint(bg),color:paint(fg),field:paint(field),border:paint(bg.map((v,i)=>v*.6+fg[i]*.4)),scheme:luminance(bg)<.4?'dark':'light'};
+  };
+  api.buttons=element=>{for(const button of element?.querySelectorAll('button')||[]){const p=api.palette(button);if(getComputedStyle(button).color!==p.color)button.style.setProperty('color',p.color,'important');}};
+  api.controls=(element,anchor)=>{if(!element)return;const p=api.palette(anchor||element);for(const [name,value]of Object.entries({surface:p.background,text:p.color,field:p.field,border:p.border,scheme:p.scheme})){const key='--nexus-'+name;if(element.style.getPropertyValue(key)!==value)element.style.setProperty(key,value);}api.buttons(element);return p;};
+  api.surface=(element,anchor)=>{const p=api.controls(element,anchor||document.querySelector('.sidebar')||document.body);if(element&&!element.hasAttribute('data-nexus-surface'))element.setAttribute('data-nexus-surface','');api.buttons(element);return p;};
   api.decorate=element=>{if(!element)return;element.setAttribute('lang',api.language);element.setAttribute('dir',api.direction);};
   api.subscribe(()=>document.dispatchEvent(new Event('nexus-language')));
   if(followHydra){

@@ -60,7 +60,9 @@ function Get-NexusRendererEdits($State,[string]$Archive,[string]$Operation){
             $node=$assets.files.$assetName
             if($node -and ($node.unpacked -or $node.link)){throw 'Unsupported Nexus announcement asset. The archive was not replaced.'}
             if(!$node){$node=[pscustomobject]@{};$assets.files|Add-Member -NotePropertyName $assetName -NotePropertyValue $node -Force}
-            [pscustomobject]@{Folder=$folder;Name=$assetName;Node=$node;Bytes=[Convert]::FromBase64String('__NEXUS_ANNOUNCEMENT_BASE64__')}
+            $expected=[Convert]::FromBase64String('__NEXUS_ANNOUNCEMENT_BASE64__');$same=$false
+            if($null -ne $node.size){$actual=[HydraSuiteAsar]::ReadFile($Archive,$State.Offset,[long]$node.offset,[int]$node.size);$same=(Get-Integrity $actual).hash -ceq (Get-Integrity $expected).hash}
+            if(!$same){[pscustomobject]@{Folder=$folder;Name=$assetName;Node=$node;Bytes=$expected}}
         }else{$assets.files.PSObject.Properties.Remove($assetName)}
     }
     # Source-only installer fixtures have no renderer. A real renderer must expose the known menu.

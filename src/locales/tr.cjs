@@ -564,5 +564,10 @@ module.exports={
   "Save your data": "Verilerinizi kaydet",
   "Install update": "Güncellemeyi yükle",
   "Restart Hydra": "Hydra’yı yeniden başlat",
-  "Update details": "Güncelleme ayrıntıları"
+  "Update details": "Güncelleme ayrıntıları",
+  "Previous recovery point is damaged. A new backup will be created.": "Önceki kurtarma noktası bozuk. Yeni bir yedek oluşturulacak.",
+  "Steam settings are damaged. The original file was preserved.": "Steam ayarları bozuk. Özgün dosya korundu.",
+  "Backup needs attention: {error}": "Yedeğin incelenmesi gerekiyor: {error}",
+  "Partial recovery point": "Kısmi kurtarma noktası",
+  "Store synchronization is paused until you resume activity sharing.": "Etkinlik paylaşımını sürdürünceye kadar mağaza eşitlemesi duraklatılır."
 };

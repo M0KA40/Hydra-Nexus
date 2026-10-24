@@ -1,4 +1,8 @@
-# Verification — Hydra Nexus 1.2.0 local candidate
+# Current local repair validation
+
+See [repair-validation.md](repair-validation.md) for revision 10. The entries below are historical and retain their original test counts; they do not describe the current candidate.
+
+# Verification — historical evidence
 
 ## 1.2.0 revision 6 — correct active renderer selection
 

@@ -3,7 +3,7 @@ const fs=require('node:fs'),fsp=fs.promises,path=require('node:path'),crypto=req
 const {atomicText}=require('./themes.cjs');
 const i18n=require('./i18n.cjs');
 const sha=bytes=>crypto.createHash('sha256').update(bytes).digest('hex');
-function newer(a,b){const parse=v=>/^\d+\.\d+\.\d+$/.test(v)?v.split('.').map(Number):null,x=parse(a),y=parse(b);if(!x||!y)return false;for(let i=0;i<3;i++){if(x[i]!==y[i])return x[i]>y[i];}return false;}
+function newer(a,b){const parse=v=>/^\d+\.\d+\.\d+$/.test(v)?v.split('.').map(Number):null,x=parse(a),y=parse(b);if(!x||!y)return false;for(let i=0;i<3;i++){if(x[i]!==y[i])return x[i]>y[i];}const stable=v=>v.split('.').every(part=>part==='0'||!part.startsWith('0'));return stable(a)&&!stable(b);}
 function releaseVersion(bytes){const text=bytes.toString('utf8');const version=text.match(/^:: HYDRA_NEXUS_RELEASE (\d+\.\d+\.\d+)\r?$/m)?.[1];if(!version||!text.includes(':: === HYDRA_SUITE_PS_START ===')||!text.includes('hydra-nexus-bridge.cjs'))throw Error('Choose an official Hydra Nexus BAT release');return version;}
 function releaseRevision(bytes){return Number(bytes.toString('utf8').match(/^:: HYDRA_NEXUS_REVISION (\d+)\r?$/m)?.[1]||1);}
 function createUpdater({directory,version,revision=1,getRepository,fetcher,app,dialog,shutdown,confirm,startupTimeoutMs=45000}){
@@ -65,6 +65,6 @@ function createUpdater({directory,version,revision=1,getRepository,fetcher,app,d
     const task=perform().finally(()=>{busy=false;if(name==='installUpdate')installing=null;});
     if(name==='installUpdate')installing=task;return task;
   }
-  return {installedNotes,action};
+  return {installedNotes,action,started:()=>require('./update-recovery.cjs').confirmAndPrune({folder,app,version,revision})};
 }
 module.exports={createUpdater,newer,releaseVersion,releaseRevision,sha};

@@ -1,3 +1,9 @@
+# Current local repair candidate
+
+Revision 10 extends activity gates to Steam and Epic integration synchronization and RetroAchievements. When a store-wide transaction does not identify individual games, that store synchronization remains paused until **Resume activity sharing** is confirmed. The pause survives restart and account scopes remain separate. This conservative hold is shown separately from the private-game count.
+
+The historical validation counts below belong to their dated revisions. Current validation is recorded in [repair-validation.md](repair-validation.md). No server-side presence or notification guarantee is implied.
+
 # Invisible Mode
 
 In Settings > Hydra Nexus > Plugins, enable **Invisible Mode** to make the account-menu control available. This does not turn privacy on. Open the account dropdown and use the control directly below **Friends**. A bright green check with **On** means privacy is active; a dim minus with **Off** means it is inactive. Both controls follow Hydra's language and theme. Disabling the plugin turns privacy off and removes the account-menu control. Existing revision-4 enabled settings migrate to both availability and mode on, preserving protection.
