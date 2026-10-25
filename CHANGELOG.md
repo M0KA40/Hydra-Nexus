@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.2.2 — Extract path and Polish
+
+- Add a default-enabled Extract path plugin using Hydra's native download controls. Remember the last accepted folder and per-download destinations across queues and restarts, with a game folder inside the chosen location.
+- Preserve native download paths for resume/seeding and discover extracted games at their chosen destination. Protect existing destination files and strengthen extraction recovery, companion-file preservation and archive cleanup.
+- Add Polish with complete translations; all nine languages follow Hydra's language and live changes.
+- Add default-enabled inactive-video pausing with same-position resume and a Themes opt-out. Preserve Low Resource Mode priority.
+- Fix custom-background startup wallpaper flashes, unify video playback policy and omit the zero-blur filter. Clarify supported video containers and codec requirements.
+- Official version 1.2.2, internal revision 6, supersedes preview 1.2.02. [Release notes](docs/releases/1.2.2.md).
+
 ## 1.2.1 — theme compatibility
 
 Final release following experimental 1.2.01. Retains the Invisible Mode announcement and the 1.2.0 notes above the appended 1.2.1 fixes. Includes the theme/dropdown/Backup fixes, readable pending updater buttons and the preserved revision-10 repairs. [Release notes](docs/releases/1.2.1.md).

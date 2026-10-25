@@ -14,7 +14,7 @@ for name in ['core.cjs','drive-folder.cjs','achievements.cjs','ui.js','bridge.cj
     modules['./'+name]=text
 steam=(source/'steam.cjs').read_text(encoding='utf8')
 modules['./steam.cjs']=steam
-for name in ['activity.cjs','themes.cjs','nexus-ui.js','updater.cjs','controller.cjs','notes.cjs','notes-ui.js','hardware.cjs','services.cjs','workspace-ui.js','steam-vdf.cjs','steam-ui.js','mod-catalog.cjs','game-links.cjs','ratings.cjs','requirements.cjs','brand.cjs','privacy.cjs','release-notes.cjs','update-job.cjs','update-shutdown.cjs','update-assets.cjs','update-confirmation.cjs','update-recovery.cjs']:
+for name in ['activity.cjs','themes.cjs','extract-path.cjs','nexus-ui.js','updater.cjs','controller.cjs','notes.cjs','notes-ui.js','hardware.cjs','services.cjs','workspace-ui.js','steam-vdf.cjs','steam-ui.js','mod-catalog.cjs','game-links.cjs','ratings.cjs','requirements.cjs','brand.cjs','privacy.cjs','release-notes.cjs','update-job.cjs','update-shutdown.cjs','update-assets.cjs','update-confirmation.cjs','update-recovery.cjs']:
     modules['./'+name]=(source/name).read_text(encoding='utf-8').replace('__NEXUS_REPOSITORY__',json.dumps('M0KA40/Hydra-Nexus')).replace('__NEXUS_BRAND_ICON__','data:image/svg+xml;base64,'+base64.b64encode((root/'assets/brand/Hydra-Nexus-transparent.svg').read_bytes()).decode()).replace('__NEXUS_BRAND_WINDOW_ICON__','data:image/png;base64,'+base64.b64encode((root/'assets/brand/Hydra-Nexus-transparent.png').read_bytes()).decode()).replace('__NEXUS_MODS_ICON__','data:image/png;base64,'+base64.b64encode((root/'assets/nexus-mods.png').read_bytes()).decode())
 modules['./update-assets.cjs']="'use strict';module.exports={worker:"+json.dumps((root/'installer/update-worker.ps1').read_text(encoding='utf8'))+"};"
 for file in [source/'i18n.cjs',*sorted((source/'locales').glob('*.cjs'))]:
@@ -47,7 +47,7 @@ function Remove-NexusHooks([string]$Text,$Patch){
     $Text=$Text.Replace('await /* HYDRA_NEXUS_CLASSICS_LAUNCH_V1 */ (globalThis.__NEXUS_STEAM_NATIVE_LAUNCH__ || ((nativeLaunch, options) => nativeLaunch(options)))(() => openClassicsGame(shop, objectId), {shop, objectId})','await openClassicsGame(shop, objectId)')
     $Text=$Text.Replace('/* HYDRA_NEXUS_PRIVACY_GAME_V1 */ if(globalThis.__NEXUS_PRIVACY_BLOCK_GAME__?.(game))return;','')
     $Text=$Text.Replace('PendingGroupedSouvenirStore.list(/* HYDRA_NEXUS_SOUVENIR_UPLOAD_V1 */ {nexusUpload:true})','PendingGroupedSouvenirStore.list()')
-    $Text=Remove-NexusWindowHook $Text
+    $Text=Remove-NexusExtractionHooks (Remove-NexusWindowHook $Text)
     return $Text
 }
 function Add-NexusNativeLaunchHooks([string]$Text){
@@ -101,6 +101,9 @@ function Get-NexusAdapter([string]$Text){
         $exit='updateExit:{assertIdle:()=>{if(DownloadManager.hasActiveDownload())throw Error("Pause downloads before restarting to update.");if(isRemoteLibrarySyncing())throw Error("Wait for library synchronization to finish before updating.");},prepare:async(signal)=>{const check=()=>{if(signal?.aborted)throw Error("Saving before the update did not finish. Hydra was kept open.");};check();await shutdownEpicIntegration();check();DownloadOrchestrator.cancelPendingDebridPreparations();PowerSaveBlockerManager.reset();await clearGamesPlaytime();check();await stopAllEmulatorSouvenirCaptureSessions();check();await libraryWriteQueue.drain();check();const w=WindowManager.mainWindow;if(w&&!w.isDestroyed()){const b=w.getBounds();const m=w.isMaximized();const initial=WindowManager.initialConfigInitializationMainWindow;await WindowManager.saveScreenConfig(m?{width:initial?.width||b.width,height:initial?.height||b.height,isMaximized:true}:{...b,isMaximized:false});}},close:async()=>{await libraryWriteQueue.drain();await db.close();},reopen:async()=>{await db.open();}},'
         $adapter=$adapter.Replace('__HYDRA_NEXUS_BIND__({','__HYDRA_NEXUS_BIND__({'+$exit)
     }
+    if($Text -match '\\bclass\\s+GameFilesManager\\b'){
+        $adapter=$adapter.Replace('__HYDRA_NEXUS_BIND__({','__HYDRA_NEXUS_BIND__({extraction:{manager:GameFilesManager,downloads:downloadsSublevel,zip:SevenZip,deleteArchive:deleteArchiveFile,windows:WindowManager,db},')
+    }
     return $adapter
 }
 function Show-NexusDevelopmentNotice {
@@ -135,13 +138,14 @@ function Show-NexusMenu($Patch){
 '''.replace('BUNDLE',base64.b64encode(bundle.encode()).decode())
 native_ui=(source/'native-ui.js').read_text(encoding='utf8')
 native_ui=native_ui[:native_ui.index("if(typeof module")]
-native_installer=(root/'installer/native-ui.ps1').read_text(encoding='utf8').replace('__NEXUS_NATIVE_UI_BASE64__',base64.b64encode(native_ui.encode()).decode()).replace('__NEXUS_ANNOUNCEMENT_BASE64__',base64.b64encode((root/'assets/announcements/invisible-mode-1.2.0.png').read_bytes()).decode())
+native_installer=(root/'installer/native-ui.ps1').read_text(encoding='utf8').replace('__NEXUS_NATIVE_UI_BASE64__',base64.b64encode(native_ui.encode()).decode()).replace('__NEXUS_ANNOUNCEMENT_BASE64__',base64.b64encode((root/'assets/announcements/invisible-mode-1.2.0.png').read_bytes()).decode()).replace('__NEXUS_EXTRACT_ANNOUNCEMENT_BASE64__',base64.b64encode((root/'assets/announcements/extract-path-1.2.2.png').read_bytes()).decode())
 registry+='\n'+native_installer
 base=base.replace("Add-Type -TypeDefinition @'",registry+"\nAdd-Type -TypeDefinition @'",1)
 base=base.replace("[ValidateSet('steam','gameshift','backup')]", "[ValidateSet('nexus')]")
 base=base.replace("[string]$PatchId = 'steam'", "[string]$PatchId = 'nexus'")
 base=base.replace('Remove-PatchHooks $state.Text $Patch','Remove-NexusHooks $state.Text $Patch')
-base=base.replace('    $bridgeBytes = [byte[]]@()', "    if ($Operation -eq 'Install' -and $Patch.Id -eq 'nexus') { $clean=Add-NexusWindowHook (Add-NexusPrivacyHooks (Add-NexusNativeLaunchHooks $clean)) }\n    $bridgeBytes = [byte[]]@()")
+base=base.replace('$clean=Add-NexusWindowHook (Add-NexusPrivacyHooks (Add-NexusNativeLaunchHooks $clean))','$clean=Add-NexusExtractionHooks (Add-NexusWindowHook (Add-NexusPrivacyHooks (Add-NexusNativeLaunchHooks $clean)))')
+base=base.replace('    $bridgeBytes = [byte[]]@()', "    if ($Operation -eq 'Install' -and $Patch.Id -eq 'nexus') { $clean=Add-NexusExtractionHooks (Add-NexusWindowHook (Add-NexusPrivacyHooks (Add-NexusNativeLaunchHooks $clean))) }\n    $bridgeBytes = [byte[]]@()")
 base=base.replace("if ($Patch.Id -eq 'backup') { Assert-HydraBackupIdle }", "if ($Patch.Id -in @('backup','nexus')) { Assert-HydraBackupIdle }")
 base=base.replace("if ($Operation -eq 'Install' -and $Patch.Id -eq 'backup') { $newMain += Get-BackupAdapter $clean }", "if ($Operation -eq 'Install' -and $Patch.Id -eq 'backup') { $newMain += Get-BackupAdapter $clean }; if ($Operation -eq 'Install' -and $Patch.Id -eq 'nexus') { $newMain += Get-NexusAdapter $clean }")
 base=base.replace("if (!$Testing -and $Operation -eq 'Install' -and $Patch.Id -eq 'backup') { Write-BackupInstallation $directory }", "if (!$Testing -and $Operation -eq 'Install' -and $Patch.Id -in @('backup','nexus')) { Write-BackupInstallation $directory }")
@@ -161,4 +165,4 @@ base=base.replace('__NEXUS_RELEASE_VERSION__',version).replace('__NEXUS_RELEASE_
 base=base.replace('Hydra Nexus 1.0.0','Hydra Nexus '+version).replace('v1.0.0','v'+version)
 base=f':: HYDRA_NEXUS_RELEASE {version}\n:: HYDRA_NEXUS_REVISION {revision}\n'+base
 (output/'Hydra_Nexus.bat').write_bytes(base.replace('\r\n','\n').replace('\n','\r\n').encode())
-print('Built Hydra Nexus '+version+': 9 plugins, backgrounds, safe updater and per-game tools. GameShift is not bundled.')
+print('Built Hydra Nexus '+version+': 10 plugins, backgrounds, safe updater and per-game tools. GameShift is not bundled.')

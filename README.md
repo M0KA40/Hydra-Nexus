@@ -10,19 +10,19 @@
 
 Hydra Nexus adds game tools to Hydra Launcher: backups, notes, tabs, play history, Steam launch settings and more. Features live in Hydra's settings and game pages, with controls that follow your installed theme.
 
-**Language support introduced in Hydra Nexus 1.2.0:** English, Português (Brasil), Español, Русский, العربية, Français, Deutsch and Türkçe. Nexus follows Hydra's chosen language, switches live and falls back to English for unsupported languages. [Language support and contribution rules](docs/localization.md).
+**Interface languages:** English, Português (Brasil), Español, Русский, العربية, Français, Deutsch, Türkçe and Polski. Nexus follows Hydra's chosen language, switches live and falls back to English for unsupported languages. [Language support and contribution rules](docs/localization.md).
 
 **[Download the installer](https://github.com/M0KA40/Hydra-Nexus/releases/latest/download/Hydra_Nexus.bat)** · [Installation](docs/installation.md) · [Feature guide](docs/features.md) · [Report a problem](https://github.com/M0KA40/Hydra-Nexus/issues/new/choose)
 
-## Invisible Mode — play on your terms
+## New in 1.2.2 — Extract path
 
-<p align="center"><img src="assets/announcements/invisible-mode-1.2.0.png" alt="Invisible Mode — appear offline in Hydra and keep your library connected" width="100%"></p>
+<p align="center"><img src="assets/announcements/extract-path-1.2.2.png" alt="Extract path — choose an extraction folder and Nexus remembers it" width="100%"></p>
 
-**New in 1.2.0.** Control your Hydra presence while game images, local progress and your interface stay available. Enable the plugin, then switch Invisible Mode on below **Friends** in your account menu.
+Download to one location and extract to another. **Extract path (Hydra Nexus)** appears above the download button with native themed controls. Nexus remembers your last folder and keeps a destination for each queued download. Enabled by default; disable it in **Plugins**.
 
-**One-click control · Clear on/off status · Your existing Hydra theme**
+**Also new:** Polish language support, inactive-video pausing and custom-background startup fixes.
 
-[How Invisible Mode works](docs/invisible-mode.md) · [1.2.0 release notes](docs/releases/1.2.0.md)
+[1.2.2 release notes](docs/releases/1.2.2.md) · [Feature guide](docs/features.md#extract-path)
 
 ## Install
 

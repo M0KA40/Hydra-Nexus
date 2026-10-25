@@ -1,10 +1,10 @@
 'use strict';
-// English messages are catalog keys. Keep every message in all eight catalogs.
-const catalogs={en:require('./locales/en.cjs'),'pt-BR':require('./locales/pt-BR.cjs'),es:require('./locales/es.cjs'),ru:require('./locales/ru.cjs'),ar:require('./locales/ar.cjs'),fr:require('./locales/fr.cjs'),de:require('./locales/de.cjs'),tr:require('./locales/tr.cjs')};
+// English messages are catalog keys. Keep every message in all nine catalogs.
+const catalogs={en:require('./locales/en.cjs'),'pt-BR':require('./locales/pt-BR.cjs'),es:require('./locales/es.cjs'),ru:require('./locales/ru.cjs'),ar:require('./locales/ar.cjs'),fr:require('./locales/fr.cjs'),de:require('./locales/de.cjs'),tr:require('./locales/tr.cjs'),pl:require('./locales/pl.cjs')};
 
 // Self-contained: this factory also runs inside sandboxed Electron renderers.
 function createTranslator(catalogs,initialLanguage='en'){
-  const supported=['en','pt-BR','es','ru','ar','fr','de','tr'];
+  const supported=['en','pt-BR','es','ru','ar','fr','de','tr','pl'];
   function normalize(value){const code=typeof value==='string'?value.trim().replace(/_/g,'-').toLowerCase().split('-')[0]:'';return code==='pt'?'pt-BR':supported.includes(code)?code:'en';}
   let language=normalize(initialLanguage);const listeners=new Set();
   const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

@@ -1,6 +1,6 @@
 # Interface localization
 
-Nexus follows Hydra's selected interface language. Supported languages are **English, Português (Brasil), Español, Русский, العربية, Français, Deutsch and Türkçe**. Regional tags are normalized (for example `ar-SA`, `es-419`, `fr-CA` and `pt_BR`). Portuguese variants use the Brazilian Portuguese catalog. Unsupported languages and missing individual messages fall back to English.
+Nexus follows Hydra's selected interface language. Supported languages are **English, Português (Brasil), Español, Русский, العربية, Français, Deutsch, Türkçe and Polski**. Regional tags are normalized (for example `ar-SA`, `es-419`, `fr-CA` `pt_BR` and `pl-PL`). Portuguese variants use the Brazilian Portuguese catalog. Unsupported languages and missing individual messages fall back to English.
 
 ## Runtime behavior
 
@@ -12,7 +12,7 @@ The catalogs are bundled with the BAT. No translation service, API key, network 
 
 ## Adding or changing copy
 
-1. Use an English message as the key in **all eight** `src/locales/*.cjs` files. Files must be UTF-8. Names such as Hydra Nexus, Steam and Nexus Mods retain their brand spelling.
+1. Use an English message as the key in **all nine** `src/locales/*.cjs` files. Files must be UTF-8. Names such as Hydra Nexus, Steam and Nexus Mods retain their brand spelling.
 2. Use named placeholders in complete sentences: `tr('Version {version} is available', {version})`. Do not assemble sentences from translated prefixes/suffixes. Number placeholders use the selected locale; counts can use neutral labels to avoid incorrect plural grammar.
 3. Use `ht(key, values)` when inserting translated text into HTML. It escapes both the translation and inserted values. For a native dialog, use `localizedDialog()` and translate composed text before adding user paths or game names. Keep button order and confirmation defaults unchanged.
 4. Translate application response/error messages at the display boundary with `msg()`. Keep stored identifiers and backend transactions independent of language. Never send user Notes or private account information to a translation service.

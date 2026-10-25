@@ -16,10 +16,14 @@ globalThis.loadHydra=(window,hash)=>WindowManager.loadWindowURL(window,hash);`;
  const patched=await fs.readFile(output,'utf8');new vm.Script(patched);
  for(const dev of [false,true])for(const nexus of [false,true]){
   const calls=[],context={is:{dev},process:{env:{ELECTRON_RENDERER_URL:dev?'http://localhost:5173':undefined}},path,__dirname:path.join(root,'out/main'),__HYDRA_NEXUS__:nexus};vm.createContext(context);vm.runInContext(patched,context);
-  const window={loadURL:async url=>calls.push(['remote',url]),loadFile:async(file,options)=>calls.push(['local',file,options.hash])};
-  await context.loadHydra(window,'settings');assert.equal(calls.length,1);
+  const window={loadURL:async url=>calls.push(['remote',url]),loadFile:async(file,options)=>calls.push(['local',file,options.hash,options.query])};
+  let release,reads=0;context.__NEXUS_BACKGROUND_STARTUP__=()=>{reads++;return new Promise(resolve=>release=resolve);};
+  const loading=context.loadHydra(window,'settings');
+  if(nexus&&!dev){assert.equal(calls.length,0,'renderer waits only for background settings');release(true);}
+  await loading;assert.equal(calls.length,1);assert.equal(reads,nexus&&!dev?1:0);
   assert.equal(calls[0][0],nexus&&!dev?'local':'remote','Nexus must load the patched renderer, even when the CDN is reachable');
-  if(nexus&&!dev){assert.equal(calls[0][1],path.join(root,'out/renderer/index.html'));assert.equal(calls[0][2],'settings');}
+  if(nexus&&!dev){assert.equal(calls[0][1],path.join(root,'out/renderer/index.html'));assert.equal(calls[0][2],'settings');assert.equal(calls[0][3].nexusBackground,'1');
+   context.__NEXUS_BACKGROUND_STARTUP__=async()=>false;await context.loadHydra(window,'library');assert.equal(calls[1][3],undefined,'no wallpaper mask when none selected');}
  }
  console.log('PASS: production Nexus selects the patched local renderer before a reachable CDN; development and absent-Nexus paths stay native; route/hash preserved; exact cleanup, stable repair and unknown-loader rejection. No Hydra session launched.');
 })().catch(e=>{console.error(e);process.exitCode=1;});

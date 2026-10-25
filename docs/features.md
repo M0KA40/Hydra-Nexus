@@ -1,6 +1,6 @@
 # Feature guide
 
-Manage the eight plugins in **Settings → Hydra Nexus → Plugins**. Backgrounds and updates have their own pages in the same settings group.
+Manage the ten plugins in **Settings → Hydra Nexus → Plugins**. Backgrounds and updates have their own pages in the same settings group.
 
 ## Game Backup
 
@@ -96,9 +96,9 @@ This mode pauses custom background video, animations and expensive blur effects 
 
 ## Custom Backgrounds
 
-Open **Themes → Choose image or video**. Nexus copies the file into its own media folder and replaces the active theme's backdrop after the media has loaded. Theme controls, colors and layout remain in use.
+Open **Themes → Choose image or video**. Nexus copies the original file into its own media folder without re-encoding it. When a managed background is selected, the native theme wallpaper is suppressed during startup and media decoding, then the selected background appears. A decode failure or **Reset background** restores the native theme. Theme controls, colors and layout remain in use.
 
-Adjust **Darkness** and **Blur**, or choose **Reset background** to return to the theme's original background. Images and H.264 MP4 playback were tested. Other video codecs depend on Electron and Windows support. If a file cannot be decoded, the theme background stays available and an error is shown. Low Resource Mode pauses custom video and disables blur.
+Adjust **Darkness** and **Blur**, or choose **Reset background** to return to the theme's original background. Images and H.264 MP4 playback were tested. Other video codecs depend on Electron and Windows support. If a file cannot be decoded, the theme background stays available and an error is shown. Low Resource Mode pauses custom video and disables blur. Video pausing follows one policy across Nexus and workspace events. A zero blur setting applies no filter; positive blur is preserved. File size alone does not determine GPU decoding/compositing cost. Nexus does not resize, drop frames or automatically recompress media, and does not claim a measured GPU reduction.
 
 ## Updater
 
@@ -115,3 +115,9 @@ Internal repairs can keep the same public version. The updater also compares an 
 An optional Plugins toggle pauses Hydra realtime presence/chat and activity uploads while retaining covers, achievement icons and local progress. Affected activity stays local after turning it off until explicitly resumed. Steam visibility is separate; a second-account check is still required to confirm friends see Offline. See [behavior, controls and limitations](invisible-mode.md).
 
 Revision 5 separates Invisible Mode plugin availability from its account-menu on/off control, with native React navigation, distinct colored icons and corrected indexed/durable privacy processing. Owner-reported second-account presence was Offline; game notifications are not confirmed. [Installed-update release notes](release-notes.md) show matching GitHub notes once.
+
+## Extract path
+
+Enabled by default in Plugins. The native download dialog shows Extract path (Hydra Nexus) above its download action. Choose a parent folder; a game folder is created inside it. The last folder used by an accepted download is remembered, and queued downloads keep their own choice. Original download files stay in their download location for resume and seeding. Disable the plugin to use native extraction; existing extracted games keep their discovery path. Unrelated existing destination files are never silently overwritten.
+
+Polish (`pl`) is supported starting in 1.2.2, with all 591 messages translated and live language changes following Hydra. Existing interface languages remain supported.

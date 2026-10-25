@@ -88,9 +88,41 @@ function HydraNexusUpdateDialog(){
         React.createElement('button',{ref:cancelRef,type:'button',className:'button button--outline',disabled:state.pending,onClick:()=>reply(false)},state.cancelLabel),
         React.createElement('button',{type:'button',className:'button button--primary',disabled:state.pending,'aria-busy':state.pending||undefined,'data-nexus-pending':state.pending?'':undefined,onClick:()=>reply(true)},state.installLabel))));
 }
+// Uses exactly the native TextField and Button components, including theme CSS.
+function HydraNexusExtractPath({downloadPath,enabled,disabled}){
+  const React=reactExports$1;
+  const subscribe=React.useCallback(listener=>{document.addEventListener('nexus-extract-path',listener);return()=>document.removeEventListener('nexus-extract-path',listener);},[]);
+  const snapshot=React.useCallback(()=>window.__nexusExtractControl?.snapshot||null,[]);
+  const state=React.useSyncExternalStore(subscribe,snapshot,snapshot);
+  if(!state?.available)return null;
+  return React.createElement(TextField,{
+    value:state.path||downloadPath||'',readOnly:true,disabled:true,dir:'ltr',title:state.path||downloadPath||'',
+    label:state.label,hint:state.hint,error:state.error||undefined,
+    containerProps:{'data-nexus-extract-path':'',lang:state.language,dir:state.dir,style:{minWidth:0}},
+    rightContent:React.createElement(Button$1,{type:'button',className:'download-settings-modal__change-path-button',theme:'outline',disabled:disabled||!enabled||state.pending||!!state.error&&!!window.__hydraNexusUI?.getConfig().extractPath?.error,'aria-busy':state.pending||undefined,onClick:()=>window.__nexusExtractControl.choose(downloadPath)},state.changeLabel)
+  });
+}
+function HydraNexusDownloadButton({__nexusButton,...props}){
+  const React=reactExports$1;
+  const subscribe=React.useCallback(listener=>{document.addEventListener('nexus-extract-path',listener);return()=>document.removeEventListener('nexus-extract-path',listener);},[]);
+  const snapshot=React.useCallback(()=>window.__nexusExtractControl?.snapshot||null,[]);
+  const state=React.useSyncExternalStore(subscribe,snapshot,snapshot);
+  return React.createElement(__nexusButton,{...props,disabled:props.disabled||!!state?.pending});
+}
 function installNativeNexusCommit(){
   window.__nexusNativeHost=true;
+  // Runs at the start of the patched entry, before native theme preferences mount.
+  // Only a boolean travels in the URL; paths and settings stay in the trusted bridge.
+  if(new URLSearchParams(window.location.search).get('nexusBackground')==='1'&&!document.getElementById('nexus-background-startup')){
+    document.documentElement.setAttribute('data-nexus-bg-pending','');
+    const style=document.createElement('style');style.id='nexus-background-startup';style.textContent=`
+      html[data-nexus-bg-pending] body{background:#101014!important}
+      html[data-nexus-bg-pending] body:before,html[data-nexus-bg-pending] body:after{background-image:none!important;visibility:hidden!important}
+      html[data-nexus-bg-pending] #root,html[data-nexus-bg-pending] #root>main,html[data-nexus-bg-pending] .container,html[data-nexus-bg-pending] .container__content,html[data-nexus-bg-pending] .settings__content{background-image:none!important;background-color:transparent!important}
+      html[data-nexus-bg-pending] #root:before,html[data-nexus-bg-pending] #root:after,html[data-nexus-bg-pending] .container:before,html[data-nexus-bg-pending] .container:after{background-image:none!important;background-color:transparent!important}
+    `;document.head.append(style);
+  }
   let scheduled=false;
   window.__nexusNativeCommit=()=>{if(scheduled)return;scheduled=true;queueMicrotask(()=>{scheduled=false;document.dispatchEvent(new Event('nexus-native-commit'));});};
 }
-if(typeof module!=='undefined')module.exports={HydraNexusInvisibleMenu,HydraNexusSettingsGroup,HydraNexusHost,HydraNexusReleaseNotes,HydraNexusUpdateDialog,installNativeNexusCommit};
+if(typeof module!=='undefined')module.exports={HydraNexusInvisibleMenu,HydraNexusSettingsGroup,HydraNexusHost,HydraNexusReleaseNotes,HydraNexusUpdateDialog,HydraNexusExtractPath,HydraNexusDownloadButton,installNativeNexusCommit};

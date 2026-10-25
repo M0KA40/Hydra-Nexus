@@ -32,6 +32,6 @@ const root=path.join(__dirname,'..');
   await show();await page.locator('.modal__close-button').click();await page.locator('[role=dialog]').waitFor({state:'detached'});assert.equal(await page.evaluate(()=>calls.at(-1).data.accepted),false);
   await show();await page.evaluate(()=>delayReply=true);await page.locator('.button--primary').click();assert.equal(await page.locator('.button--primary').isDisabled(),true);assert.equal(await page.locator('.button--outline').isDisabled(),true);assert.equal(await page.evaluate(()=>calls.at(-1).data.accepted),true);assert.equal(await page.evaluate(()=>calls.at(-1).data.id),'confirmation-42');
   await page.evaluate(()=>window.__nexusReceive({event:'updateConfirmation',value:null}));await page.locator('[role=dialog]').waitFor({state:'detached'});assert.deepEqual(errors,[]);
-  console.log('PASS: native React update dialog in eight languages, live RTL, initial Cancel focus, collapsed hash details, safe cancel/close and single disabled approval.');
+  console.log('PASS: native React update dialog in all supported languages, live RTL, initial Cancel focus, collapsed hash details, safe cancel/close and single disabled approval.');
  }finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

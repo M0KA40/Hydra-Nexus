@@ -13,7 +13,7 @@ const {catalogs,rendererScript}=require('../src/i18n.cjs'),root=path.join(__dirn
   await page.evaluate(()=>{
    installNativeNexusCommit();
    const nativeObserve=MutationObserver.prototype.observe;window.bodyObservers=0;MutationObserver.prototype.observe=function(target,options){if(target===document.body)bodyObservers++;return nativeObserve.call(this,target,options);};
-   window.config={version:'1.2.0',announcementUrl:'./assets/nexus-invisible-mode.png',plugins:{steam:true,backup:true,activity:true,tabs:true,mods:true,notes:true,hardware:false,lowResource:false,invisible:false},theme:{},privacy:{supported:true,requested:false,active:false,held:1},autoCheckUpdates:false};
+   window.config={version:'1.2.2',announcementUrl:'./assets/nexus-invisible-mode.png',extractPathAnnouncementUrl:'./assets/nexus-extract-path.png',plugins:{steam:true,backup:true,activity:true,tabs:true,mods:true,notes:true,hardware:false,lowResource:false,invisible:false},theme:{},privacy:{supported:true,requested:false,active:false,held:1},autoCheckUpdates:false};
    window.games=[{key:'steam:42',shop:'steam',objectId:'42',title:'Fixture',lifetimeMs:1}];window.calls=[];window.friendClicks=0;
    console.info=message=>{
     if(message.startsWith('__HYDRA_NEXUS__')){
@@ -85,7 +85,18 @@ const {catalogs,rendererScript}=require('../src/i18n.cjs'),root=path.join(__dirn
   await page.evaluate(()=>document.documentElement.lang='en');await page.waitForFunction(()=>window.__nexusReleaseControl.snapshot?.language==='en');
   if(process.env.HYDRA_NOTES_121_PREVIEW)await page.screenshot({path:process.env.HYDRA_NOTES_121_PREVIEW});
   await page.locator('[role=dialog] .button--primary').click();await page.locator('[role=dialog]').waitFor({state:'detached'});
+  await page.route('http://nexus.test/renderer/assets/nexus-extract-path.png',route=>route.fulfill({status:200,contentType:'image/png',body:fs.readFileSync(path.join(root,'assets/announcements/extract-path-1.2.2.png'))}));
+  const notes122=fs.readFileSync(path.join(root,'docs/releases/1.2.2.md'),'utf8').replace(/<!--[\s\S]*?-->/g,'').trim();
+  await page.evaluate(notes=>window.__nexusReceive({event:'releaseNotes',value:{id:'1.2.2:6',version:'1.2.2',notes}}),notes122);
+  await page.waitForFunction(()=>document.querySelector('[data-nexus-announcement] img')?.naturalWidth>0);
+  assert.equal(await announcement.getAttribute('src'),'./assets/nexus-extract-path.png');
+  const article122=await page.locator('[role=dialog] article').innerText();assert.match(article122,/^Hydra Nexus 1\.2\.2/);assert.match(article122,/Polski/);assert.match(article122,/Video background/);assert.ok(!article122.includes('![Extract path')&&!article122.includes('raw.githubusercontent'));
+  for(const language of Object.keys(catalogs)){await page.evaluate(l=>document.documentElement.lang=l,language);await page.waitForFunction(l=>window.__nexusReleaseControl.snapshot?.language===l,language);assert.equal(await page.evaluate(()=>window.__nexusReleaseControl.snapshot.announcement.title),catalogs[language]['Extract path (Hydra Nexus)']);assert.equal(await announcement.isVisible(),true);}
+  await page.evaluate(()=>document.documentElement.lang='en');await page.waitForFunction(()=>window.__nexusReleaseControl.snapshot?.language==='en');
+  if(process.env.HYDRA_NOTES_122_PREVIEW)await page.screenshot({path:process.env.HYDRA_NOTES_122_PREVIEW});
+  assert.deepEqual(errors,[]);
+  await page.locator('[role=dialog] .button--primary').click();await page.locator('[role=dialog]').waitFor({state:'detached'});
   if(process.env.HYDRA_NATIVE_UI_PREVIEW)await page.screenshot({path:process.env.HYDRA_NATIVE_UI_PREVIEW});
-  console.log('PASS: real Hydra React runtime; native settings and account controls; all eight languages; independent plugin/mode; complete hide/disable; distinct colored on/off icons; native commands; repeated mount/unmount; Steam/Notes/Mods/Backup native commits; zero body observers and no idle requests.');
+  console.log('PASS: real Hydra React runtime; native settings and account controls; all supported languages; independent plugin/mode; complete hide/disable; distinct colored on/off icons; native commands; repeated mount/unmount; Steam/Notes/Mods/Backup native commits; zero body observers and no idle requests.');
  }finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});
