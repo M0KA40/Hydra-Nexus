@@ -74,7 +74,7 @@ Hydra Nexus — расширение сообщества для Hydra Launcher 
 
 ## Custom backgrounds
 
-[![](../../assets/media/custom-background-preview.jpg)](../../assets/media/custom-background.mp4)
+https://github.com/user-attachments/assets/f69ff1b4-6250-43b1-a5d7-98ca3722d952
 
 Выберите локальное изображение или видео для фона. Настройте затемнение и размытие, приостанавливайте видео при неактивной Hydra и возвращайте фон темы кнопкой Reset. Воспроизведение зависит от кодека; рекомендуются H.264 MP4 или WebM.
 

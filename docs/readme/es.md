@@ -74,7 +74,7 @@ Abre varias páginas de juegos en pestañas de la misma ventana. Se conservan re
 
 ## Custom backgrounds
 
-[![](../../assets/media/custom-background-preview.jpg)](../../assets/media/custom-background.mp4)
+https://github.com/user-attachments/assets/f69ff1b4-6250-43b1-a5d7-98ca3722d952
 
 Elige una imagen o vídeo local como fondo. Ajusta oscuridad y desenfoque, pausa opcionalmente el vídeo cuando Hydra esté inactivo y restaura el fondo del tema con Reset. La reproducción depende del códec; se recomienda H.264 MP4 o WebM.
 

@@ -74,7 +74,7 @@ Ouvrez plusieurs pages de jeux dans la même fenêtre Hydra. Les résultats, fil
 
 ## Custom backgrounds
 
-[![](../../assets/media/custom-background-preview.jpg)](../../assets/media/custom-background.mp4)
+https://github.com/user-attachments/assets/f69ff1b4-6250-43b1-a5d7-98ca3722d952
 
 Choisissez une image ou une vidéo locale comme arrière-plan. Réglez l’assombrissement et le flou, suspendez éventuellement la vidéo lorsque Hydra est inactif, puis restaurez le fond du thème avec Reset. La lecture dépend du codec ; H.264 MP4 ou WebM est recommandé.
 

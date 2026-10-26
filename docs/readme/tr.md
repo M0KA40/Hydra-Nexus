@@ -74,7 +74,7 @@ Aynı Hydra penceresinde birden çok oyun sayfasını sekmelerde açın. Katalog
 
 ## Custom backgrounds
 
-[![](../../assets/media/custom-background-preview.jpg)](../../assets/media/custom-background.mp4)
+https://github.com/user-attachments/assets/f69ff1b4-6250-43b1-a5d7-98ca3722d952
 
 Arka plan olarak yerel resim veya video seçin. Karartma ve bulanıklığı ayarlayın; Hydra etkin değilken videoyu isteğe bağlı duraklatın ve Reset ile tema arka planına dönün. Oynatma kodeğe bağlıdır; H.264 MP4 veya WebM önerilir.
 

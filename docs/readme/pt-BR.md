@@ -74,7 +74,7 @@ Abra várias páginas de jogos em abas da mesma janela. Resultados, filtros e ro
 
 ## Custom backgrounds
 
-[![](../../assets/media/custom-background-preview.jpg)](../../assets/media/custom-background.mp4)
+https://github.com/user-attachments/assets/f69ff1b4-6250-43b1-a5d7-98ca3722d952
 
 Escolha uma imagem ou vídeo local como fundo. Ajuste escurecimento e desfoque, pause opcionalmente o vídeo com Hydra inativo e restaure o fundo do tema com Reset. A reprodução depende do codec; recomenda-se H.264 MP4 ou WebM.
 

@@ -74,7 +74,7 @@ Hydra Nexus إضافة مجتمعية لهايدرا لانشر على ويند�
 
 ## Custom backgrounds
 
-[![](../../assets/media/custom-background-preview.jpg)](../../assets/media/custom-background.mp4)
+https://github.com/user-attachments/assets/f69ff1b4-6250-43b1-a5d7-98ca3722d952
 
 اختر صورة أو فيديو محليًا كخلفية لهايدرا. اضبط التعتيم والتمويه، وأوقف الفيديو اختياريًا عند عدم نشاط هايدرا، وأعد خلفية الثيم بزر إعادة التعيين. تشغيل الفيديو يعتمد على الترميز؛ يوصى بـH.264 MP4 أو WebM.
 

@@ -74,7 +74,7 @@ Otwieraj wiele stron gier w kartach jednego okna. Wyniki katalogu, filtry i prze
 
 ## Custom backgrounds
 
-[![](../../assets/media/custom-background-preview.jpg)](../../assets/media/custom-background.mp4)
+https://github.com/user-attachments/assets/f69ff1b4-6250-43b1-a5d7-98ca3722d952
 
 Wybierz lokalny obraz lub film jako tło. Ustaw przyciemnienie i rozmycie, opcjonalnie wstrzymuj film przy nieaktywnym Hydra i przywróć tło motywu przez Reset. Odtwarzanie zależy od kodeka; zalecane H.264 MP4 lub WebM.
 
