@@ -14,38 +14,6 @@ concurrency:
   group: public-release
   cancel-in-progress: false
 jobs:
-  background-video:
-    if: github.event_name == 'push' && github.event.head_commit.message == 'Embed custom background video'
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Upload the existing background demonstration and embed its player
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: pwsh
-        run: |
-          $ErrorActionPreference = 'Stop'
-          $repositoryId = gh api "repos/$env:GITHUB_REPOSITORY" --jq '.id'
-          if ($LASTEXITCODE -ne 0) { throw 'Cannot read repository ID.' }
-          $headers = @{ Authorization = "Bearer $env:GH_TOKEN"; Accept = 'application/vnd.github+json' }
-          $endpoint = "https://uploads.github.com/user-attachments/assets?name=custom-background.mp4&content_type=video%2Fmp4&repository_id=$repositoryId"
-          $asset = Invoke-RestMethod -Method Post -Uri $endpoint -Headers $headers -ContentType 'application/octet-stream' -InFile 'assets/media/custom-background.mp4'
-          if ($asset.url -notmatch '^https://github\.com/user-attachments/assets/[a-fA-F0-9-]+$') { throw 'Unexpected attachment URL.' }
-          $files = @('README.md','docs/features.md') + @(Get-ChildItem 'docs/readme/*.md' | ForEach-Object { $_.FullName })
-          $pattern = '\[!\[\]\((?:\.\./)*assets/media/custom-background-preview\.jpg\)\]\((?:\.\./)*assets/media/custom-background\.mp4\)'
-          foreach ($file in $files) {
-            $text = [IO.File]::ReadAllText($file)
-            if (-not [regex]::IsMatch($text, $pattern)) { throw "Video placeholder missing: $file" }
-            [IO.File]::WriteAllText($file, [regex]::Replace($text, $pattern, $asset.url), [Text.UTF8Encoding]::new($false))
-          }
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -- README.md docs/features.md docs/readme
-          git commit -m 'Embed the custom background video player'
-          if ($LASTEXITCODE -ne 0) { throw 'Cannot commit video links.' }
-          git push origin HEAD:main
-          if ($LASTEXITCODE -ne 0) { throw 'Cannot publish video links.' }
-          Write-Output "Background video player: $($asset.url)"
   publish:
     if: (github.event_name == 'push' && github.event.head_commit.message == 'Release Hydra Nexus 2.0') || (github.event_name == 'workflow_dispatch' && github.event.inputs.confirm == 'publish')
     runs-on: windows-latest
@@ -71,12 +39,3 @@ jobs:
           if ($LASTEXITCODE -eq 0) { throw "Release v$version already exists; refusing to replace it." }
           gh release create "v$version" "dist/Hydra_Nexus.bat" "dist/Hydra-Nexus-$version-source.zip" "dist/SHA256SUMS.txt" "dist/Hydra-Nexus-$version-release-notes.json" --repo "$env:GITHUB_REPOSITORY" --target "$env:GITHUB_SHA" --title "Hydra Nexus 2.0" --notes-file "docs/releases/$version.md" --latest
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-      - name: Update repository description
-        continue-on-error: true
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: pwsh
-        run: |
-          gh api --method PATCH "repos/$env:GITHUB_REPOSITORY" -f description="Community extension for Hydra Launcher on Windows: game storage, backups, Steam launch settings, play activity, tabs, notes and custom backgrounds." --silent
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-
