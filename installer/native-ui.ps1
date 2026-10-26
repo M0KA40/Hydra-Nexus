@@ -34,7 +34,11 @@ function Add-NexusWindowHook([string]$Text){
     return $Text.Substring(0,$at)+'/* HYDRA_NEXUS_LOCAL_RENDERER_V2 */ if(globalThis.__HYDRA_NEXUS__ && !(is.dev && process.env["ELECTRON_RENDERER_URL"])){const nexusBackground=await globalThis.__NEXUS_BACKGROUND_STARTUP__?.();await window.loadFile(path.join(__dirname,"../renderer/index.html"),{hash,query:nexusBackground?{nexusBackground:"1"}:undefined});return;}'+$Text.Substring($at)
 }
 function Remove-NexusRendererHooks([string]$Text){
+    $Text=$Text.Replace('/* HYDRA_NEXUS_SETTINGS_DISCOVERY_V1 */ "data-nexus-settings-entry":path2==="/settings"?"":undefined,','')
+    $Text=$Text.Replace('/* HYDRA_NEXUS_TOOLS_DIALOG_V1 */ jsxRuntimeExports.jsx(HydraNexusToolsDialog, {}),','')
     $Text=[regex]::Replace($Text,'(?s)// === HYDRA_NEXUS_NATIVE_UI_START ===\r?\n.*?// === HYDRA_NEXUS_NATIVE_UI_END ===\r?\n','')
+    $Text=[regex]::Replace($Text,'(?s)/\* HYDRA_NEXUS_TAB_SCOPE_V1:([A-Za-z0-9+/=]+) \*/.*?/\* HYDRA_NEXUS_TAB_SCOPE_END \*/',[Text.RegularExpressions.MatchEvaluator]{param($m) return [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($m.Groups[1].Value))})
+    $Text=$Text.Replace('/* HYDRA_NEXUS_TABS_OUTLET_V1 */ HydraNexusTabsOutlet','Outlet')
     $Text=$Text.Replace('/* HYDRA_NEXUS_PRIVACY_MENU_V1 */ jsxRuntimeExports.jsx(HydraNexusInvisibleMenu, {}),','')
     $Text=$Text.Replace('/* HYDRA_NEXUS_RELEASE_NOTES_V1 */ jsxRuntimeExports.jsx(HydraNexusReleaseNotes, {}),','')
     $Text=$Text.Replace('/* HYDRA_NEXUS_UPDATE_DIALOG_V1 */ jsxRuntimeExports.jsx(HydraNexusUpdateDialog, {}),','')
@@ -46,16 +50,42 @@ function Remove-NexusRendererHooks([string]$Text){
     $Text=[regex]::Replace($Text,'/\* HYDRA_NEXUS_DOWNLOAD_BUTTON_TAG \*/ __nexusButton:(?:Button\$1|Button),','')
     return $Text
 }
+function Add-NexusTabPageScope([string]$Text,[string]$Name){
+    $start=$Text.IndexOf('function '+$Name+'(')
+    if($start -lt 0){throw ('Unsupported Hydra tab page: '+$Name+'. The archive was not replaced.')}
+    $end=[regex]::Match($Text.Substring($start),'\r?\n__name\('+[regex]::Escape($Name)+',')
+    if(!$end.Success){throw ('Unsupported Hydra tab page boundary: '+$Name+'. The archive was not replaced.')}
+    $original=$Text.Substring($start,$end.Index)
+    $next=$original.Replace('reactExports$1.useEffect(', 'HydraNexusPageEffect(').Replace('reactExports$1.useLayoutEffect(', 'HydraNexusPageLayoutEffect(')
+    $next=[regex]::Replace($next,'(?<![\w$])(?:globalThis\.)?window\.', 'HydraNexusPageWindow.')
+    $next=$next.Replace('globalThis.electron.', 'HydraNexusPageElectron.')
+    $next=[regex]::Replace($next,'(?<![\w$.])document\.', 'HydraNexusPageDocument.')
+    $next=[regex]::Replace($next,'(?<![\w$.])(?:globalThis\.)?(setTimeout|setInterval|clearTimeout|clearInterval|requestAnimationFrame|cancelAnimationFrame)\(', 'HydraNexusPageWindow.$1(')
+    $next=[regex]::Replace($next,'\bnew (IntersectionObserver|ResizeObserver|MutationObserver)\(', 'new HydraNexusPageObservers.$1(')
+    if($Name -ceq 'Catalogue$1'){$next=$next.Replace('debounce$5(', 'HydraNexusPageDebounce(')}
+    if($Name -ceq 'Modal$1'){$next=$next.Replace('reactDomExports.createPortal(', 'HydraNexusPagePortal(')}
+    if($next -ceq $original){return $Text}
+    $marker='/* HYDRA_NEXUS_TAB_SCOPE_V1:'+ [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($original))+' */'
+    return $Text.Substring(0,$start)+$marker+$next+'/* HYDRA_NEXUS_TAB_SCOPE_END */'+$Text.Substring($start+$original.Length)
+}
 function Add-NexusRendererHooks([string]$Text){
     $clean=Remove-NexusRendererHooks $Text
+    $entry='onClick: /* @__PURE__ */ __name(() => handleSidebarItemClick(path2), "onClick"),';if($clean.Contains($entry)){$clean=$clean.Replace($entry,'/* HYDRA_NEXUS_SETTINGS_DISCOVERY_V1 */ "data-nexus-settings-entry":path2==="/settings"?"":undefined,'+$entry)}
     if($clean -notmatch '\bhandleFriendsClick\b' -or $clean -notmatch 'sidebar-profile__dropdown-item'){throw 'Unsupported Hydra native interface. The archive was not replaced.'}
     $separator='jsxRuntimeExports\.jsx\("div", \{ className: "sidebar-profile__dropdown-separator" \}\)'
     if([regex]::Matches($clean,$separator).Count -ne 1){throw 'Unsupported Hydra account menu. The archive was not replaced.'}
     $result=[regex]::Replace($clean,$separator,'/* HYDRA_NEXUS_PRIVACY_MENU_V1 */ jsxRuntimeExports.jsx(HydraNexusInvisibleMenu, {}),$0')
+    if($clean.Contains('function App$1(')){
+        foreach($required in @('function useOutlet(', 'const LocationContext =', 'var ReactReduxContext =', 'const store =')){if(!$clean.Contains($required)){throw 'Unsupported Hydra tab routing. The archive was not replaced.'}}
+        $outlet='(className: "container__content",\s*children: /\* @__PURE__ \*/ jsxRuntimeExports\.jsx\()Outlet(, \{\})'
+        if([regex]::Matches($result,$outlet).Count -ne 1){throw 'Unsupported Hydra page outlet. The archive was not replaced.'}
+        $result=[regex]::Replace($result,$outlet,'$1/* HYDRA_NEXUS_TABS_OUTLET_V1 */ HydraNexusTabsOutlet$2')
+        foreach($name in @('Catalogue$1','GameDetails','GameDetailsContent','GameDetailsContextProvider','useCatalogue','useLaunchboxFilters','useReviewPrompt','useUserReviewStatus','Hero$1','HeroPanelActions','HeroPanelPlaytime','Modal$1')){$result=Add-NexusTabPageScope $result $name}
+    }
     $root='jsxRuntimeExports.jsx(BottomPanel, {})'
     if([regex]::Matches($result,[regex]::Escape($root)).Count -ne 1){throw 'Unsupported Hydra main interface. The archive was not replaced.'}
-    $result=$result.Replace($root,'/* HYDRA_NEXUS_RELEASE_NOTES_V1 */ jsxRuntimeExports.jsx(HydraNexusReleaseNotes, {}),/* HYDRA_NEXUS_UPDATE_DIALOG_V1 */ jsxRuntimeExports.jsx(HydraNexusUpdateDialog, {}),'+$root)
-    $hosts='(jsxRuntimeExports\.(?:jsx|jsxs)\()("(?:aside|div|ul|section)")(,\s*\{\s*)(className:\s*"(?:settings__sidebar|settings__panel|sidebar__menu|hero-panel__actions|hero-panel__content|game-details__hero|game-options-modal__container|game-options-modal__panel|game-options-modal__content|context-menu__list|catalogue-results-page|catalogue-grid|library__content)")'
+    $result=$result.Replace($root,'/* HYDRA_NEXUS_RELEASE_NOTES_V1 */ jsxRuntimeExports.jsx(HydraNexusReleaseNotes, {}),/* HYDRA_NEXUS_UPDATE_DIALOG_V1 */ jsxRuntimeExports.jsx(HydraNexusUpdateDialog, {}),/* HYDRA_NEXUS_TOOLS_DIALOG_V1 */ jsxRuntimeExports.jsx(HydraNexusToolsDialog, {}),'+$root)
+    $hosts='(jsxRuntimeExports\.(?:jsx|jsxs)\()("(?:aside|div|ul|section)")(,\s*\{\s*)(className:\s*"(?:settings__sidebar|settings__panel|sidebar__menu|hero-panel__actions|hero-panel__content|game-details__hero|game-options-modal__container|game-options-modal__panel|game-options-modal__content|context-menu__list|catalogue-results-page|catalogue-grid|library__content|downloads__container|download-group__hero-buttons|download-group__hero-buttons)")'
     $matches=[regex]::Matches($result,$hosts)
     if($matches.Count -lt 5 -or $result -notmatch 'className: "settings__sidebar"'){throw 'Unsupported Hydra native interface hosts. The archive was not replaced.'}
     $result=[regex]::Replace($result,$hosts,[Text.RegularExpressions.MatchEvaluator]{param($m)
@@ -88,9 +118,46 @@ function Add-NexusRendererHooks([string]$Text){
     $source=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('__NEXUS_NATIVE_UI_BASE64__'))
     return "// === HYDRA_NEXUS_NATIVE_UI_START ===`n"+$source+"`ninstallNativeNexusCommit();`n// === HYDRA_NEXUS_NATIVE_UI_END ===`n"+$result
 }
+function Remove-NexusMediaCSP([string]$Text){
+    return [regex]::Replace($Text,'<!-- HYDRA_NEXUS_MEDIA_CSP_V1:([A-Za-z0-9+/=]+) --><meta\b[^>]*>',[Text.RegularExpressions.MatchEvaluator]{param($m)
+        return [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($m.Groups[1].Value))
+    },[Text.RegularExpressions.RegexOptions]::IgnoreCase)
+}
+function Add-NexusMediaCSP([string]$Text){
+    $clean=Remove-NexusMediaCSP $Text
+    $pattern='<meta\b(?=[^>]*\bhttp-equiv=["'']Content-Security-Policy["''])[^>]*>'
+    $matches=[regex]::Matches($clean,$pattern,[Text.RegularExpressions.RegexOptions]::IgnoreCase)
+    if($matches.Count -ne 1){throw 'Unsupported Hydra media policy. The archive was not replaced.'}
+    $meta=$matches[0]
+    $attribute=[regex]::Match($meta.Value,'\bcontent=(["''])(.*?)\1',[Text.RegularExpressions.RegexOptions]::IgnoreCase)
+    if(!$attribute.Success){throw 'Unsupported Hydra media policy. The archive was not replaced.'}
+    $policy=$attribute.Groups[2].Value
+    $media=[regex]::Match($policy,'(?:^|;)\s*media-src\s+([^;]*)',[Text.RegularExpressions.RegexOptions]::IgnoreCase)
+    if($media.Success){
+        $values=$media.Groups[1].Value
+        if(($values -split '\s+') -contains 'nexus-media:'){return $clean}
+        $next=$values.Replace("'none'",'').Trim()+' nexus-media:'
+        $policy=$policy.Substring(0,$media.Groups[1].Index)+$next+$policy.Substring($media.Groups[1].Index+$media.Groups[1].Length)
+    }else{
+        $default=[regex]::Match($policy,'(?:^|;)\s*default-src\s+([^;]*)',[Text.RegularExpressions.RegexOptions]::IgnoreCase)
+        if(!$default.Success){throw 'Unsupported Hydra media policy. The archive was not replaced.'}
+        $policy=$policy.TrimEnd().TrimEnd(';')+'; media-src '+$default.Groups[1].Value.Replace("'none'",'').Trim()+' nexus-media:;'
+    }
+    $at=$attribute.Groups[2].Index
+    $patched=$meta.Value.Substring(0,$at)+$policy+$meta.Value.Substring($at+$attribute.Groups[2].Length)
+    $marker='<!-- HYDRA_NEXUS_MEDIA_CSP_V1:'+ [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($meta.Value))+' -->'
+    return $clean.Substring(0,$meta.Index)+$marker+$patched+$clean.Substring($meta.Index+$meta.Length)
+}
 function Get-NexusRendererEdits($State,[string]$Archive,[string]$Operation){
     $found=0
     foreach($folder in @('out','dist')){
+        $html=$State.Header.files.$folder.files.renderer.files.'index.html'
+        if($html){
+            if($html.unpacked -or $html.link){throw 'Unsupported Hydra renderer HTML. The archive was not replaced.'}
+            $text=[Text.Encoding]::UTF8.GetString([HydraSuiteAsar]::ReadFile($Archive,$State.Offset,[long]$html.offset,[int]$html.size))
+            $next=if($Operation -eq 'Install'){Add-NexusMediaCSP $text}else{Remove-NexusMediaCSP $text}
+            if($next -cne $text){[pscustomobject]@{Folder=$folder;Name='index.html';Root=$true;Node=$html;Bytes=$utf8.GetBytes($next)}}
+        }
         $assets=$State.Header.files.$folder.files.renderer.files.assets
         if(!$assets){continue}
         foreach($property in $assets.files.PSObject.Properties){
@@ -104,7 +171,11 @@ function Get-NexusRendererEdits($State,[string]$Archive,[string]$Operation){
             $next=if($Operation -eq 'Install'){Add-NexusRendererHooks $clean}else{$clean}
             if($next -cne $text){[pscustomobject]@{Folder=$folder;Name=$property.Name;Node=$node;Bytes=$utf8.GetBytes($next)}}
         }
-        foreach($asset in @(@{Name='nexus-invisible-mode.png';Data='__NEXUS_ANNOUNCEMENT_BASE64__'},@{Name='nexus-extract-path.png';Data='__NEXUS_EXTRACT_ANNOUNCEMENT_BASE64__'})){
+        foreach($obsoleteGuide in @('nexus-guide-steam-location.webp','nexus-guide-steam-modes.webp','nexus-invisible-mode.png','nexus-extract-path.png')){$assets.files.PSObject.Properties.Remove($obsoleteGuide)}
+        $guideAssets=@(
+            # __NEXUS_PLUGIN_GUIDE_ASSETS__
+        )
+        foreach($asset in $guideAssets){
         $assetName=$asset.Name
         if($Operation -eq 'Install'){
             $node=$assets.files.$assetName
@@ -121,7 +192,7 @@ function Get-NexusRendererEdits($State,[string]$Archive,[string]$Operation){
 }
 function Assert-NexusRendererEdits($State,[string]$Archive,$Edits){
     foreach($edit in $Edits){
-        $node=$State.Header.files.($edit.Folder).files.renderer.files.assets.files.($edit.Name)
+        $node=if($edit.Root){$State.Header.files.($edit.Folder).files.renderer.files.($edit.Name)}else{$State.Header.files.($edit.Folder).files.renderer.files.assets.files.($edit.Name)}
         $bytes=[HydraSuiteAsar]::ReadFile($Archive,$State.Offset,[long]$node.offset,[int]$node.size)
         if((Get-Integrity $bytes).hash -ne (Get-Integrity $edit.Bytes).hash){throw 'Native interface verification failed. The original archive was not replaced.'}
     }

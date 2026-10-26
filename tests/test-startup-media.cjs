@@ -22,7 +22,7 @@ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),asse
   let selected;const startup=context.global.__NEXUS_BACKGROUND_STARTUP__().then(value=>selected=value);await Promise.resolve();assert.equal(selected,undefined);finishTheme();await startup;assert.equal(selected,true);
   for(let i=0;i<100&&!messages.some(x=>x.event==='releaseNotes');i++)await new Promise(r=>setTimeout(r,10));
   assert.ok(messages.some(x=>x.event==='releaseNotes'));assert.equal(registered,true,'media is ready while history/Notes initialization is still blocked');
-  assert.equal(bootstrap.config.announcementUrl,'./assets/nexus-invisible-mode.png','announcement uses the native self origin allowed by Hydra CSP');
+  assert.equal(bootstrap.config.announcementUrl,'./assets/nexus-guide-invisible.webp','announcement uses the native self origin allowed by Hydra CSP');
   assert.equal(bootstrap.config.theme.background.file,'fixture.webm','saved background arrives before history initializes');
   assert.deepEqual(bootstrap.windowState,{focused:false,visible:false});
   nativeState.visible=true;nativeState.minimized=false;nativeState.focused=true;win.emit('focus');assert.deepEqual(messages.at(-1),{event:'windowState',value:{focused:true,visible:true}});
@@ -30,8 +30,8 @@ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),asse
   nativeState.minimized=false;nativeState.focused=false;win.emit('restore');assert.deepEqual(messages.at(-1).value,{focused:false,visible:true});
   nativeState.visible=false;win.emit('hide');assert.equal(messages.at(-1).value.visible,false);
   win.emit('closed');for(const event of ['focus','blur','minimize','restore','show','hide'])assert.equal(win.listenerCount(event),0,'window lifecycle listeners are removed on close');
-  const asset=path.join(directory,'out/renderer/assets/nexus-invisible-mode.png');fs.mkdirSync(path.dirname(asset),{recursive:true});fs.writeFileSync(asset,'fixture');
-  assert.match((await handler({url:'nexus-media://brand/invisible-mode.png'})).url,/nexus-invisible-mode\.png$/);
+  const asset=path.join(directory,'out/renderer/assets/nexus-guide-invisible.webp');fs.mkdirSync(path.dirname(asset),{recursive:true});fs.writeFileSync(asset,'fixture');
+  assert.match((await handler({url:'nexus-media://brand/invisible-mode.png'})).url,/nexus-guide-invisible\.webp$/);
   assert.equal((await handler({url:'nexus-media://brand/unknown.png'})).status,404);
  }finally{finishTheme();finishInit();}
  console.log('PASS: announcement media is registered before notes arrive during delayed startup; fixed asset and unknown-path rejection; native window playback state at startup and focus/minimize/restore/hide events with close cleanup.');

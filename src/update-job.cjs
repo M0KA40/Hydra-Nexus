@@ -16,6 +16,8 @@ function createUpdateJobs({folder,app,shutdown,startupTimeoutMs=45000}){
     }
     return state;
   }
+  function alive(state){if(!Number.isInteger(state?.workerPid)||state.workerPid<=0)return false;try{process.kill(state.workerPid,0);return true;}catch{return false;}}
+  async function assertWorker(job,phase){const state=await readState(job);if(state?.phase!==phase||!alive(state))throw Error('The update helper stopped before restart. Hydra was kept open.');}
   async function run(staged){
     const prior=await status();if(prior&&!terminal.has(prior.phase))throw Error('An update operation is already running');
     const id=crypto.randomBytes(16).toString('hex'),token=crypto.randomBytes(32).toString('hex'),dir=path.join(folder,'job-'+id);
@@ -49,10 +51,22 @@ function createUpdateJobs({folder,app,shutdown,startupTimeoutMs=45000}){
       // Recheck the actual payload after potentially slow Notes/native saves.
       if(crypto.createHash('sha256').update(await fsp.readFile(staged.file)).digest('hex')!==staged.sha256)throw Error('The staged updater changed. Choose it again.');
       if((await readState(active))?.phase!=='ready')throw Error('The update helper stopped before restart. Hydra was kept open.');
-      await prepared.commit(async signal=>{if(signal?.aborted)throw Error('Saving before the update did not finish. Hydra was kept open.');await atomicText(path.join(dir,'approved'),token);if(signal?.aborted){await fsp.rm(path.join(dir,'approved'),{force:true});throw Error('Saving before the update did not finish. Hydra was kept open.');}},async()=>{await fsp.rm(path.join(dir,'approved'),{force:true});await atomicText(path.join(dir,'cancel'),token);});committed=true;
+      await prepared.commit(async signal=>{
+        if(signal?.aborted)throw Error('Saving before the update did not finish. Hydra was kept open.');
+        await assertWorker(active,'ready');await atomicText(path.join(dir,'approved'),token);
+        const deadline=Date.now()+5000;
+        while(true){
+          if(signal?.aborted)throw Error('Saving before the update did not finish. Hydra was kept open.');
+          const state=await readState(active);
+          if(!alive(state)||!['ready','waiting'].includes(state?.phase))throw Error('The update helper stopped before restart. Hydra was kept open.');
+          if(state.phase==='waiting')break;
+          if(Date.now()>=deadline)throw Error('The update helper stopped before restart. Hydra was kept open.');
+          await pause(50);
+        }
+      },async()=>{await fsp.rm(path.join(dir,'approved'),{force:true});await atomicText(path.join(dir,'cancel'),token);},()=>assertWorker(active,'waiting'));committed=true;
       return {current:null,busy:true,installation:'Waiting for Hydra to exit normally. Do not reopen it manually.'};
     }catch(error){
-      shutdown?.cancel?.();
+      await shutdown?.cancel?.();
       await atomicText(path.join(dir,'cancel'),token);
       await atomicText(path.join(folder,'installation-status.txt'),'Update needs attention: '+error.message);
       throw error;

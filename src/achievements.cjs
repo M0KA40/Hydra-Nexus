@@ -1,6 +1,6 @@
 'use strict';
 const fs=require('node:fs'),path=require('node:path');
-const {atomicJson,keyOf}=require('./core.cjs');
+const {atomicJson,keyOf,validateGameMetadata}=require('./core.cjs');
 const copy=x=>JSON.parse(JSON.stringify(x));
 function mergeAchievements(base,extra){
   if(!extra)return base;if(!base)return extra;
@@ -14,10 +14,11 @@ function mergeAchievements(base,extra){
   return {...extra,...base,achievements:[...definitions.values()],unlockedAchievements:[...unlocks.values()]};
 }
 function createAchievementAdapter({stateDir,getBinding,invoke,running}){
-  const restoredFile=path.join(stateDir,'restored-achievements.json');let restored={};
-  try{restored=JSON.parse(fs.readFileSync(restoredFile,'utf8'));}catch(e){if(e.code!=='ENOENT')throw Error('Restored achievement data is damaged; the file was preserved.');}
+  const restoredFile=path.join(stateDir,'restored-achievements.json');let restored={},error=null;
+  try{if(fs.statSync(restoredFile).size>32*1024*1024)throw Error();restored=JSON.parse(fs.readFileSync(restoredFile,'utf8'));if(!restored||Array.isArray(restored)||typeof restored!=='object'||Object.entries(restored).some(([key,value])=>!/^[-\w]+:[-\w.]+$/.test(key)||!value||!Array.isArray(value.achievements)||!Array.isArray(value.unlockedAchievements)))throw Error();}catch(e){if(e.code!=='ENOENT'){restored={};error=Error('Restored achievement data is damaged; the file was preserved.');}}
   let replaceMemory;
   function bind(binding){
+    if(error)return;
     const memory=binding.memory;if(!memory||memory.__hbkWrapped)return;
     replaceMemory=memory.set.bind(memory);
     memory.set=(shop,id,value)=>replaceMemory(shop,id,mergeAchievements(value,restored[shop+':'+id]));
@@ -31,6 +32,7 @@ function createAchievementAdapter({stateDir,getBinding,invoke,running}){
     async running(){return getBinding().running?getBinding().running():running();},
     async achievementFiles(g){return getBinding().collect?getBinding().collect(g,{includeSteamCache:true,awaitGameDirectoryLocations:true}):[];},
     async exportGame(g){
+      if(error)throw error;
       const b=getBinding(),key=keyOf(g);let achievementData=mergeAchievements(b.memory?.get(g.shop,g.objectId),restored[key])||null;
       if(!achievementData&&b.db){try{achievementData=await b.db.sublevel('gameAchievements',{valueEncoding:'json'}).get(key);}catch(e){if(!['LEVEL_NOT_FOUND','LEVEL_DATABASE_NOT_OPEN'].includes(e.code))throw e;}}
       if(b.parse){
@@ -40,20 +42,21 @@ function createAchievementAdapter({stateDir,getBinding,invoke,running}){
       }
       return copy({game:{title:g.title,shop:g.shop,objectId:g.objectId,playTimeInMilliseconds:g.playTimeInMilliseconds,lastTimePlayed:g.lastTimePlayed,achievementCount:g.achievementCount,unlockedAchievementCount:g.unlockedAchievementCount},achievementData});
     },
-    async importGame(g,data){
+    async importGame(g,data,{restoreExact=false}={}){
+      if(error)throw error;validateGameMetadata(data?.game||{});
       const b=getBinding(),key=keyOf(g);if(!b.games?.put)throw Error('This Hydra build needs an updated database adapter for metadata restore. Your backups remain readable.');
       const existing=await b.games.get(key).catch(e=>{if(e.code==='LEVEL_NOT_FOUND')return null;throw e;});
       const source=data?.game||{},allowed={};for(const name of ['playTimeInMilliseconds','lastTimePlayed','achievementCount','unlockedAchievementCount'])if(source[name]!==undefined)allowed[name]=source[name];
-      await b.games.put(key,{...(existing||{title:g.title,shop:g.shop,objectId:g.objectId,isDeleted:false}),...allowed});
+      const nextGame={...(existing||{title:g.title,shop:g.shop,objectId:g.objectId,isDeleted:false})};if(restoreExact)for(const name of ['playTimeInMilliseconds','lastTimePlayed','achievementCount','unlockedAchievementCount'])delete nextGame[name];await b.games.put(key,{...nextGame,...allowed});
       if(data?.achievementData){
-        restored[key]=copy(data.achievementData);await atomicJson(restoredFile,restored);
+        const next={...restored,[key]:copy(data.achievementData)};await atomicJson(restoredFile,next);restored=next;
         if(b.memory)(replaceMemory||b.memory.set.bind(b.memory))(g.shop,g.objectId,copy(data.achievementData));
         else if(b.db)await b.db.sublevel('gameAchievements',{valueEncoding:'json'}).put(key,data.achievementData);
       }else{
-        delete restored[key];await atomicJson(restoredFile,restored);b.memory?.delete?.(g.shop,g.objectId);
+        const next={...restored};delete next[key];await atomicJson(restoredFile,next);restored=next;b.memory?.delete?.(g.shop,g.objectId);
         if(!b.memory&&b.db)await b.db.sublevel('gameAchievements',{valueEncoding:'json'}).del(key);
       }
     }
-  };return {adapter,bind};
+  };return {adapter,bind,get error(){return error;}};
 }
 module.exports={mergeAchievements,createAchievementAdapter};

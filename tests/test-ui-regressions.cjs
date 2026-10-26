@@ -4,7 +4,7 @@ const root=path.join(__dirname,'..','src');
 const nexus=fs.readFileSync(path.join(root,'nexus-ui.js'),'utf8');
 const workspace=fs.readFileSync(path.join(root,'workspace-ui.js'),'utf8');
 const checks=[
-  ['settings form drafts are captured',/function captureForm\(\)\{\s*if\(!section\)return;[\s\S]*?formDrafts\[el\.id\]=el\.value/],
+  ['settings form drafts are captured',/function captureForm\(\)\{\s*capturePlugin\(\);\s*if\(!section\)return;[\s\S]*?formDrafts\[el\.id\]=el\.value/],
   ['expanded settings sections survive rerenders',/formDrafts\.details\[section\.dataset\.nexusSection\]=\[\.\.\.section\.querySelectorAll\('details'\)\]\.map\(el=>el\.open\)/],
   ['settings drafts are restored after rerender',/Object\.hasOwn\(formDrafts,el\.id\)\)el\.value=formDrafts\[el\.id\]/],
   ['the updater retries an update request after an unrelated action',/function continueInstall\(\)\{if\(pendingInstall&&!busy&&section&&selected==='updater'\)\{pendingInstall=false;act\('installUpdate'\);}}/],

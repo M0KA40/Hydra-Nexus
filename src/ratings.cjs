@@ -19,6 +19,7 @@ const cpuReference={
  'AMD Ryzen 7 7800X3D':[34287,3761], 'Intel Core i9-9900K':[18021,2908], 'Intel Core i9-13900K':[58048,4595], 'Intel Core i9-14900K':[58183,4690]
 };
 function createRatings({directory,fetchText}){const file=path.join(directory,'hardware-ratings.json'),inflight=new Map();let cache={};try{const st=fs.statSync(file);if(st.size<2*1024*1024)cache=JSON.parse(fs.readFileSync(file,'utf8'));}catch{}
+ if(!cache||Array.isArray(cache)||typeof cache!=='object')cache={};
  let persist=Promise.resolve();
  async function lookup(raw,kind){const name=canonical(raw,kind);if(!name)return null;const id=kind+':'+key(name),saved=cache[id];if(saved&&Date.now()-Number(saved.when)<30*86400000&&saved.rating===null)return null;if(saved&&Date.now()-Number(saved.when)<30*86400000&&saved.rating&&key(canonical(saved.rating.name,kind))===key(name)&&Number.isFinite(saved.rating.score)&&saved.rating.score>0&&saved.rating.score<2000000&&Number.isFinite(saved.rating.single)&&saved.rating.single>0&&saved.rating.single<100000&&typeof saved.rating.source==='string'&&saved.rating.source.startsWith('https://www.cpubenchmark.net/'))return saved.rating;
    if(kind==='cpu'){const hit=Object.entries(cpuReference).find(([n])=>key(n)===key(name));if(hit)return {name:hit[0],score:hit[1][0],single:hit[1][1],source:'https://www.cpubenchmark.net/cpu.php?cpu='+encodeURIComponent(hit[0]),asOf:'2026-10-21',reference:true};}

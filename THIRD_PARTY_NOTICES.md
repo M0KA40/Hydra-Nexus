@@ -39,3 +39,13 @@ The supplied Hydra Nexus brand assets identify this project. External product na
 ## Hardware reference facts
 
 The small dated hardware reference set contains individual published benchmark values with source links to CPU Benchmark and Video Card Benchmark. It is not a bundled benchmark database.
+
+## Game Tabs guide artwork
+
+The bundled Tabs guide combines an owner-supplied Hydra interface capture with original Steam library artwork for Red Dead Redemption 2 (Steam app 1174180), Grand Theft Auto V (271590), and ELDEN RING (1245620). Game artwork, titles and marks belong to their respective publishers and rights holders; the project's MIT code license does not apply to them. The artwork illustrates opening the corresponding game pages. No affiliation or endorsement is claimed.
+
+Source store pages: https://store.steampowered.com/app/1174180/ , https://store.steampowered.com/app/271590/ , https://store.steampowered.com/app/1245620/ .
+
+## Feature illustrations and repository covers
+
+Illustrations combine Hydra interface captures, project diagrams and original publisher game artwork. The Hollow Knight artwork belongs to Team Cherry; other game artwork and marks belong to their respective publishers. These images illustrate the tools and are not covered by the project code license. No publisher affiliation is claimed.

@@ -33,14 +33,29 @@ function HydraNexusSettingsGroup(){
       key:name,type:'button',className:'settings__sidebar-button'+(state?.selected===name?' settings__sidebar-button--active':''),
       'data-nexus-tab':name,onClick:()=>window.__hydraNexusUI?.openSection(name)
     },React.createElement('span',{className:'settings__sidebar-button-icon','aria-hidden':true,dangerouslySetInnerHTML:{__html:state?.icons?.[name]||''}}),
-    React.createElement('span',{className:'settings__sidebar-button-label'},labels[index]))));
+    React.createElement('span',{className:'settings__sidebar-button-label'},labels[index]),name==='plugins'&&state?.hasNewPlugins?React.createElement('span',{className:'nexus-discovery-dot',role:'img','aria-label':state.newLabel}):null)));
 }
+function HydraNexusActivityLink(){
+  const React=reactExports$1;
+  const subscribe=React.useCallback(listener=>{document.addEventListener('nexus-config',listener);document.addEventListener('nexus-language',listener);return()=>{document.removeEventListener('nexus-config',listener);document.removeEventListener('nexus-language',listener);};},[]);
+  const snapshot=React.useCallback(()=>window.__nexusReplay&&window.__hydraNexusUI?.getConfig().plugins.activity&&window.__hydraNexusUI?.getConfig().activityRecaps!==false?(window.__nexusI18n?.language||'en'):'',[]);
+  const language=React.useSyncExternalStore(subscribe,snapshot,snapshot);if(!language)return null;
+  const label=window.__nexusI18n?.t('Play activity')||'Play activity';
+  return React.createElement('li',{id:'nexus-replay-link',className:'sidebar__menu-item'},React.createElement('button',{className:'sidebar__menu-item-button',type:'button',onClick:()=>window.__nexusReplay.open(),style:{display:'flex',alignItems:'center',gap:12,width:'100%'}},React.createElement('svg',{width:20,height:20,viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:1.5,'aria-hidden':true},React.createElement('path',{d:'M4 20V4m0 16h16M8 16v-4m5 4V7m5 9v-6'})),React.createElement('span',null,label)));
+}
+function useHydraNexusTools(){const React=reactExports$1;return React.useSyncExternalStore(React.useCallback(listener=>{document.addEventListener('nexus-tools',listener);return()=>document.removeEventListener('nexus-tools',listener);},[]),React.useCallback(()=>window.__nexusToolsControl?.snapshot||null,[]));}
+function HydraNexusStorageLink(){const state=useHydraNexusTools(),React=reactExports$1;if(!state?.storageEnabled)return null;return React.createElement('button',{type:'button',className:'settings__sidebar-button','data-nexus-storage-entry':'',onClick:()=>window.__nexusTools.open('storage'),lang:state.language,dir:state.dir},React.createElement('span',{className:'settings__sidebar-button-icon','aria-hidden':true},React.createElement('svg',{width:16,height:16,viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:1.6},React.createElement('path',{d:'M4 4h16v16H4zM4 14h16M8 17h.01M12 17h.01'}))),React.createElement('span',{className:'settings__sidebar-button-label'},window.__nexusI18n?.t('Game Storage Manager')||'Game Storage Manager'));}
+function HydraNexusDownloadActions(){const state=useHydraNexusTools(),React=reactExports$1;if(!state?.finishEnabled)return null;const tr=key=>window.__nexusI18n?.t(key)||key;return React.createElement('div',{className:'nexus-download-tools',lang:state.language,dir:state.dir},state.armed&&React.createElement('small',null,tr('Action armed')),React.createElement(Button$1,{theme:'outline',className:'download-group__glass-btn',type:'button','data-nexus-finish-entry':'',onClick:()=>window.__nexusTools.open('finish')},tr('Download Finish Actions')));}
+function HydraNexusToolsDialog(){const state=useHydraNexusTools(),React=reactExports$1,body=React.useRef(null);React.useLayoutEffect(()=>{if(body.current)window.__nexusTools?.afterRender(body.current);},[state]);React.useEffect(()=>{if(state?.countdown)body.current?.querySelector('[data-tool=cancelFinish]')?.focus();},[state?.countdown]);const tools=state?.page?React.createElement(Modal$1,{visible:true,title:state.title,large:state.page==='storage',onCloseStart:()=>window.__nexusTools.prepareClose(),onClose:()=>window.__nexusTools.close(),className:'nexus-tools-dialog nexus-tools-'+state.page},React.createElement('div',{ref:body,className:'nexus-tools-body',lang:state.language,dir:state.dir,onClick:event=>window.__nexusTools.click(event),dangerouslySetInnerHTML:{__html:state.html}})):null;return React.createElement(React.Fragment,null,tools,React.createElement(HydraNexusPluginDialog),React.createElement(HydraNexusBackupProfileDialog));}
+function HydraNexusPluginDialog(){const React=reactExports$1,body=React.useRef(null);const state=React.useSyncExternalStore(React.useCallback(listener=>{document.addEventListener('nexus-plugin-dialog',listener);return()=>document.removeEventListener('nexus-plugin-dialog',listener);},[]),React.useCallback(()=>window.__nexusPluginControl?.snapshot||null,[]));React.useLayoutEffect(()=>{if(body.current)window.__nexusPluginDialog?.afterRender(body.current);},[state]);if(!state)return null;return React.createElement(Modal$1,{visible:true,title:state.title,large:true,onClose:()=>window.__nexusPluginDialog?.close(),className:'nexus-plugin-dialog'},React.createElement('div',{ref:body,className:'nexus-plugin-body nexus-section',lang:state.language,dir:state.dir,dangerouslySetInnerHTML:{__html:state.html}}));}
+function HydraNexusBackupProfileDialog(){const React=reactExports$1,body=React.useRef(null);const state=React.useSyncExternalStore(React.useCallback(listener=>{document.addEventListener('nexus-backup-profile',listener);return()=>document.removeEventListener('nexus-backup-profile',listener);},[]),React.useCallback(()=>window.__hbkProfileControl?.snapshot||null,[]));React.useLayoutEffect(()=>{if(body.current)window.__hbkProfile?.afterRender(body.current);},[state]);if(!state)return null;return React.createElement(Modal$1,{visible:true,title:state.title,large:true,onClose:()=>window.__hbkProfile?.close(),className:'nexus-backup-profile'},React.createElement('div',{id:'hbk-profile-body',ref:body,lang:state.language,dir:state.dir,dangerouslySetInnerHTML:{__html:state.html}}));}
 function HydraNexusHost(props){
   const React=reactExports$1,{__nexusTag,children,...nativeProps}=props;
   React.useLayoutEffect(()=>{window.__nexusNativeCommit();});
-  return nativeProps.className==='settings__sidebar'
-    ?React.createElement(__nexusTag,nativeProps,children,React.createElement(HydraNexusSettingsGroup,{key:'hydra-nexus'}))
-    :React.createElement(__nexusTag,nativeProps,children);
+  if(nativeProps.className==='settings__sidebar'){const items=[];let inserted=false;React.Children.forEach(children,child=>{items.push(child);if(child?.key==='big_picture'){items.push(React.createElement(HydraNexusStorageLink,{key:'nexus-storage'}));inserted=true;}});if(!inserted)items.push(React.createElement(HydraNexusStorageLink,{key:'nexus-storage'}));return React.createElement(__nexusTag,nativeProps,...items,React.createElement(HydraNexusSettingsGroup,{key:'hydra-nexus'}));}
+  if(nativeProps.className==='sidebar__menu')return React.createElement(__nexusTag,nativeProps,children,React.createElement(HydraNexusActivityLink));
+  if(nativeProps.className==='download-group__hero-buttons')return React.createElement(__nexusTag,nativeProps,children,React.createElement(HydraNexusDownloadActions));
+  return React.createElement(__nexusTag,nativeProps,children);
 }
 function HydraNexusReleaseNotes(){
   const React=reactExports$1;
@@ -53,8 +68,8 @@ function HydraNexusReleaseNotes(){
       React.createElement('div',{'data-nexus-notes-content':'',style:{maxHeight:'60vh',overflowY:'auto',overflowWrap:'anywhere',minWidth:0}},
         state.announcement&&React.createElement('section',{'data-nexus-announcement':'',style:{display:'flex',flexDirection:'column',gap:12,marginBottom:24}},
           React.createElement('img',{src:state.announcement.url,alt:state.announcement.alt,decoding:'async',style:{display:'block',width:'100%',height:'auto',borderRadius:12},onError:event=>{event.currentTarget.hidden=true;event.currentTarget.style.display='none';}}),
-          React.createElement('h3',{style:{margin:0}},state.announcement.title),
-          React.createElement('p',{style:{margin:0,lineHeight:1.7,opacity:0.85}},state.announcement.description)),
+          state.announcement.title&&React.createElement('h3',{style:{margin:0}},state.announcement.title),
+          state.announcement.description&&React.createElement('p',{style:{margin:0,lineHeight:1.7,opacity:0.85}},state.announcement.description)),
         React.createElement('article',{className:'nexus-release-notes',style:{overflowWrap:'anywhere',lineHeight:1.7},dangerouslySetInnerHTML:{__html:state.html}})),
       React.createElement('div',{style:{display:'flex',justifyContent:'flex-end',gap:12,flexWrap:'wrap'}},
         React.createElement('button',{className:'button button--outline',onClick:()=>window.__nexusReleaseControl.open()},state.sourceLabel),
@@ -125,4 +140,4 @@ function installNativeNexusCommit(){
   let scheduled=false;
   window.__nexusNativeCommit=()=>{if(scheduled)return;scheduled=true;queueMicrotask(()=>{scheduled=false;document.dispatchEvent(new Event('nexus-native-commit'));});};
 }
-if(typeof module!=='undefined')module.exports={HydraNexusInvisibleMenu,HydraNexusSettingsGroup,HydraNexusHost,HydraNexusReleaseNotes,HydraNexusUpdateDialog,HydraNexusExtractPath,HydraNexusDownloadButton,installNativeNexusCommit};
+if(typeof module!=='undefined')module.exports={HydraNexusToolsDialog,HydraNexusStorageLink,HydraNexusDownloadActions,HydraNexusInvisibleMenu,HydraNexusSettingsGroup,HydraNexusHost,HydraNexusReleaseNotes,HydraNexusUpdateDialog,HydraNexusExtractPath,HydraNexusDownloadButton,installNativeNexusCommit};

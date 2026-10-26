@@ -1,6 +1,6 @@
 # Contributing
 
-For a bug, use the issue template and include a short reproduction. For a code change, describe the behavior being fixed and the checks you ran. Reuse Hydra's native control styles. All new or changed interface copy must ship in the eight supported languages; read [localization](docs/localization.md) and `AGENTS.md` before adding a feature.
+For a bug, use the issue template and include a short reproduction. For a code change, describe the behavior being fixed and the checks you ran. Reuse Hydra's native control styles. All new or changed interface copy must ship in the nine supported languages; read [localization](docs/localization.md) and `AGENTS.md` before adding a feature.
 
 ## Layout
 
@@ -17,4 +17,4 @@ Google Drive integration uses a folder managed by Drive for desktop. Source and 
 
 ## Publishing
 
-Update the version in `src/brand.cjs` and write English notes in `docs/releases/<version>.md`. A main-branch commit with the message prefix `Release Hydra Nexus ` runs the checked release workflow. Ordinary commits only run verification. A maintainer can also dispatch Release with `confirm` set to `publish`. The workflow refuses to replace an existing release and marks a successful new release as latest.
+Update the version in `src/brand.cjs` and write English notes in `docs/releases/<version>.md`. Ordinary commits run verification. A main-branch commit whose message is exactly `Release Hydra Nexus 2.0` runs the checked release workflow; the separate Verify job is skipped to avoid repeating the same checks. Maintainers can also dispatch Release manually with `confirm` set to `publish`. Keep all nine translations in `src/release-content.cjs` and `docs/releases/<version>/` in sync with the exact version and revision. The workflow refuses to replace an existing release and marks a successful new release as latest.

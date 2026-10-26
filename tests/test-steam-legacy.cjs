@@ -39,7 +39,7 @@ const vdf=require('../src/steam-vdf.cjs'),a='76561198000000001',b='7656119800000
  await fsp.writeFile(bindingsFile,'{}');await direct();assert.equal(commands.length,beforeDirect,'unbound native shortcut passes through');
  await fsp.writeFile(bindingsFile,JSON.stringify({777:{mode:'online',steamId64:a}}));options.shop='gog';await direct();assert.equal(commands.length,beforeDirect,'other store ID does not select Steam binding');options.shop='steam';
  const beforeFail=directLaunches;failStart=true;await assert.rejects(direct(),/simulated spawn failure/);failStart=false;assert.equal(directLaunches,beforeFail,'failed shortcut preparation cannot launch game');
- ctx.__NEXUS_RESTORE_ACTIVE__=()=>true;const beforeGuard=commands.length;await assert.rejects(direct(),/restore to finish/);assert.equal(commands.length,beforeGuard);ctx.__NEXUS_RESTORE_ACTIVE__=()=>false;
+ ctx.__NEXUS_RESTORE_ACTIVE__=()=>true;const beforeGuard=commands.length;await assert.rejects(direct(),/restore to finish/);assert.equal(commands.length,beforeGuard);ctx.__NEXUS_RESTORE_ACTIVE__=()=>false;ctx.__NEXUS_STORAGE_BUSY__=()=>true;const beforeMoveGuard=commands.length;await assert.rejects(direct(),/game transfer/);assert.equal(commands.length,beforeMoveGuard);ctx.__NEXUS_STORAGE_BUSY__=()=>false;
  // A restore starting while Steam is being prepared must also block native execution.
  const priorRestore=ctx.__NEXUS_RESTORE_ACTIVE__;ctx.__NEXUS_RESTORE_ACTIVE__=()=>events.includes('steam-start');events.length=0;
  await assert.rejects(direct(),/restore to finish/);assert.equal(directLaunches,beforeFail);ctx.__NEXUS_RESTORE_ACTIVE__=priorRestore;

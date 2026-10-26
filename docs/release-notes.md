@@ -1,7 +1,5 @@
-# Installed-update release notes
+# Release notes
 
-After Nexus boots, the main process fetches GitHub release **v{installed version}** from the configured repository, independently of update availability checks. The release must match the installed internal revision using `<!-- HYDRA_NEXUS_REVISION N -->`. A newer tag/revision, draft, prerelease, empty body or unavailable network produces no popup. There is one attempt per session, no polling, and the interface does not wait for it. A later launch can retry an unavailable release.
+Nexus follows Hydra's selected language for bundled release notes. Installed notes match the exact version/revision, work offline and are acknowledged once per release. Live language changes update the open dialog. Unsupported languages use English. The updater can read the corresponding multilingual release-note asset before installation; older releases without that asset keep their published text.
 
-Hydra's own React Modal displays the notes with localized chrome, scrollable content, a GitHub release button and acknowledgement. Notes retain their published language; HTML is escaped and internal comments are stripped. Dismissing stores the installed version/revision locally so it does not fetch/show again for that update. A genuinely newer installed revision can show its own notes once. Read/fetch failures never block game launch or trigger installation. `src/release-notes.cjs` controls acknowledgement; `src/updater.cjs` performs the bounded public GitHub request without credentials; `src/native-ui.js` renders the native dialog.
-
-The current candidate is not published, so its matching public release may not exist yet. The popup is expected only after matching notes are available. The live GitHub popup has not been exercised by this task; unit/browser fixtures cover exact-version filtering, offline/empty handling, once-only acknowledgement, sanitization, duplicate messages and live eight-language labels.
+Repository documentation and release-note translations use explicit language links. Published release history is retained under docs/releases.

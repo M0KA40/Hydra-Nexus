@@ -1,0 +1,14 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs/promises'),path=require('node:path'),os=require('node:os');
+const source=process.env.HYDRA_FINISH_SOURCE;let exported=require('../src/download-finish.cjs');if(source){const module={exports:{}};require('node:vm').runInThisContext('(function(require,module,exports){'+require('node:fs').readFileSync(source,'utf8')+'\n})')(require('node:module').createRequire(path.join(__dirname,'../src/download-finish.cjs')),module,module.exports);exported=module.exports;}const {createDownloadFinish}=exported;const baseline=!!source,metrics={};
+const until=async test=>{for(let i=0;i<300;i++){if(test())return;await new Promise(r=>setTimeout(r,2));}throw Error('Fixture timed out');};
+(async()=>{const root=await fs.mkdtemp(path.join(os.tmpdir(),'tools-budget-'));try{
+ let rows=[{shop:'steam',objectId:'1',status:'active',timestamp:1}],events=0,timer,resolveExecution,rejectExecution;
+ const finish=createDownloadFinish({directory:root,readDownloads:async()=>rows,changed:()=>events++,execute:()=>new Promise((resolve,reject)=>{resolveExecution=resolve;rejectExecution=reject;}),setTimer:fn=>(timer=fn,1),clearTimer:()=>{timer=null;}});
+ await finish.arm('sleep');events=0;for(let i=0;i<200;i++){rows[0].progress=i/400;await finish.refresh();}
+ metrics.unchangedEvents=events;if(!baseline)assert.equal(events,0,'unchanged waiting state sends no redundant UI events for download progress');
+ rows=[{...rows[0],status:'complete',progress:1}];await finish.refresh();assert.equal(finish.snapshot().phase,'countdown');timer();await until(()=>!!resolveExecution);
+ rows=[{shop:'steam',objectId:'2',status:'active',timestamp:2}];await finish.arm('shutdown');resolveExecution();await new Promise(r=>setTimeout(r,5));metrics.afterOldSuccess=finish.snapshot().phase;if(!baseline)assert.equal(finish.snapshot().phase,'waiting','old executor success cannot overwrite new queue state');assert.equal(finish.snapshot().armed,true);
+ rows=[{...rows[0],status:'complete',progress:1}];await finish.refresh();resolveExecution=null;timer();await until(()=>!!resolveExecution);finish.cancel();rejectExecution(Error('delayed old failure'));await new Promise(r=>setTimeout(r,5));metrics.afterOldFailure=finish.snapshot().phase;if(!baseline)assert.equal(finish.snapshot().phase,'cancelled','old executor rejection cannot replace cancellation with error');assert.equal(finish.snapshot().armed,false);finish.close();
+ console.log(JSON.stringify({baseline,...metrics}));console.log((baseline?'BASELINE (pre-fix metrics above): ':'PASS: ')+'200 unchanged download updates emit zero UI events; deferred fake executor success/failure cannot overwrite a new queue or cancellation. No power executor used.');
+}finally{await fs.rm(root,{recursive:true,force:true});}})().catch(e=>{console.error(e);process.exitCode=1;});

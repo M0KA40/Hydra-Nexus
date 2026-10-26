@@ -14,11 +14,19 @@ for name in ['core.cjs','drive-folder.cjs','achievements.cjs','ui.js','bridge.cj
     modules['./'+name]=text
 steam=(source/'steam.cjs').read_text(encoding='utf8')
 modules['./steam.cjs']=steam
-for name in ['activity.cjs','themes.cjs','extract-path.cjs','nexus-ui.js','updater.cjs','controller.cjs','notes.cjs','notes-ui.js','hardware.cjs','services.cjs','workspace-ui.js','steam-vdf.cjs','steam-ui.js','mod-catalog.cjs','game-links.cjs','ratings.cjs','requirements.cjs','brand.cjs','privacy.cjs','release-notes.cjs','update-job.cjs','update-shutdown.cjs','update-assets.cjs','update-confirmation.cjs','update-recovery.cjs']:
+for name in ['plugin-guides.cjs','plugin-discovery.cjs','plugin-restart.cjs','storage-roots.cjs','storage-transfer.cjs','storage.cjs','download-finish.cjs','tools-ui.js','replay.cjs','replay-ui.js','background-media.cjs','background-manager.js','activity.cjs','themes.cjs','extract-path.cjs','nexus-ui.js','updater.cjs','controller.cjs','notes.cjs','notes-ui.js','hardware.cjs','services.cjs','workspace-ui.js','steam-vdf.cjs','steam-ui.js','mod-catalog.cjs','game-links.cjs','ratings.cjs','requirements.cjs','brand.cjs','privacy.cjs','release-content.cjs','release-localization.cjs','release-notes.cjs','update-job.cjs','update-shutdown.cjs','update-assets.cjs','update-confirmation.cjs','update-recovery.cjs']:
     modules['./'+name]=(source/name).read_text(encoding='utf-8').replace('__NEXUS_REPOSITORY__',json.dumps('M0KA40/Hydra-Nexus')).replace('__NEXUS_BRAND_ICON__','data:image/svg+xml;base64,'+base64.b64encode((root/'assets/brand/Hydra-Nexus-transparent.svg').read_bytes()).decode()).replace('__NEXUS_BRAND_WINDOW_ICON__','data:image/png;base64,'+base64.b64encode((root/'assets/brand/Hydra-Nexus-transparent.png').read_bytes()).decode()).replace('__NEXUS_MODS_ICON__','data:image/png;base64,'+base64.b64encode((root/'assets/nexus-mods.png').read_bytes()).decode())
 modules['./update-assets.cjs']="'use strict';module.exports={worker:"+json.dumps((root/'installer/update-worker.ps1').read_text(encoding='utf8'))+"};"
 for file in [source/'i18n.cjs',*sorted((source/'locales').glob('*.cjs'))]:
     modules['./'+file.relative_to(source).as_posix()]=file.read_text(encoding='utf-8')
+logo=(root/'assets/brand/Hydra-Nexus-transparent.svg').read_text(encoding='utf8')
+logo=logo.replace('viewBox="0 0 1024 1024"','viewBox="0 120 1024 1060"').replace('d="M512 484 669','class="replay-core" d="M512 484 669').replace('<circle cx="512"','<circle class="replay-contact" cx="512"')
+# Pulse the complete head as one shape; keep its jaw anchored to the neck.
+head_start=logo.index('<path d="M451 268')
+head_end=logo.index('<!-- Center: the "Nexus"',head_start)
+logo=logo[:head_start]+'<g class="replay-head">'+logo[head_start:head_end]+'</g>'+logo[head_end:]
+logo=logo.replace('</svg>','<path d="M512 414V484L355 575V744L512 835V1080" fill="none" stroke="#D3FFE9" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" pathLength="1" class="replay-flow"/><path d="M150 1080H874" stroke="#24463D" stroke-width="6" stroke-linecap="round"/><path d="M512 1080H150" fill="none" stroke="#A4FFD9" stroke-width="7" stroke-linecap="round" pathLength="1" class="replay-rail"/><path d="M512 1080H874" fill="none" stroke="#A4FFD9" stroke-width="7" stroke-linecap="round" pathLength="1" class="replay-rail"/></svg>')
+modules['./replay-ui.js']=modules['./replay-ui.js'].replace('__NEXUS_REPLAY_CSS__',(source/'replay.css').read_text(encoding='utf8')).replace('__NEXUS_REPLAY_MARK__',logo)
 missing=set()
 for name,text in modules.items():
     for match in re.finditer(r"require\(['\"](\./[^'\"]+)['\"]\)",text):
@@ -94,15 +102,18 @@ function Get-NexusAdapter([string]$Text){
     }
     # A confirmed update saves native work explicitly before app.exit; the
     # normal Hydra quit/torrent path is not changed or globally intercepted.
-    $required=@('DownloadManager','DownloadOrchestrator','PowerSaveBlockerManager','libraryWriteQueue','WindowManager','db','shutdownEpicIntegration','clearGamesPlaytime','stopAllEmulatorSouvenirCaptureSessions','isRemoteLibrarySyncing')
+    $required=@('DownloadManager','DownloadOrchestrator','PowerSaveBlockerManager','libraryWriteQueue','WindowManager','db','shutdownEpicIntegration','clearGamesPlaytime','stopAllEmulatorSouvenirCaptureSessions','isRemoteLibrarySyncing','stopping','closing','managedPlaytime','subscribeEpicAuth','runtime','integration','lastPublicState','firstLinkPending')
     $supported=$true
     foreach($name in $required){if($Text -notmatch ('\\b'+[regex]::Escape($name)+'\\b')){$supported=$false}}
     if($supported){
-        $exit='updateExit:{assertIdle:()=>{if(DownloadManager.hasActiveDownload())throw Error("Pause downloads before restarting to update.");if(isRemoteLibrarySyncing())throw Error("Wait for library synchronization to finish before updating.");},prepare:async(signal)=>{const check=()=>{if(signal?.aborted)throw Error("Saving before the update did not finish. Hydra was kept open.");};check();await shutdownEpicIntegration();check();DownloadOrchestrator.cancelPendingDebridPreparations();PowerSaveBlockerManager.reset();await clearGamesPlaytime();check();await stopAllEmulatorSouvenirCaptureSessions();check();await libraryWriteQueue.drain();check();const w=WindowManager.mainWindow;if(w&&!w.isDestroyed()){const b=w.getBounds();const m=w.isMaximized();const initial=WindowManager.initialConfigInitializationMainWindow;await WindowManager.saveScreenConfig(m?{width:initial?.width||b.width,height:initial?.height||b.height,isMaximized:true}:{...b,isMaximized:false});}},close:async()=>{await libraryWriteQueue.drain();await db.close();},reopen:async()=>{await db.open();}},'
+        $exit='updateExit:{assertIdle:()=>{if(DownloadManager.hasActiveDownload())throw Error("Pause downloads before restarting to update.");if(isRemoteLibrarySyncing())throw Error("Wait for library synchronization to finish before updating.");},prepare:async(signal)=>{const check=()=>{if(signal?.aborted)throw Error("Saving before the update did not finish. Hydra was kept open.");};check();await shutdownEpicIntegration();check();DownloadOrchestrator.cancelPendingDebridPreparations();PowerSaveBlockerManager.reset();await clearGamesPlaytime();check();await stopAllEmulatorSouvenirCaptureSessions();check();await libraryWriteQueue.drain();check();const w=WindowManager.mainWindow;if(w&&!w.isDestroyed()){const b=w.getBounds();const m=w.isMaximized();const initial=WindowManager.initialConfigInitializationMainWindow;await WindowManager.saveScreenConfig(m?{width:initial?.width||b.width,height:initial?.height||b.height,isMaximized:true}:{...b,isMaximized:false});}},close:async()=>{await libraryWriteQueue.drain();await db.close();},reopen:async()=>{await db.open();},recover:async()=>{stopping=false;closing=false;managedPlaytime?.restoreAfterFailedShutdown();subscribeEpicAuth();runtime?.invalidate();lastPublicState=null;firstLinkPending=false;await integration?.authContextChanged();}},'
         $adapter=$adapter.Replace('__HYDRA_NEXUS_BIND__({','__HYDRA_NEXUS_BIND__({'+$exit)
     }
     if($Text -match '\\bclass\\s+GameFilesManager\\b'){
         $adapter=$adapter.Replace('__HYDRA_NEXUS_BIND__({','__HYDRA_NEXUS_BIND__({extraction:{manager:GameFilesManager,downloads:downloadsSublevel,zip:SevenZip,deleteArchive:deleteArchiveFile,windows:WindowManager,db},')
+    }
+    if($Text -match '\\bfindGameRootFromExe\\b' -and $Text -match '\\bupdateGameExecutablePath\\b' -and $Text -match '\\blibraryWriteQueue\\b'){
+        $adapter=$adapter.Replace('__HYDRA_NEXUS_BIND__({','__HYDRA_NEXUS_BIND__({storage:{resolve:findGameRootFromExe,update:updateGameExecutablePath,queue:libraryWriteQueue},')
     }
     return $adapter
 }
@@ -138,7 +149,12 @@ function Show-NexusMenu($Patch){
 '''.replace('BUNDLE',base64.b64encode(bundle.encode()).decode())
 native_ui=(source/'native-ui.js').read_text(encoding='utf8')
 native_ui=native_ui[:native_ui.index("if(typeof module")]
-native_installer=(root/'installer/native-ui.ps1').read_text(encoding='utf8').replace('__NEXUS_NATIVE_UI_BASE64__',base64.b64encode(native_ui.encode()).decode()).replace('__NEXUS_ANNOUNCEMENT_BASE64__',base64.b64encode((root/'assets/announcements/invisible-mode-1.2.0.png').read_bytes()).decode()).replace('__NEXUS_EXTRACT_ANNOUNCEMENT_BASE64__',base64.b64encode((root/'assets/announcements/extract-path-1.2.2.png').read_bytes()).decode())
+native_tabs=(source/'native-tabs.js').read_text(encoding='utf8')
+native_ui=native_tabs[:native_tabs.index("if(typeof module")]+native_ui
+native_installer=(root/'installer/native-ui.ps1').read_text(encoding='utf8').replace('__NEXUS_NATIVE_UI_BASE64__',base64.b64encode(native_ui.encode()).decode())
+guide_assets=','.join("@{Name='nexus-guide-"+p.stem+".webp';Data='"+base64.b64encode(p.read_bytes()).decode()+"'}" for p in sorted((root/'assets/plugin-guides').glob('*.webp')))
+guide_assets+=",@{Name='nexus-release-2.0.jpg';Data='"+base64.b64encode((root/'assets/promo/update-2.0.jpg').read_bytes()).decode()+"'}"
+native_installer=native_installer.replace('# __NEXUS_PLUGIN_GUIDE_ASSETS__',guide_assets)
 registry+='\n'+native_installer
 base=base.replace("Add-Type -TypeDefinition @'",registry+"\nAdd-Type -TypeDefinition @'",1)
 base=base.replace("[ValidateSet('steam','gameshift','backup')]", "[ValidateSet('nexus')]")
@@ -165,4 +181,4 @@ base=base.replace('__NEXUS_RELEASE_VERSION__',version).replace('__NEXUS_RELEASE_
 base=base.replace('Hydra Nexus 1.0.0','Hydra Nexus '+version).replace('v1.0.0','v'+version)
 base=f':: HYDRA_NEXUS_RELEASE {version}\n:: HYDRA_NEXUS_REVISION {revision}\n'+base
 (output/'Hydra_Nexus.bat').write_bytes(base.replace('\r\n','\n').replace('\n','\r\n').encode())
-print('Built Hydra Nexus '+version+': 10 plugins, backgrounds, safe updater and per-game tools. GameShift is not bundled.')
+print('Built Hydra Nexus '+version+': 11 plugins, backgrounds, safe updater and per-game tools. GameShift is not bundled.')

@@ -21,8 +21,20 @@ required={p.relative_to(root).as_posix() for p in (root/'src').rglob('*') if p.i
 if not required.issubset(manifest):raise SystemExit('Runtime source is missing from release manifest')
 with zipfile.ZipFile(out/f'Hydra-Nexus-{version}-source.zip','w',zipfile.ZIP_DEFLATED,compresslevel=9) as archive:
     for file in sorted(set(files)):
-        archive.write(file,'Hydra-Nexus/'+file.relative_to(root).as_posix())
-names=['Hydra_Nexus.bat',f'Hydra-Nexus-{version}-source.zip']
+        entry=zipfile.ZipInfo('Hydra-Nexus/'+file.relative_to(root).as_posix(),date_time=(2020,1,1,0,0,0))
+        entry.compress_type=zipfile.ZIP_DEFLATED
+        entry.create_system=3
+        entry.external_attr=0o100644<<16
+        archive.writestr(entry,file.read_bytes(),compresslevel=9)
+content=(root/'src/release-content.cjs').read_text(encoding='utf8')
+pack=json.loads(content.split('module.exports=',1)[1].strip().removesuffix(';'))
+assert pack['schema']==1 and pack['version']==version and pack['revision']==revision
+assert set(pack['notes'])=={'en','pt-BR','es','ru','ar','fr','de','tr','pl'}
+for language,text in pack['notes'].items():
+    assert text.strip() and text==(root/f'docs/releases/{version}/{language}.md').read_text(encoding='utf8'), 'Release translations differ'
+notes_name=f'Hydra-Nexus-{version}-release-notes.json'
+(out/notes_name).write_text(json.dumps(pack,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
+names=['Hydra_Nexus.bat',f'Hydra-Nexus-{version}-source.zip',notes_name]
 (out/'SHA256SUMS.txt').write_text(''.join(hashlib.sha256((out/name).read_bytes()).hexdigest()+'  '+name+'\n' for name in names),encoding='utf8')
 assert f':: HYDRA_NEXUS_RELEASE {version}\r\n'.encode() in (out/'Hydra_Nexus.bat').read_bytes()[:160]
 print('Packaged Hydra Nexus '+version)

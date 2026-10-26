@@ -297,7 +297,8 @@
         if (fs.existsSync(achJsonPath)) {
           try {
             current = JSON.parse(await fs.promises.readFile(achJsonPath, "utf8"));
-          } catch (_) {}
+            if(!current||typeof current!=='object'||Array.isArray(current))throw Error('Invalid achievement metadata');
+          } catch (error) { throw Error('Invalid achievement metadata'); }
         }
 
         let changed = false;
@@ -456,6 +457,7 @@
   // to switch accounts underneath a game that the first request just launched.
   let activeSteamLaunch = null;
   function assertLaunchAllowed() {
+    if(global.__NEXUS_STORAGE_BUSY__?.())throw Error('Wait for the game transfer to finish.');
     if(global.__NEXUS_UPDATE_BUSY__?.())throw Error('An update operation is already running');
     if(global.__NEXUS_RESTORE_ACTIVE__?.())throw Error('A game backup is being restored. Wait for the restore to finish before launching a game.');
   }

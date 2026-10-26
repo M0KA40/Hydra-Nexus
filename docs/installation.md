@@ -48,13 +48,3 @@ The in-app updater keeps recovery copies of the application archive and executab
 | Game notes | Your chosen folder, in `Hydra-Nexus-Notes.json` |
 
 Keep an exported Notes file and a game backup copy somewhere that will survive reinstalling Windows. API credentials are not part of those exports.
-
-## Local revision-10 repair candidate
-
-Revision 10 is an unpublished local candidate. Isolated validation is complete; see [repair-validation.md](repair-validation.md). It has not been installed into the live application. Installation identity records now name Hydra_Nexus.bat and include the actual version and internal revision. The complete installation check includes bridge bytes, native hooks and the announcement asset.
-
-Successful update jobs are confirmed by a matching application startup. Cleanup retains at least two confirmed successful jobs and requires a verified retained rollback before deleting older confirmed jobs. Failed, unresolved and foreign-content jobs remain untouched. Legacy jobs without confirmation are preserved for manual review.
-
-## 1.2.01 testing candidate
-
-Use the BAT supplied with this candidate after exiting Hydra completely. Choose Install / Update / Repair, then check Steam launch settings and the Backup sidebar entry with your chosen theme. Account switching requires the existing Steam setup described above. The former separate Backup gear is replaced by the single Backup row; click opens settings and holding three seconds backs up. [Theme acceptance and scope](theme-compatibility.md).

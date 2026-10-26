@@ -15,7 +15,7 @@ const root=path.join(__dirname,'..');
     console.info=text=>{if(text.startsWith('__HYDRA_NEXUS__')){const r=JSON.parse(text.slice(15));calls.push(r);if(!delayReply)setTimeout(()=>window.__nexusReceive({id:r.id,result:{accepted:true}}),0);}};
     reactDomExports.createRoot(document.getElementById('root')).render(h(HydraNexusUpdateDialog));
   });
-  await page.addScriptTag({content:'('+require('../src/nexus-ui.js').toString()+')('+JSON.stringify({token:'fixture',config:{version:'1.2.0',plugins:{},theme:{},privacy:{},autoCheckUpdates:false}})+')'});
+  await page.addScriptTag({content:require('../src/background-manager.js').toString()+';window.__nexusCreateBackgroundManager=createBackgroundManager;'});await page.addScriptTag({content:'window.__nexusCreateBackgroundManager=('+require('../src/background-manager.js').toString()+');('+require('../src/nexus-ui.js').toString()+')('+JSON.stringify({token:'fixture',config:{version:'1.2.0',plugins:{},theme:{},privacy:{},autoCheckUpdates:false}})+')'});
   const show=async()=>{await page.evaluate(()=>window.__nexusReceive({event:'updateConfirmation',value:{id:'confirmation-42',version:'1.2.0',source:'GitHub: M0KA40/Hydra-Nexus',sha256:'a'.repeat(64)}}));await page.locator('[role=dialog]').waitFor();};
   await show();
   assert.equal(await page.locator('details').getAttribute('open'),null);assert.equal(await page.locator('ol li').count(),3);assert.equal(await page.locator('.button--outline').evaluate(el=>el===document.activeElement),true,'Cancel receives initial focus');

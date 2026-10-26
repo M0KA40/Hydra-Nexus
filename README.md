@@ -1,106 +1,121 @@
-<p align="center"><img src="assets/brand/Hydra-Nexus-banner.png" alt="Hydra Nexus — Extend the experience" width="100%"></p>
+![Hydra Nexus — Extend your Hydra experience](assets/promo/overview.jpg)
 
-<p align="center">
-  <a href="https://github.com/M0KA40/Hydra-Nexus/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/M0KA40/Hydra-Nexus?color=62e5c8&label=release"></a>
-  <img alt="Windows" src="https://img.shields.io/badge/platform-Windows-28b6be">
-  <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-afffe0"></a>
-</p>
+[English](README.md) · [Português (Brasil)](docs/readme/pt-BR.md) · [Español](docs/readme/es.md) · [Русский](docs/readme/ru.md) · [العربية](docs/readme/ar.md) · [Français](docs/readme/fr.md) · [Deutsch](docs/readme/de.md) · [Türkçe](docs/readme/tr.md) · [Polski](docs/readme/pl.md)
 
-**A community patch for Hydra Launcher. Requires an existing Hydra Launcher installation; this is not a standalone launcher.**
+# Hydra Nexus
 
-Hydra Nexus adds game tools to Hydra Launcher: backups, notes, tabs, play history, Steam launch settings and more. Features live in Hydra's settings and game pages, with controls that follow your installed theme.
+Hydra Nexus is a community extension for Hydra Launcher on Windows. It adds game storage tools, save and local-achievement backups, per-game Steam accounts, play activity, tabs, notes and your own backgrounds. Enable the tools you need in Plugins. Nexus follows Hydra’s language and uses native controls that work with your theme. An existing Hydra Launcher installation is required.
 
-**Interface languages:** English, Português (Brasil), Español, Русский, العربية, Français, Deutsch, Türkçe and Polski. Nexus follows Hydra's chosen language, switches live and falls back to English for unsupported languages. [Language support and contribution rules](docs/localization.md).
+**[Download installer](https://github.com/M0KA40/Hydra-Nexus/releases/latest/download/Hydra_Nexus.bat)** · [Release notes](docs/releases/2.0.0/en.md) · [Report a problem](https://github.com/M0KA40/Hydra-Nexus/issues/new/choose)
 
-**[Download the installer](https://github.com/M0KA40/Hydra-Nexus/releases/latest/download/Hydra_Nexus.bat)** · [Installation](docs/installation.md) · [Feature guide](docs/features.md) · [Report a problem](https://github.com/M0KA40/Hydra-Nexus/issues/new/choose)
+## Steam launch settings
 
-## New in 1.2.2 — Extract path
+![Steam launch settings](assets/features/steam.webp)
 
-<p align="center"><img src="assets/announcements/extract-path-1.2.2.png" alt="Extract path — choose an extraction folder and Nexus remembers it" width="100%"></p>
+Assign a saved Steam account and launch mode to each game. Default / standalone launches normally without asking Nexus to start or switch Steam; an existing Steam session stays unchanged. Steam online uses a saved personal account online. Steam offline forces the selected account offline, including shared accounts. Only accounts already saved in Steam are listed. Turn off Steam’s account-choice prompt on startup to allow automatic switching.
 
-Download to one location and extract to another. **Extract path (Hydra Nexus)** appears above the download button with native themed controls. Nexus remembers your last folder and keeps a destination for each queued download. Enabled by default; disable it in **Plugins**.
+**Where to use it:** Library → game page → Steam button beside Play
 
-**Also new:** Polish language support, inactive-video pausing and custom-background startup fixes.
+## Game Storage Manager
 
-[1.2.2 release notes](docs/releases/1.2.2.md) · [Feature guide](docs/features.md#extract-path)
+![Game Storage Manager](assets/features/storage.webp)
 
-## Install
+Browse installed games by drive, available space and measured file sizes. Search and sort by size or last played. Open a game folder or move selected games after reviewing the destination and required space. Copied files are verified before Hydra’s paths are updated and originals removed. Uncertain folders require confirmation; partial measurements are labelled. External launcher registrations and desktop shortcuts are not rewritten.
 
-1. Download **Hydra_Nexus.bat** from Releases.
-2. Exit Hydra completely, including its tray icon.
-3. Run the BAT and choose **Install / Update / Repair**.
-4. Open **Hydra → Settings → Hydra Nexus → Plugins**.
+**Where to use it:** Settings → below Big Picture → Game Storage Manager
 
-The installer includes its runtime. You do not need Node.js or Python. Optional cloud copies require Google Drive for desktop. Updating keeps your settings, notes, play history and game backups.
+## Play Activity
 
-## What's included
+![Play Activity](assets/features/activity.webp)
 
-| Feature | What it does | Where to use it |
+Review recorded sessions, playtime and the last-played date for each game. Weekly and monthly recaps show games, active days and available dated achievements. Control notices from the bell, or disable recaps and all their notices while keeping session tracking and per-game history. Detailed history starts when Nexus tracks play; lifetime totals cannot reconstruct earlier sessions.
+
+**Where to use it:** Sidebar → Play activity; per-game graph beside playtime
+
+## Game Backup
+
+![Game Backup](assets/features/backup.png)
+
+Keep separate recovery points for each game’s saves and local achievements. Restore a point, open its folder or extract a verified copy elsewhere without replacing current saves. Add an extra save folder or stop new backups for one game while keeping its history. For cloud copies, choose a folder synced by Google Drive for desktop; Drive handles cloud sync without a Google login inside Nexus. Close games before restoring. Local achievement restore does not grant Steam/Epic account unlocks.
+
+**Where to use it:** Sidebar → Backup; game Options → General → Backup
+
+## Extract Path
+
+![Extract Path](assets/features/extract.webp)
+
+Download archives to one drive and extract the game to another. Enable automatic extraction in Download settings and choose Extract path. Nexus remembers the last accepted destination and keeps a destination for each queued download. A game folder is created inside it. Original archives remain in their download location for resume/seeding unless you separately enable archive deletion after extraction.
+
+**Where to use it:** Download settings → automatic extraction → Extract path
+
+## Download Finish Actions
+
+![Download Finish Actions](assets/features/finish.webp)
+
+Choose a notification, Sleep or PC Shutdown after the whole download queue and enabled extractions finish. Power actions have 60 seconds to cancel. New downloads resume waiting; closing Hydra cancels the pending action. Enabling the plugin requires a Hydra restart, and restart never automatically arms a power action.
+
+**Where to use it:** Downloads → beside Cancel → Download Finish Actions
+
+## Invisible Mode
+
+![Invisible Mode](assets/features/invisible.webp)
+
+Control Hydra activity sharing while retaining local progress and access to artwork. Enabling the plugin activates Invisible Mode immediately; change it afterward from the account menu. Private activity stays local after turning the mode off until you explicitly resume sharing. Presence updates can take time, and game notifications also depend on Hydra servers.
+
+**Where to use it:** Account menu → below Friends → Invisible Mode
+
+## Game Tabs
+
+![Game Tabs](assets/features/tabs.webp)
+
+Open multiple game pages in tabs within the same Hydra window and return to your place. Catalogue search results, filters and scroll are retained. Right-click a game in Catalogue or Library and choose Open in New Tab; switch using the tab bar and close with ×. Tabs belong to the current Hydra session and are not restored after a full application restart.
+
+**Where to use it:** Catalogue or Library → right-click → Open in New Tab
+
+## Custom backgrounds
+
+[![](assets/media/custom-background-preview.jpg)](assets/media/custom-background.mp4)
+
+Choose your own local image or video as Hydra’s background. Adjust darkness and blur, optionally pause video while Hydra is inactive, and restore the theme background with Reset. Supported video playback depends on the codec; H.264 MP4 or WebM is recommended.
+
+**Where to use it:** Hydra Nexus Settings → Themes → Choose image or video
+
+## Additional tools
+
+- Game Notes — text and links per game, an independent window, Always on top and a focus shortcut.
+- Nexus Mods — open the matched game’s mods page or search when no reliable match is available.
+- PC Compatibility — compare confirmed PC specifications with published minimum requirements. Estimates are not FPS predictions.
+- Updater — check releases, verify the downloaded installer and update/restart from Hydra.
+
+## Supported interface languages
+
+| Language | Native name | Nexus interface |
 | --- | --- | --- |
-| **Game Backup** | Keeps separate recovery points for each game's saves and local achievements. Supports external restore and optional copies through Google Drive for desktop. | Backup in the sidebar; game Options → General |
-| **Game Notes** | Saves text and links for each game in a portable local file. The separate window supports Always on top and a keyboard shortcut. | Notes button beside Play |
-| **Game Tabs** | Opens games from Catalogue or Library without losing your catalogue search, filters and scroll position. | Right-click a game → Open in New Tab |
-| **Play Activity** | Shows the exact last-played date and a record of daily playtime and sessions. | Date and activity icon beside playtime |
-| **Invisible Mode** | Enable its account-menu control in Plugins, then independently turn privacy on/off below Friends. Preserves image/interface access and private activity holds. | Plugins/account menu; [behavior and limits](docs/invisible-mode.md) |
-| **Steam** | Chooses a saved Steam account and online, offline or standalone launch mode per game. Login usernames can be hidden. | Steam button beside game actions |
-| **Nexus Mods** | Opens a matched game's mods page. Edition names are normalized; unmatched games open a game search. | Nexus Mods logo on library game pages |
-| **PC Compatibility** | Compares your confirmed PC specifications with published minimum requirements. Supported CPU/GPU models use benchmark references. | Monitor icon on a game's cover |
-| **Low Resource Mode** | Pauses background video and visual effects. | Plugins |
-| **Custom Backgrounds** | Applies a local image or video over your theme's background. Includes darkness, blur and reset controls. | Themes |
-| **Updater** | Checks GitHub releases and offers a verified download, installation and restart. Automatic checks can be disabled. | Updater |
+| en | English | ✓ Supported |
+| pt-BR | Português (Brasil) | ✓ Supported |
+| es | Español | ✓ Supported |
+| ru | Русский | ✓ Supported |
+| ar | العربية | ✓ Supported |
+| fr | Français | ✓ Supported |
+| de | Deutsch | ✓ Supported |
+| tr | Türkçe | ✓ Supported |
+| pl | Polski | ✓ Supported |
 
-Read the [feature guide](docs/features.md) for controls, setup and limitations.
+## Install and update
 
-## A look inside
+1. Download Hydra_Nexus.bat from Releases.
+2. Exit Hydra completely, including its tray icon.
+3. Run the BAT and choose Install / Update / Repair.
+4. Open Hydra → Settings → Hydra Nexus → Plugins.
 
-<img src="assets/screenshots/game-details.webp" alt="Game page with Steam, Notes, Mods and exact last-played time" width="100%">
+No separate Node.js or Python installation is needed to run the installer. Updating keeps Nexus settings, Notes, play history and backups. If a Hydra update replaces the modification, reapply a compatible Nexus build. Nexus is independent of Hydra Launcher, Valve, Google and Nexus Mods. Include both app versions and reproduction steps when reporting problems.
 
-<details open>
-<summary>Plugin settings and Steam launch controls</summary>
+## More information
 
-![Plugin settings](assets/screenshots/plugins.webp)
-![Steam account and launch settings](assets/screenshots/steam-launch-settings.webp)
-![Available Steam launch modes](assets/screenshots/steam-launch-modes.webp)
-
-</details>
-
-<details>
-<summary>Notes, play history and backups</summary>
-
-![Per-game notes in an independent window](assets/screenshots/game-notes.webp)
-![Daily activity and session history](assets/screenshots/play-activity.webp)
-![Backup settings](assets/screenshots/backup-settings.webp)
-
-The Backup screenshot predates the desktop-sync update. The current Google Drive page uses a folder picker, not a Google account connection.
-
-</details>
-
-The screenshots show the extension with a Hydra theme. Themes are not included in the download.
-
-## Before you start
-
-- **Backups:** a game needs actual save files or local achievement data. Adding a title to your library does not create a save backup. Restoring local achievements does not grant Steam or Epic account unlocks.
-- **Play history:** detailed sessions start when Nexus tracking is enabled. Earlier daily records cannot be recovered from a lifetime total.
-- **PC checks:** results estimate minimum suitability. They do not predict FPS. Missing publisher requirements or unsupported hardware ratings are identified in the result.
-- **Compatibility:** verified against Hydra 4.2.0 on Windows. There is no version whitelist, but Hydra updates can change internal interfaces and require a Nexus update. Re-run the installer after a Hydra update replaces the patch.
-
-## Project information
-
-**1.2.0 — Invisible Mode & multilingual update** brings private presence controls, eight interface languages, reliable Steam switching from existing Desktop shortcuts and a repaired in-app updater. [Read the patch notes](docs/releases/1.2.0.md).
-
-**1.0.1 — Maintenance update** fixes unnecessary UI work, Steam activation, Notes, Backup navigation and installer/update handling. [Read the patch notes](docs/releases/1.0.1.md).
-
-**1.0.0 — First Release** includes all eight plugins, desktop Drive sync and the in-app updater. Earlier 2.x development builds need one manual installation of 1.0.0. Subsequent 1.x releases update through Updater. GameShift, achievement-style imports and theme CSS editing are not included.
-
-Hydra Nexus is a community project, independent of Hydra Launcher, Valve, Google and Nexus Mods. Development continues; please include steps to reproduce a problem when opening an issue.
-
-[Privacy](docs/privacy.md) · [Troubleshooting](docs/troubleshooting.md) · [Verification](docs/verification.md) · [Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md) · [Third-party notices](THIRD_PARTY_NOTICES.md)
+[Privacy](docs/privacy.md) · [Troubleshooting](docs/troubleshooting.md) · [Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md) · [MIT](LICENSE) · [Third-party notices](THIRD_PARTY_NOTICES.md)
 
 ## Build from source
 
 ```sh
 python build.py
 ```
-
-The build writes `Hydra_Nexus.bat` to `dist/`. No Google OAuth configuration is required. See [contributing](CONTRIBUTING.md) for the source layout and checks.
-

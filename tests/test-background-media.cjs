@@ -1,0 +1,24 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs/promises'),path=require('node:path'),os=require('node:os');
+const {ThemeStore}=require('../src/themes.cjs'),{createBackgroundMedia}=require('../src/background-media.cjs');
+(async()=>{const root=await fs.mkdtemp(path.join(os.tmpdir(),'nexus-media-'));try{
+  const source=path.join(root,'video.mp4'),directory=path.join(root,'settings');await fs.writeFile(source,Buffer.from('0123456789'));
+  let store=await new ThemeStore({directory}).init();const first=await store.prepareBackground(source);
+  assert.equal(store.public().background,null,'preparation does not publish an unvalidated selection');await store.commitBackground(first.file);const original=await fs.readFile(store.file);
+  const candidate=await store.prepareBackground(source);assert.equal(store.public().background.file,first.file);assert.deepEqual(await fs.readFile(store.file),original);assert.equal(store.approved(first.file),true);assert.equal(store.approved(candidate.file),true);
+  const serve=createBackgroundMedia({directory,approved:id=>store.approved(id)}),url='nexus-media://assets/'+candidate.file;
+  const request=(range,method='GET',target=url,signal)=>serve({url:target,method,headers:new Headers(range?{range}:{}),signal});
+  let response=await request();assert.equal(response.status,200);assert.equal(response.headers.get('content-type'),'video/mp4');assert.equal(await response.text(),'0123456789');
+  for(const [range,text,contentRange] of [['bytes=2-5','2345','bytes 2-5/10'],['bytes=7-','789','bytes 7-9/10'],['bytes=-3','789','bytes 7-9/10'],['bytes=-99','0123456789','bytes 0-9/10'],['bytes=9-99','9','bytes 9-9/10']]){response=await request(range);assert.equal(response.status,206);assert.equal(response.headers.get('content-range'),contentRange);assert.equal(response.headers.get('content-length'),String(text.length));assert.equal(await response.text(),text);}
+  for(const range of ['bytes=10-','bytes=-0','bytes=5-2','bytes=0-1,3-4','bytes=-','bytes=9007199254740992-','items=0-1']){response=await request(range);assert.equal(response.status,416,range);assert.equal(response.headers.get('content-range'),'bytes */10');}
+  response=await request('bytes=1-2','HEAD');assert.equal(response.status,200);assert.equal(response.headers.get('content-length'),'10');assert.equal(await response.text(),'');
+  assert.equal((await request(null,'POST')).status,405);
+  for(const target of ['nexus-media://assets/../themes.json','nexus-media://assets/%2e%2e%2fthemes.json','nexus-media://assets/%xx','nexus-media://assets/00000000-0000-0000-0000-000000000000.mp4',url+'?anything=1',url.replace('assets/','other/')])assert.equal((await request(null,'GET',target)).status,404,target);
+  const save=store.save.bind(store);store.save=async()=>{throw Error('simulated disk failure');};await assert.rejects(store.commitBackground(candidate.file),/disk failure/);assert.equal(store.public().background.file,first.file);assert.deepEqual(await fs.readFile(store.file),original);response=await request();assert.equal(response.status,200);await response.text();store.save=save;
+  await store.cancelBackground(candidate.file);assert.equal(store.approved(candidate.file),false);assert.equal((await request()).status,404);await assert.rejects(store.commitBackground(candidate.file),/cancelled/);assert.deepEqual(await fs.readFile(path.join(directory,'media',first.file)),await fs.readFile(source));
+  const orphan=await store.prepareBackground(source);store=await new ThemeStore({directory}).init();await store.recoverMedia();await assert.rejects(fs.stat(path.join(directory,'media',orphan.file)),{code:'ENOENT'});assert.equal(store.public().background.file,first.file);
+  const next=await store.prepareBackground(source);await store.clearBackground();await assert.rejects(store.commitBackground(next.file),/cancelled/);assert.equal(store.public().background,null);
+  const linked=await store.prepareBackground(source),target=path.join(directory,'media',linked.file);await fs.unlink(target);await fs.link(source,target);assert.equal((await serve({url:'nexus-media://assets/'+linked.file,headers:new Headers()})).status,404,'hard-linked files are never served');await store.cancelBackground();
+  const big=await store.prepareBackground(source);await fs.writeFile(path.join(directory,'media',big.file),Buffer.alloc(2*1024*1024));const controller=new AbortController();response=await serve({url:'nexus-media://assets/'+big.file,headers:new Headers(),signal:controller.signal});await response.body.cancel();controller.abort();await store.cancelBackground();
+  console.log('PASS: streamed full/open/suffix ranges and HEAD, 416/405, strict approved IDs, malformed/traversal requests, linked files, stream cancellation, transactional persistence/failure/cancel/reset/restart cleanup.');
+}finally{await fs.rm(root,{recursive:true,force:true});}})().catch(error=>{console.error(error);process.exitCode=1;});

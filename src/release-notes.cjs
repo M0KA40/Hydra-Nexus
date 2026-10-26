@@ -1,6 +1,7 @@
 'use strict';
 const fs=require('node:fs/promises'),path=require('node:path');
 const {atomicText}=require('./themes.cjs');
+const {cleanNotes,translations}=require('./release-localization.cjs');
 function createReleaseNotes({directory,version,revision,load,changed=()=>{},log=()=>{}}){
   const file=path.join(directory,'release-notes.json'),id=version+':'+revision;
   let pending=null,current=null,dismissed=false;
@@ -11,9 +12,9 @@ function createReleaseNotes({directory,version,revision,load,changed=()=>{},log=
       try{
         const release=await load();
         if(!release||release.version!==version||release.revision!==revision)return null;
-        const notes=String(release.notes||'').slice(0,16000).replace(/<!--[\s\S]*?-->/g,'').trim();
+        const localized=translations(release.translations),notes=cleanNotes(release.notes)||localized.en;
         if(!notes)return null;
-        current={id,version,revision,notes};changed(current);return current;
+        current={id,version,revision,notes,translations:localized};changed(current);return current;
       }catch(e){log(e);return null;}
     })();
     return pending;

@@ -6,7 +6,7 @@ Exit Hydra completely, including the tray icon, then install the current Nexus r
 
 ## A custom background stays black or fails to load
 
-Use **Themes → Reset background**, then try a PNG image or an H.264 MP4 video. A file's extension does not identify its codec. Nexus checks decoding before replacing the theme backdrop. Low Resource Mode pauses video and removes blur intentionally.
+Use **Themes → Reset background**, then try a PNG image or an H.264 MP4 video. A file's extension does not identify its codec. Nexus checks decoding before replacing the theme backdrop. Inactive-video pausing is controlled in Themes.
 
 ## PC Compatibility has no result for a component
 
