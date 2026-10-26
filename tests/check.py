@@ -1,6 +1,11 @@
 from pathlib import Path
-import subprocess,shutil,sys
+import subprocess,shutil,sys,os,tempfile
 root=Path(__file__).resolve().parent.parent
+# Windows runners can expose an 8.3 TEMP alias. Fixtures must use its real path,
+# just as production scans require a canonical, non-linked game directory.
+fixture_temp=os.path.realpath(tempfile.gettempdir())
+os.environ['TEMP']=fixture_temp
+os.environ['TMP']=fixture_temp
 node=shutil.which('node')
 if not node:sys.exit('Node.js is required for source checks')
 for file in sorted((root/'src').rglob('*')):
