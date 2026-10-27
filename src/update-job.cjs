@@ -22,10 +22,13 @@ function createUpdateJobs({folder,app,shutdown,startupTimeoutMs=45000}){
     const prior=await status();if(prior&&!terminal.has(prior.phase))throw Error('An update operation is already running');
     const id=crypto.randomBytes(16).toString('hex'),token=crypto.randomBytes(32).toString('hex'),dir=path.join(folder,'job-'+id);
     await fsp.mkdir(dir,{recursive:true});
-    const exe=app.getPath('exe'),request={schema:2,id,token,parentPid:process.pid,parentExe:process.execPath,exe,processNames:[...new Set([path.basename(exe,path.extname(exe)),'hydralauncher'])],installer:staged.file,sha256:staged.sha256,version:staged.version,revision:staged.revision};
+    const exe=app.getPath('exe'),request={schema:2,id,token,parentPid:process.pid,parentExe:process.execPath,exe,processNames:[...new Set([path.basename(exe,path.extname(exe)),'hydralauncher'])],installer:staged.file,sha256:staged.sha256,version:staged.version,revision:staged.revision,showProgress:app.isPackaged!==false,presentation:require('./update-presentation.cjs').updatePresentation()};
     const jobFile=path.join(dir,'request.json'),workerFile=path.join(dir,'worker.ps1');
     let worker=require('./update-assets.cjs').worker;
     if(worker==='__NEXUS_UPDATE_WORKER__')worker=await fsp.readFile(path.join(__dirname,'../installer/update-worker.ps1'),'utf8');
+    let progress=require('./update-assets.cjs').progress;
+    if(progress==='__NEXUS_UPDATE_PROGRESS__')progress=await fsp.readFile(path.join(__dirname,'../installer/update-progress.ps1'),'utf8');
+    await atomicText(path.join(dir,'progress.ps1'),'\ufeff'+progress);
     await atomicText(workerFile,'\ufeff'+worker);await atomicText(jobFile,JSON.stringify(request));
     active={schema:2,id,token};await atomicText(pointer,JSON.stringify(active));
     const powershell=path.join(process.env.SystemRoot||'C:\\Windows','System32','WindowsPowerShell','v1.0','powershell.exe');

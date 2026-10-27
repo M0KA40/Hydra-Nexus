@@ -55,7 +55,31 @@ Add-Type -TypeDefinition @'
 using System;
 using System.IO;
 using System.Text;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Management.Automation;
 public static class HydraSuiteAsar {
+    public sealed class CopyPlan { public long[] Offsets; public int[] Sizes; }
+    public static CopyPlan PrepareCompaction(object files) {
+        var offsets=new List<long>();var sizes=new List<int>();long cursor=0;
+        PlanNodes(files,offsets,sizes,ref cursor,0);
+        return new CopyPlan {Offsets=offsets.ToArray(),Sizes=sizes.ToArray()};
+    }
+    private static void PlanNodes(object files,List<long> offsets,List<int> sizes,ref long cursor,int depth) {
+        if(depth>100)throw new InvalidDataException("ASAR directory nesting exceeds its limit.");
+        var properties=new List<PSPropertyInfo>(PSObject.AsPSObject(files).Properties);
+        properties.Sort((a,b)=>StringComparer.Ordinal.Compare(a.Name,b.Name));
+        foreach(var property in properties) {
+            var node=PSObject.AsPSObject(property.Value);var children=node.Properties["files"];
+            if(children!=null && children.Value!=null){PlanNodes(children.Value,offsets,sizes,ref cursor,depth+1);continue;}
+            var unpacked=node.Properties["unpacked"];var link=node.Properties["link"];var size=node.Properties["size"];var offset=node.Properties["offset"];
+            if((unpacked!=null && LanguagePrimitives.IsTrue(unpacked.Value)) || (link!=null && LanguagePrimitives.IsTrue(link.Value)) || size==null || size.Value==null)continue;
+            if(offset==null || offset.Value==null)throw new InvalidDataException("Packed ASAR entry has no offset.");
+            long old=Convert.ToInt64(offset.Value,CultureInfo.InvariantCulture);int length=Convert.ToInt32(size.Value,CultureInfo.InvariantCulture);
+            if(old<0 || length<0)throw new InvalidDataException("Invalid ASAR payload.");
+            offsets.Add(old);sizes.Add(length);offset.Value=cursor.ToString(CultureInfo.InvariantCulture);cursor=checked(cursor+length);
+        }
+    }
     public static string ReadHeader(string file, out int dataOffset) {
         using(var stream=File.OpenRead(file)) using(var reader=new BinaryReader(stream)) {
             if(reader.ReadUInt32()!=4) throw new InvalidDataException("Invalid ASAR signature.");
@@ -302,11 +326,21 @@ function Get-PackedNodes($Files,[string]$Prefix='') {
     }
 }
 function Write-CompactArchive([string]$Archive,$State,[string]$Destination,[byte[]]$Appended) {
-    $plan=@(Get-PackedNodes $State.Header.files);$offsets=[long[]]@($plan|ForEach-Object {$_.Offset});$sizes=[int[]]@($plan|ForEach-Object {$_.Size});$cursor=0L
-    foreach($item in $plan){$item.Node.offset=[string]$cursor;$cursor+=$item.Size}
-    [HydraSuiteAsar]::WriteCompacted($Archive,$State.Offset,$Destination,($State.Header|ConvertTo-Json -Depth 100 -Compress),$Appended,$offsets,$sizes)
+    $plan=[HydraSuiteAsar]::PrepareCompaction($State.Header.files)
+    [HydraSuiteAsar]::WriteCompacted($Archive,$State.Offset,$Destination,($State.Header|ConvertTo-Json -Depth 100 -Compress),$Appended,$plan.Offsets,$plan.Sizes)
+}
+function Set-NexusInstallProgress([string]$Stage) {
+    $labels=@{preparing='Checking the installation';backup='Preserving the original archive';writing='Building the updated archive';verifying='Verifying changed files';committing='Applying the verified update'}
+    if($env:HYDRA_NEXUS_PROGRESS_SILENT -ne '1'){
+        Write-Progress -Id 91 -Activity 'Hydra Nexus' -Status $labels[$Stage] -PercentComplete -1
+        Write-Host ('  > '+$labels[$Stage]) -ForegroundColor Cyan
+    }
+    if($script:NexusInstallProgressSink){& $script:NexusInstallProgressSink $Stage}
 }
 function Invoke-BuiltInPatch($Patch, [ValidateSet('Install','Remove')][string]$Operation, [switch]$Testing) {
+    # Feedback precedes directory discovery and archive parsing.
+    Set-NexusInstallProgress 'preparing'
+    try {
     $directory = Resolve-HydraDirectory
     $engineDir = $null
     if ($Operation -eq 'Install' -and $Patch.Id -eq 'gameshift') { $engineDir = Resolve-GameShiftDirectory }
@@ -348,6 +382,7 @@ function Invoke-BuiltInPatch($Patch, [ValidateSet('Install','Remove')][string]$O
     $appended = New-Object byte[] ($mainBytes.Length+$bridgeBytes.Length)
     [Array]::Copy($mainBytes,0,$appended,0,$mainBytes.Length)
     if ($bridgeBytes.Length) { [Array]::Copy($bridgeBytes,0,$appended,$mainBytes.Length,$bridgeBytes.Length) }
+    Set-NexusInstallProgress 'backup'
     $backup = $archive+'.before-hydra-suite.bak'
     if (!(Test-Path -LiteralPath $backup)) { Copy-Item -LiteralPath $archive -Destination $backup }
     $temporary = $archive+'.hydra-suite.'+[guid]::NewGuid().ToString('N')+'.tmp'
@@ -356,7 +391,9 @@ function Invoke-BuiltInPatch($Patch, [ValidateSet('Install','Remove')][string]$O
     $executable=Join-Path $directory 'Hydra.exe'
     try {
         Write-Host ('  Preparing '+$Patch.Name+'...') -ForegroundColor Cyan
+        Set-NexusInstallProgress 'writing'
         Write-CompactArchive $archive $state $temporary $appended
+        Set-NexusInstallProgress 'verifying'
         $check = Get-ArchiveState $temporary
         $verifiedMain = $utf8.GetBytes($check.Text)
         if ((Get-Integrity $verifiedMain).hash -ne (Get-Integrity $mainBytes).hash) { throw 'Main entry verification failed. The original archive was not replaced.' }
@@ -373,6 +410,7 @@ function Invoke-BuiltInPatch($Patch, [ValidateSet('Install','Remove')][string]$O
         }
         if (!$Testing -and $Operation -eq 'Install' -and $Patch.Id -eq 'backup') { Write-BackupInstallation $directory }
         if (!$Testing -and $Patch.Id -eq 'backup') { Assert-HydraBackupIdle }
+        Set-NexusInstallProgress 'committing'
         [IO.File]::Replace($temporary,$archive,$transactionArchive)
         if(!$Testing -and $Operation -eq 'Remove'){
             $otherPatches=@($script:BuiltInPatches|Where-Object {$_.Id -ne $Patch.Id -and $check.Files.PSObject.Properties[$_.BridgeName]})
@@ -396,6 +434,7 @@ function Invoke-BuiltInPatch($Patch, [ValidateSet('Install','Remove')][string]$O
     } else { Write-Host ('  '+$Patch.Name+' removed successfully.') -ForegroundColor Green }
     Write-Host '  Other patches and saved game settings are preserved.' -ForegroundColor Gray
     Write-Host ('  Recovery backup: '+$backup) -ForegroundColor Gray
+    } finally {Write-Progress -Id 91 -Activity 'Hydra Nexus' -Completed}
 }
 
 function Get-BackupAdapter([string]$Text) {

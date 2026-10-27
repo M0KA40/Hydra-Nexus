@@ -1,11 +1,9 @@
 name: Release
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
     inputs:
       confirm:
-        description: Type publish to create the release
+        description: Type publish-2.1 to publish the maintenance release while keeping 2.0 Latest
         required: true
         type: string
 permissions:
@@ -15,7 +13,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   publish:
-    if: (github.event_name == 'push' && github.event.head_commit.message == 'Release Hydra Nexus 2.0') || (github.event_name == 'workflow_dispatch' && github.event.inputs.confirm == 'publish')
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.confirm == 'publish-2.1'
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -35,7 +33,14 @@ jobs:
         shell: pwsh
         run: |
           $version = node -p "require('./src/brand.cjs').version"
+          if ($version -ne '2.1.0') { throw 'This workflow only publishes the 2.1 maintenance release.' }
+          $latest = gh api "repos/$env:GITHUB_REPOSITORY/releases/latest" --jq '.tag_name'
+          if ($LASTEXITCODE -ne 0 -or $latest -ne 'v2.0.0') { throw 'Expected v2.0.0 to be Latest; no release was created.' }
           gh release view "v$version" --repo "$env:GITHUB_REPOSITORY" *> $null
           if ($LASTEXITCODE -eq 0) { throw "Release v$version already exists; refusing to replace it." }
-          gh release create "v$version" "dist/Hydra_Nexus.bat" "dist/Hydra-Nexus-$version-source.zip" "dist/SHA256SUMS.txt" "dist/Hydra-Nexus-$version-release-notes.json" --repo "$env:GITHUB_REPOSITORY" --target "$env:GITHUB_SHA" --title "Hydra Nexus 2.0" --notes-file "docs/releases/$version.md" --latest
+          gh release create "v$version" "dist/Hydra_Nexus.bat" "dist/Hydra-Nexus-$version-source.zip" "dist/SHA256SUMS.txt" "dist/Hydra-Nexus-$version-release-notes.json" --repo "$env:GITHUB_REPOSITORY" --target "$env:GITHUB_SHA" --title "Hydra Nexus 2.1" --notes-file "docs/releases/$version.md" --draft --latest=false
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          gh release edit "v$version" --repo "$env:GITHUB_REPOSITORY" --draft=false --latest=false
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $latest = gh api "repos/$env:GITHUB_REPOSITORY/releases/latest" --jq '.tag_name'
+          if ($LASTEXITCODE -ne 0 -or $latest -ne 'v2.0.0') { throw 'Publication finished, but the Latest release must be inspected before delivery.' }

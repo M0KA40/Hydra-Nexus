@@ -10,7 +10,7 @@ Hydra Nexus إضافة مجتمعية لهايدرا لانشر على ويند�
 
 ## Steam launch settings
 
-![Steam launch settings](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/ac0b8e5df56367c357d743ffb2c01ea4b1fc9c9a/assets/features/steam.webp)
+![Steam launch settings](../../assets/features/steam.webp)
 
 اربط كل لعبة بحساب Steam محفوظ ووضع تشغيل مناسب. Default / standalone يشغّل اللعبة دون طلب تشغيل Steam أو تبديل حسابه من Nexus؛ جلسة Steam المفتوحة تبقى كما هي. Steam online للحساب الشخصي المتصل، وSteam offline يفرض عدم الاتصال للحساب المحدد، بما فيه الحسابات المشتركة. تظهر الحسابات المحفوظة في Steam فقط. عطّل سؤال اختيار الحساب عند بدء Steam للسماح بالتبديل التلقائي.
 

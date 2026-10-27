@@ -17,7 +17,8 @@ async function confirmAndPrune({folder,app,version,revision,keep=2}){
       await plain(dir);const [r,s,c]=await Promise.all(['request.json','state.json','startup-confirmed.json'].map(n=>readJSON(path.join(dir,n))));
       if(r.schema!==2||s.schema!==2||c.schema!==1||!Number.isSafeInteger(s.workerPid)||s.workerPid<=0||path.resolve(r.exe)!==path.resolve(app.getPath('exe'))||s.phase!=='installed'||r.id!==item.name.slice(4)||s.id!==r.id||c.id!==r.id||r.token!==s.token||c.version!==r.version||c.revision!==r.revision||!Number.isFinite(Date.parse(c.at)))continue;
       // Unknown files, failed jobs and running helpers are never cleanup targets.
-      if((await fs.readdir(dir,{withFileTypes:true})).some(item=>item.isSymbolicLink()||!['request.json','state.json','startup-confirmed.json','worker.ps1','approved','cancel','launch-once','startup.log','startup-errors.log','installer.log','recovery'].includes(item.name)||(item.name==='recovery'?!item.isDirectory():!item.isFile())))continue;
+      if((await fs.readdir(dir,{withFileTypes:true})).some(item=>item.isSymbolicLink()||!['request.json','state.json','startup-confirmed.json','worker.ps1','progress.ps1','progress-ready.json','progress.log','progress-errors.log','approved','cancel','launch-once','startup.log','startup-errors.log','installer.log','recovery'].includes(item.name)||(item.name==='recovery'?!item.isDirectory():!item.isFile())))continue;
+      try{const ui=await readJSON(path.join(dir,'progress-ready.json'));if(ui.schema!==1||ui.id!==r.id||ui.token!==r.token||!Number.isInteger(ui.pid)||ui.pid<=0)continue;let visible=false;try{process.kill(ui.pid,0);visible=true;}catch{}if(visible&&r.id!==pointer.id)continue;}catch(error){if(error.code!=='ENOENT')continue;}
       let alive=false;try{process.kill(s.workerPid,0);alive=true;}catch{}if(alive&&r.id!==pointer.id)continue;
       candidates.push({dir,at:Date.parse(c.at),id:r.id});
     }catch{}

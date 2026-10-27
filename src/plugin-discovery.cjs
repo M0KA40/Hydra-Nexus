@@ -2,7 +2,7 @@
 const fs=require('node:fs'),path=require('node:path');
 const {atomicText}=require('./themes.cjs');
 // Public feature identities, deliberately independent of installer version/revision.
-const introductions=Object.freeze({storage:'1.3/storage',downloadFinish:'1.3/download-finish'});
+const introductions=Object.freeze({storage:'1.3/storage',downloadFinish:'1.3/download-finish',pageCleaner:'2.0.1/page-cleaner'});
 function createPluginDiscovery({directory,log=()=>{}}){
   const file=path.join(directory,'plugin-discovery.json');let seen=[],failed=false,queue=Promise.resolve();
   try{const stat=fs.statSync(file);if(stat.size>16384)throw Error('Invalid plugin discovery data');const saved=JSON.parse(fs.readFileSync(file,'utf8'));if(saved.schema!==1||!Array.isArray(saved.seen)||saved.seen.some(v=>typeof v!=='string'))throw Error('Invalid plugin discovery data');seen=[...new Set(saved.seen)];}

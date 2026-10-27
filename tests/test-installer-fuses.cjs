@@ -6,7 +6,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),fsp=fs.promises
  function wire(version=1,count=9,states='101110011'){return Buffer.concat([marker,Buffer.from([version,count]),Buffer.from(states)]);}
  const fixtures={enabled:wire(),alreadyDisabled:wire(1,9,'101100011'),versionZero:wire(0),versionTwo:wire(2),asciiVersion:wire(49),truncated:wire(1,9,'10111'),shortCount:wire(1,4,'1011'),unknownState:wire(1,9,'1011r0011'),missing:Buffer.from('no marker')};
  for(const [name,bytes]of Object.entries(fixtures))await fsp.writeFile(path.join(root,name+'.exe'),bytes);
- const q=s=>"'"+s.replace(/'/g,"''")+"'",ps=`$ErrorActionPreference='Stop';Add-Type -Path ${q(source)};$root=${q(root)}
+ const q=s=>"'"+s.replace(/'/g,"''")+"'",ps=`$ErrorActionPreference='Stop';Add-Type -ReferencedAssemblies ([System.Management.Automation.PSObject].Assembly.Location) -Path ${q(source)};$root=${q(root)}
  foreach($name in @('enabled','alreadyDisabled')){
    $p=Join-Path $root ($name+'.exe');$before=[IO.File]::ReadAllBytes($p)
    $changed=[HydraSuiteAsar]::EnableModifiedAsar($p)

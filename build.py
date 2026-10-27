@@ -14,9 +14,10 @@ for name in ['core.cjs','drive-folder.cjs','achievements.cjs','ui.js','bridge.cj
     modules['./'+name]=text
 steam=(source/'steam.cjs').read_text(encoding='utf8')
 modules['./steam.cjs']=steam
-for name in ['plugin-guides.cjs','plugin-discovery.cjs','plugin-restart.cjs','storage-roots.cjs','storage-transfer.cjs','storage.cjs','download-finish.cjs','tools-ui.js','replay.cjs','replay-ui.js','background-media.cjs','background-manager.js','activity.cjs','themes.cjs','extract-path.cjs','nexus-ui.js','updater.cjs','controller.cjs','notes.cjs','notes-ui.js','hardware.cjs','services.cjs','workspace-ui.js','steam-vdf.cjs','steam-ui.js','mod-catalog.cjs','game-links.cjs','ratings.cjs','requirements.cjs','brand.cjs','privacy.cjs','release-content.cjs','release-localization.cjs','release-notes.cjs','update-job.cjs','update-shutdown.cjs','update-assets.cjs','update-confirmation.cjs','update-recovery.cjs']:
+for name in ['embedded-notes-ui.js','notes-style.cjs','notes-store.cjs','notes-markdown.js','game-actions.js','dom-patch.js','page-cleaner.cjs','page-cleaner-ui.js','plugin-guides.cjs','plugin-discovery.cjs','plugin-restart.cjs','storage-roots.cjs','storage-transfer.cjs','storage.cjs','download-finish.cjs','tools-ui.js','replay.cjs','replay-ui.js','background-media.cjs','background-manager.js','activity.cjs','themes.cjs','extract-path.cjs','nexus-ui.js','updater.cjs','controller.cjs','notes.cjs','notes-ui.js','hardware.cjs','services.cjs','workspace-ui.js','steam-vdf.cjs','steam-ui.js','mod-catalog.cjs','game-links.cjs','ratings.cjs','requirements.cjs','brand.cjs','privacy.cjs','release-content.cjs','installed-release-content.cjs','release-localization.cjs','release-notes.cjs','update-job.cjs','update-shutdown.cjs','update-assets.cjs','update-confirmation.cjs','update-recovery.cjs','update-presentation.cjs']:
     modules['./'+name]=(source/name).read_text(encoding='utf-8').replace('__NEXUS_REPOSITORY__',json.dumps('M0KA40/Hydra-Nexus')).replace('__NEXUS_BRAND_ICON__','data:image/svg+xml;base64,'+base64.b64encode((root/'assets/brand/Hydra-Nexus-transparent.svg').read_bytes()).decode()).replace('__NEXUS_BRAND_WINDOW_ICON__','data:image/png;base64,'+base64.b64encode((root/'assets/brand/Hydra-Nexus-transparent.png').read_bytes()).decode()).replace('__NEXUS_MODS_ICON__','data:image/png;base64,'+base64.b64encode((root/'assets/nexus-mods.png').read_bytes()).decode())
-modules['./update-assets.cjs']="'use strict';module.exports={worker:"+json.dumps((root/'installer/update-worker.ps1').read_text(encoding='utf8'))+"};"
+progress_ui=(root/'installer/update-progress.ps1').read_text(encoding='utf8').replace('__NEXUS_PROGRESS_LOGO__',base64.b64encode((root/'assets/brand/Hydra-Nexus-transparent.png').read_bytes()).decode())
+modules['./update-assets.cjs']="'use strict';module.exports={worker:"+json.dumps((root/'installer/update-worker.ps1').read_text(encoding='utf8'))+",progress:"+json.dumps(progress_ui)+"};"
 for file in [source/'i18n.cjs',*sorted((source/'locales').glob('*.cjs'))]:
     modules['./'+file.relative_to(source).as_posix()]=file.read_text(encoding='utf-8')
 logo=(root/'assets/brand/Hydra-Nexus-transparent.svg').read_text(encoding='utf8')
@@ -117,9 +118,9 @@ function Get-NexusAdapter([string]$Text){
     }
     return $adapter
 }
-function Show-NexusDevelopmentNotice {
+function Show-NexusReleaseNotice {
     Show-Header 'Hydra Nexus 1.0.0'
-    Write-Host '  Official release. Updates are available in Hydra Nexus > Updater.' -ForegroundColor Yellow
+    Write-Host '  Maintenance update: fixes and improvements.' -ForegroundColor Cyan
     Write-Host '  If something fails, keep your backup and report it on GitHub.'
     Write-Host '  Open Hydra > Settings > Hydra Nexus to manage your plugins.'
     Write-Host ''
@@ -157,6 +158,7 @@ guide_assets+=",@{Name='nexus-release-2.0.jpg';Data='"+base64.b64encode((root/'a
 native_installer=native_installer.replace('# __NEXUS_PLUGIN_GUIDE_ASSETS__',guide_assets)
 registry+='\n'+native_installer
 base=base.replace("Add-Type -TypeDefinition @'",registry+"\nAdd-Type -TypeDefinition @'",1)
+base=base.replace("Add-Type -TypeDefinition @'", "Add-Type -ReferencedAssemblies ([System.Management.Automation.PSObject].Assembly.Location) -TypeDefinition @'",1)
 base=base.replace("[ValidateSet('steam','gameshift','backup')]", "[ValidateSet('nexus')]")
 base=base.replace("[string]$PatchId = 'steam'", "[string]$PatchId = 'nexus'")
 base=base.replace('Remove-PatchHooks $state.Text $Patch','Remove-NexusHooks $state.Text $Patch')
@@ -171,7 +173,7 @@ base=base.replace("function Show-BuiltInMenu($Patch) {", "function Show-BuiltInM
 base=base.replace('$catalog = @($script:BuiltInPatches)',"$catalog = @($script:BuiltInPatches | Where-Object Id -eq 'nexus')")
 base=base.replace("'    HYDRA PATCH MANAGER                                 v2.1.0'", "'    HYDRA NEXUS                                         v1.0.0'")
 base=base.replace('title Hydra Patch Manager','title Hydra Nexus')
-base=base.replace("if ($Action -eq 'Menu') { Show-MainMenu }", "if ($Action -eq 'Menu') { Show-NexusDevelopmentNotice; Show-NexusMenu ($script:BuiltInPatches | Where-Object Id -eq 'nexus') }")
+base=base.replace("if ($Action -eq 'Menu') { Show-MainMenu }", "if ($Action -eq 'Menu') { Show-NexusReleaseNotice; Show-NexusMenu ($script:BuiltInPatches | Where-Object Id -eq 'nexus') }")
 # Integrate renderer changes into the same verified/rollback-safe archive replacement.
 base=base.replace('    $mainBytes = $utf8.GetBytes($newMain)', "    $rendererEdits=@(Get-NexusRendererEdits $state $archive $Operation)\n    $mainBytes = $utf8.GetBytes($newMain)")
 base=base.replace('    $backup = $archive+', "    $nativeLength=$appended.Length;foreach($edit in $rendererEdits){Set-NodeFile $edit.Node $edit.Bytes ($end+$nativeLength);$nativeLength+=$edit.Bytes.Length}\n    if($nativeLength -gt $appended.Length){$combined=New-Object byte[] $nativeLength;[Array]::Copy($appended,0,$combined,0,$appended.Length);$cursor=$appended.Length;foreach($edit in $rendererEdits){[Array]::Copy($edit.Bytes,0,$combined,$cursor,$edit.Bytes.Length);$cursor+=$edit.Bytes.Length};$appended=$combined}\n    $backup = $archive+")
@@ -181,4 +183,4 @@ base=base.replace('__NEXUS_RELEASE_VERSION__',version).replace('__NEXUS_RELEASE_
 base=base.replace('Hydra Nexus 1.0.0','Hydra Nexus '+version).replace('v1.0.0','v'+version)
 base=f':: HYDRA_NEXUS_RELEASE {version}\n:: HYDRA_NEXUS_REVISION {revision}\n'+base
 (output/'Hydra_Nexus.bat').write_bytes(base.replace('\r\n','\n').replace('\n','\r\n').encode())
-print('Built Hydra Nexus '+version+': 11 plugins, backgrounds, safe updater and per-game tools. GameShift is not bundled.')
+print('Built Hydra Nexus '+version+': 12 plugins, backgrounds, safe updater and per-game tools. GameShift is not bundled.')

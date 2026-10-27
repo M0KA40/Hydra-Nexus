@@ -1,6 +1,11 @@
 'use strict';
 const image=(name,caption)=>({src:'./assets/nexus-guide-'+name+'.webp',caption});
 module.exports={
+  pageCleaner:{location:'Settings → Hydra Nexus → Plugins → Game Page Layout.',steps:[
+    'Enable Game Page Layout, then choose visibility or Arrange sections in Plugin settings.',
+    'Hide for library games follows your current library. Hide for all games also applies to catalogue game pages.',
+    'Choose Show to restore a section. Disabling the plugin restores every section and keeps your saved choices.'
+  ]},
   invisible:{location:'Account menu → below Friends → Invisible Mode.',images:[image('invisible','Invisible Mode')],steps:[
     'Enabling this plugin also turns Invisible Mode on. Use the account-menu control to turn privacy on or off afterward.',
     'Private activity stays local after you turn this off. Resume sharing only if you want Hydra to publish it.',
@@ -47,7 +52,8 @@ module.exports={
     'Optional: basic game links work without a key. A key reads the Nexus Mods game catalogue to improve matching; it does not install mods or manage your downloads. For personal testing: sign in to Nexus Mods, open API Keys below, generate a personal key, then paste it here and select Validate & save. Nexus Mods requires public integrations to register their application separately. Your key is encrypted with Windows and is never exported.'
   ]},
   notes:{location:'Game page → Notes icon beside Play.',steps:[
-    'Keep text and links separately for every game. Open the Notes icon beside Play. Its independent window supports Always on top and a focus shortcut while playing.',
+    'Keep multiple titled notes for each game. Edit inside Hydra or open a separate window for Always on top.',
+    'Read shows Markdown headings, lists, links, code and formatting. Older notes are kept as Main note.',
     'The shortcut focuses your last open note. Always on top works with desktop and borderless games; exclusive fullscreen can cover other windows.'
   ]},
   hardware:{location:'Game cover → monitor icon in the upper corner.',steps:[

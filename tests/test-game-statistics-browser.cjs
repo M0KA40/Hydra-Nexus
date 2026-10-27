@@ -1,6 +1,6 @@
 'use strict';
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),{chromium}=require(process.env.HYDRA_PLAYWRIGHT_PATH||'playwright');
-const root=path.join(__dirname,'..'),{rendererScript,catalogs}=require('../src/i18n.cjs'),themes=require('./theme-profiles.cjs'),pack=require('../src/release-content.cjs');
+const root=path.join(__dirname,'..'),{rendererScript,catalogs}=require('../src/i18n.cjs'),themes=require('./theme-profiles.cjs'),pack={schema:1,version:'2.0.0',revision:3,notes:Object.fromEntries(Object.keys(catalogs).map(language=>[language,fs.readFileSync(path.join(root,'docs/releases/2.0.0',language+'.md'),'utf8')]))};
 const nativeCSS=fs.readFileSync(process.env.HYDRA_NATIVE_CSS,'utf8'),base=`*{box-sizing:border-box}body{margin:0;display:flex;font:14px 'Segoe UI',Arial;height:100vh}.sidebar{width:190px;flex-shrink:0;padding:20px}.container{flex:1;min-width:0;display:flex;flex-direction:column}.container__content{flex:1;min-height:0;overflow:auto}.settings__container,.settings__content{display:flex;width:100%;height:100%}.settings__panel{flex:1;min-width:0;overflow:auto;padding:24px}.settings__sidebar{width:180px;display:flex;flex-direction:column}.header{display:flex;align-items:center;justify-content:space-between;min-height:64px;padding:12px 24px}.hero-panel__content{padding:30px}.hero-panel-playtime__play-time{display:flex;align-items:center}.button{color:inherit}button,select{font:inherit}.fixture-backdrop{position:fixed;inset:0;background:#0007;display:flex;align-items:center;justify-content:center;z-index:100000}.fixture-backdrop .modal{width:850px;max-width:94vw;max-height:94vh;overflow:auto;padding:24px;background:var(--fixture-surface);color:var(--fixture-text);display:flex;flex-direction:column;gap:16px;border-radius:12px}`;
 (async()=>{
  const browser=await chromium.launch({headless:true,executablePath:process.env.HYDRA_BROWSER_EXE});let cases=0;const output=process.env.HYDRA_STATS_PREVIEW;
@@ -21,10 +21,20 @@ const nativeCSS=fs.readFileSync(process.env.HYDRA_NATIVE_CSS,'utf8'),base=`*{box
    location.hash='/game/steam/42';
   });
   await page.addScriptTag({content:rendererScript()});await page.addScriptTag({path:path.join(root,'src/background-manager.js')});await page.addScriptTag({path:path.join(root,'src/nexus-ui.js')});await page.evaluate(()=>installNexusUI({token:'fixture',config:cfg}));
+  await page.addStyleTag({content:'.header{margin:10px 10px 0;width:auto;border-radius:12px}.container__content{margin:10px;width:auto;border-radius:12px}'});
+  const frameSizes=[{width:1200,height:860},{width:1024,height:600},{width:1280,height:720},{width:1920,height:1080}],nativeFrames=[];
+  for(const size of frameSizes){await page.setViewportSize(size);nativeFrames.push(await page.evaluate(()=>{const h=document.querySelector('#original-header').getBoundingClientRect(),p=document.querySelector('#original-content').getBoundingClientRect();return {left:h.left,width:h.width,panelLeft:p.left,panelWidth:p.width,gap:p.top-h.bottom};}));}
+  await page.setViewportSize({width:1360,height:950});
   await page.locator('#nexus-activity-button').waitFor();await page.locator('#nexus-activity-button').click();await page.locator('.nexus-game-stats').waitFor();assert.equal(await page.evaluate(()=>recapCalls),0,'graph opens per-game history even with recaps enabled');
   for(const language of Object.keys(catalogs)){
    await page.evaluate(l=>document.documentElement.lang=l,language);await page.waitForFunction(l=>__nexusI18n.language===l,language);
    assert.equal(await page.locator('#nexus-activity-header h3').innerText(),catalogs[language]['Game statistics']);
+   for(let i=0;i<frameSizes.length;i++){
+    await page.setViewportSize(frameSizes[i]);const actual=await page.evaluate(()=>{const h=document.querySelector('#nexus-activity-header').getBoundingClientRect(),p=document.querySelector('#nexus-activity-panel').getBoundingClientRect(),stats=document.querySelector('.nexus-game-stats'),panel=stats.closest('.settings__panel');return {left:h.left,width:h.width,panelLeft:p.left,panelWidth:p.width,gap:p.top-h.bottom,statsWidth:stats.getBoundingClientRect().width,available:panel.clientWidth-parseFloat(getComputedStyle(panel).paddingLeft)-parseFloat(getComputedStyle(panel).paddingRight),overflow:stats.scrollWidth>stats.clientWidth+2};});
+    for(const key of Object.keys(nativeFrames[i]))assert.ok(Math.abs(actual[key]-nativeFrames[i][key])<=1,theme.name+'/'+language+' '+JSON.stringify(frameSizes[i])+' native '+key);
+    assert.ok(Math.abs(actual.statsWidth-actual.available)<=2,'statistics use the native panel width without a fixed cap');assert.equal(actual.overflow,false);
+   }
+   await page.setViewportSize({width:1360,height:950});
    await page.locator('#nexus-stats-range').selectOption('all');
    assert.equal(await page.locator('.stats-metric').nth(2).locator('strong').innerText(),await page.evaluate(l=>new Intl.NumberFormat(l).format(4),language),'zero-duration day is excluded');
    await page.locator('[data-stats-view=days]').click();assert.equal(await page.locator('.stats-day-row').count(),4);

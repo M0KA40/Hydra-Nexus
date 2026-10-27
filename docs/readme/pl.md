@@ -10,7 +10,7 @@ Hydra Nexus to społecznościowe rozszerzenie Hydra Launcher dla Windows. Dodaje
 
 ## Steam launch settings
 
-![Steam launch settings](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/ac0b8e5df56367c357d743ffb2c01ea4b1fc9c9a/assets/features/steam.webp)
+![Steam launch settings](../../assets/features/steam.webp)
 
 Przypisz grze zapisane konto Steam i tryb uruchamiania. Default / standalone nie prosi Nexus o uruchomienie Steam ani zmianę konta; otwarta sesja pozostaje bez zmian. Steam online używa osobistego konta online. Steam offline wymusza tryb offline wybranego konta, także współdzielonego. Lista zawiera tylko konta zapisane w Steam. Wyłącz pytanie o wybór konta przy starcie Steam, aby umożliwić automatyczne przełączanie.
 

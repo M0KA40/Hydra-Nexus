@@ -38,6 +38,7 @@ function Remove-NexusRendererHooks([string]$Text){
     $Text=$Text.Replace('/* HYDRA_NEXUS_TOOLS_DIALOG_V1 */ jsxRuntimeExports.jsx(HydraNexusToolsDialog, {}),','')
     $Text=[regex]::Replace($Text,'(?s)// === HYDRA_NEXUS_NATIVE_UI_START ===\r?\n.*?// === HYDRA_NEXUS_NATIVE_UI_END ===\r?\n','')
     $Text=[regex]::Replace($Text,'(?s)/\* HYDRA_NEXUS_TAB_SCOPE_V1:([A-Za-z0-9+/=]+) \*/.*?/\* HYDRA_NEXUS_TAB_SCOPE_END \*/',[Text.RegularExpressions.MatchEvaluator]{param($m) return [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($m.Groups[1].Value))})
+    $Text=[regex]::Replace($Text,'(?s)/\* HYDRA_NEXUS_CLEANER_V1:([A-Za-z0-9+/=]+) \*/.*?/\* HYDRA_NEXUS_CLEANER_END \*/',[Text.RegularExpressions.MatchEvaluator]{param($m) return [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($m.Groups[1].Value))})
     $Text=$Text.Replace('/* HYDRA_NEXUS_TABS_OUTLET_V1 */ HydraNexusTabsOutlet','Outlet')
     $Text=$Text.Replace('/* HYDRA_NEXUS_PRIVACY_MENU_V1 */ jsxRuntimeExports.jsx(HydraNexusInvisibleMenu, {}),','')
     $Text=$Text.Replace('/* HYDRA_NEXUS_RELEASE_NOTES_V1 */ jsxRuntimeExports.jsx(HydraNexusReleaseNotes, {}),','')
@@ -68,6 +69,40 @@ function Add-NexusTabPageScope([string]$Text,[string]$Name){
     $marker='/* HYDRA_NEXUS_TAB_SCOPE_V1:'+ [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($original))+' */'
     return $Text.Substring(0,$start)+$marker+$next+'/* HYDRA_NEXUS_TAB_SCOPE_END */'+$Text.Substring($start+$original.Length)
 }
+function Add-NexusCleanerScope([string]$Text,[string]$Name){
+    $start=$Text.IndexOf('function '+$Name+'(')
+    if($start -lt 0){throw ('Unsupported Hydra cleanup section: '+$Name+'. The archive was not replaced.')}
+    $end=[regex]::Match($Text.Substring($start),'\r?\n__name\('+[regex]::Escape($Name)+',')
+    if(!$end.Success){throw 'Unsupported Hydra cleanup boundary. The archive was not replaced.'}
+    $original=$Text.Substring($start,$end.Index);$next=$original
+    if($Name -ceq 'SidebarSection'){
+        if(!$next.Contains('  title,') -or !$next.Contains('className: "sidebar-section",')){throw 'Unsupported Hydra sidebar section. The archive was not replaced.'}
+        $next=$next.Replace('  title,','  nexusSection, title,').Replace('className: "sidebar-section",','className: "sidebar-section", "data-nexus-clean-section":nexusSection,')
+    }else{
+        $pairs=[ordered]@{}
+        if($Name -ceq 'Sidebar$1'){$pairs=[ordered]@{'title: t2("achievements"),'='nexusSection:"achievements", title: t2("achievements"),';'title: achievementsCount > 0'='nexusSection:"achievements", title: achievementsCount > 0';'title: t2("stats"),'='nexusSection:"stats", title: t2("stats"),';'title: t2("requirements"),'='nexusSection:"requirements", title: t2("requirements"),'}}
+        if($Name -ceq 'HowLongToBeatSection'){$pairs['title: "HowLongToBeat",']='nexusSection:"howLongToBeat", title: "HowLongToBeat",'}
+        if($Name -ceq 'ControllerSupportSection'){$pairs['title: t2("controller_support"),']='nexusSection:"controller", title: t2("controller_support"),'}
+        if($Name -ceq 'GameLanguageSection'){$pairs['title: t2("language"),']='nexusSection:"languages", title: t2("language"),'}
+        if($Name -ceq 'Sidebar$1'){
+          $pairs['howLongToBeatData: howLongToBeat.data,']='"data-nexus-layout-section":"howLongToBeat", howLongToBeatData: howLongToBeat.data,'
+          $pairs['jsxRuntimeExports.jsx(ControllerSupportSection, {})']='jsxRuntimeExports.jsx(ControllerSupportSection, {"data-nexus-layout-section":"controller"})'
+          $pairs['jsxRuntimeExports.jsx(GameLanguageSection, {})']='jsxRuntimeExports.jsx(GameLanguageSection, {"data-nexus-layout-section":"languages"})'
+        }
+        if($Name -ceq 'GameDetailsContent'){$pairs=[ordered]@{
+          'jsxRuntimeExports.jsx(GallerySlider, {})'='jsxRuntimeExports.jsx(GallerySlider, {"data-nexus-layout-section":"gallery"})';
+          'className: "game-details__description-title",'='"data-nexus-layout-section":"about", className: "game-details__description-title",';
+          'ref: descriptionRef,'='"data-nexus-layout-section":"about", ref: descriptionRef,';
+          'className: "game-details__description-toggle",'='"data-nexus-layout-section":"about", className: "game-details__description-toggle",';
+          'objectId: catalogueGame.objectId,'='"data-nexus-layout-section":"similar", objectId: catalogueGame.objectId,';
+          'ref: reviewsRef,'='"data-nexus-layout-section":"reviews", ref: reviewsRef,';
+          'onYesClick: handleReviewPromptYes,'='"data-nexus-layout-section":"reviews", onYesClick: handleReviewPromptYes,'
+        }}
+        foreach($key in $pairs.Keys){if([regex]::Matches($next,[regex]::Escape($key)).Count -ne 1){throw ('Unsupported Hydra cleanup marker: '+$Name+' '+$key+'. The archive was not replaced.')};$next=$next.Replace($key,$pairs[$key])}
+    }
+    $marker='/* HYDRA_NEXUS_CLEANER_V1:'+ [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($original))+' */'
+    return $Text.Substring(0,$start)+$marker+$next+'/* HYDRA_NEXUS_CLEANER_END */'+$Text.Substring($start+$original.Length)
+}
 function Add-NexusRendererHooks([string]$Text){
     $clean=Remove-NexusRendererHooks $Text
     $entry='onClick: /* @__PURE__ */ __name(() => handleSidebarItemClick(path2), "onClick"),';if($clean.Contains($entry)){$clean=$clean.Replace($entry,'/* HYDRA_NEXUS_SETTINGS_DISCOVERY_V1 */ "data-nexus-settings-entry":path2==="/settings"?"":undefined,'+$entry)}
@@ -76,6 +111,7 @@ function Add-NexusRendererHooks([string]$Text){
     if([regex]::Matches($clean,$separator).Count -ne 1){throw 'Unsupported Hydra account menu. The archive was not replaced.'}
     $result=[regex]::Replace($clean,$separator,'/* HYDRA_NEXUS_PRIVACY_MENU_V1 */ jsxRuntimeExports.jsx(HydraNexusInvisibleMenu, {}),$0')
     if($clean.Contains('function App$1(')){
+        foreach($name in @('SidebarSection','Sidebar$1','HowLongToBeatSection','ControllerSupportSection','GameLanguageSection','GameDetailsContent')){$result=Add-NexusCleanerScope $result $name}
         foreach($required in @('function useOutlet(', 'const LocationContext =', 'var ReactReduxContext =', 'const store =')){if(!$clean.Contains($required)){throw 'Unsupported Hydra tab routing. The archive was not replaced.'}}
         $outlet='(className: "container__content",\s*children: /\* @__PURE__ \*/ jsxRuntimeExports\.jsx\()Outlet(, \{\})'
         if([regex]::Matches($result,$outlet).Count -ne 1){throw 'Unsupported Hydra page outlet. The archive was not replaced.'}
@@ -85,7 +121,7 @@ function Add-NexusRendererHooks([string]$Text){
     $root='jsxRuntimeExports.jsx(BottomPanel, {})'
     if([regex]::Matches($result,[regex]::Escape($root)).Count -ne 1){throw 'Unsupported Hydra main interface. The archive was not replaced.'}
     $result=$result.Replace($root,'/* HYDRA_NEXUS_RELEASE_NOTES_V1 */ jsxRuntimeExports.jsx(HydraNexusReleaseNotes, {}),/* HYDRA_NEXUS_UPDATE_DIALOG_V1 */ jsxRuntimeExports.jsx(HydraNexusUpdateDialog, {}),/* HYDRA_NEXUS_TOOLS_DIALOG_V1 */ jsxRuntimeExports.jsx(HydraNexusToolsDialog, {}),'+$root)
-    $hosts='(jsxRuntimeExports\.(?:jsx|jsxs)\()("(?:aside|div|ul|section)")(,\s*\{\s*)(className:\s*"(?:settings__sidebar|settings__panel|sidebar__menu|hero-panel__actions|hero-panel__content|game-details__hero|game-options-modal__container|game-options-modal__panel|game-options-modal__content|context-menu__list|catalogue-results-page|catalogue-grid|library__content|downloads__container|download-group__hero-buttons|download-group__hero-buttons)")'
+    $hosts='(jsxRuntimeExports\.(?:jsx|jsxs)\()("(?:aside|div|ul|section)")(,\s*\{\s*)(className:\s*"(?:game-details__description-content|content-sidebar|settings__sidebar|settings__panel|sidebar__menu|hero-panel__actions|hero-panel__content|game-details__hero|game-options-modal__container|game-options-modal__panel|game-options-modal__content|context-menu__list|catalogue-results-page|catalogue-grid|library__content|downloads__container|download-group__hero-buttons|download-group__hero-buttons)")'
     $matches=[regex]::Matches($result,$hosts)
     if($matches.Count -lt 5 -or $result -notmatch 'className: "settings__sidebar"'){throw 'Unsupported Hydra native interface hosts. The archive was not replaced.'}
     $result=[regex]::Replace($result,$hosts,[Text.RegularExpressions.MatchEvaluator]{param($m)
@@ -167,8 +203,9 @@ function Get-NexusRendererEdits($State,[string]$Archive,[string]$Operation){
             if($text -notmatch 'sidebar-profile__dropdown-item' -and $text -notmatch 'HYDRA_NEXUS_NATIVE_UI_START'){continue}
             $found++
             if($found -gt 1){throw 'Ambiguous Hydra native interface. The archive was not replaced.'}
-            $clean=Remove-NexusRendererHooks $text
-            $next=if($Operation -eq 'Install'){Add-NexusRendererHooks $clean}else{$clean}
+            # Add-NexusRendererHooks already removes the exact reversible hooks.
+            # Avoid a duplicate full pass over the native renderer on every install.
+            $next=if($Operation -eq 'Install'){Add-NexusRendererHooks $text}else{Remove-NexusRendererHooks $text}
             if($next -cne $text){[pscustomobject]@{Folder=$folder;Name=$property.Name;Node=$node;Bytes=$utf8.GetBytes($next)}}
         }
         foreach($obsoleteGuide in @('nexus-guide-steam-location.webp','nexus-guide-steam-modes.webp','nexus-invisible-mode.png','nexus-extract-path.png')){$assets.files.PSObject.Properties.Remove($obsoleteGuide)}

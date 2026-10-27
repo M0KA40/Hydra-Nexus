@@ -531,7 +531,7 @@
     }
   }
 
-  const UI_INJECTION_SCRIPT = require('./i18n.cjs').rendererScript()+"("+require("./steam-ui.js").toString()+")();";
+  const UI_INJECTION_SCRIPT = require('./i18n.cjs').rendererScript()+"window.__nexusOrderGameActions=("+require("./game-actions.js").toString()+");("+require("./steam-ui.js").toString()+")();";
 
   function attachToWindow(win) {
     if (!win || win.isDestroyed() || win.__hsbAttached) return;

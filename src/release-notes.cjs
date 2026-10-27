@@ -14,7 +14,9 @@ function createReleaseNotes({directory,version,revision,load,changed=()=>{},log=
         if(!release||release.version!==version||release.revision!==revision)return null;
         const localized=translations(release.translations),notes=cleanNotes(release.notes)||localized.en;
         if(!notes)return null;
-        current={id,version,revision,notes,translations:localized};changed(current);return current;
+        current={id,version,revision,notes,translations:localized};
+        if(/^\d+\.\d+\.\d+$/.test(release.displayVersion||''))current.displayVersion=release.displayVersion;
+        changed(current);return current;
       }catch(e){log(e);return null;}
     })();
     return pending;
