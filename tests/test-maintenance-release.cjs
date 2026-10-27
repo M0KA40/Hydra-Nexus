@@ -20,7 +20,9 @@ for(const name of ['src/themes.cjs','src/nexus-ui.js','src/controller.cjs','src/
 }
 assert.ok(!files.some(name=>/interface-quiet|interface-ui|test-interface|docs\/releases\/2\.0\.1/.test(name)));
 const release=read('.github/workflows/release.yml');
-assert.ok(!/^  push:/m.test(release),'pushing prepared source must not publish');
+assert.ok(release.includes("branches: ['release/2.1.0']"),'publishing pushes are restricted to the release branch');
+assert.ok(release.includes("github.ref == 'refs/heads/release/2.1.0'"));
+assert.ok(release.includes("github.event.head_commit.message == 'Release Hydra Nexus 2.1'"),'only the explicit publication commit may publish');
 assert.ok(release.includes("github.event.inputs.confirm == 'publish-2.1'"));
 assert.equal((release.match(/--latest=false/g)||[]).length,2,'both draft creation and publication preserve Latest');
 assert.equal((release.match(/\$latest -ne 'v2\.0\.0'/g)||[]).length,2,'check Latest before and after publication');

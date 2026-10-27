@@ -1,5 +1,7 @@
 name: Release
 on:
+  push:
+    branches: ['release/2.1.0']
   workflow_dispatch:
     inputs:
       confirm:
@@ -13,7 +15,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   publish:
-    if: github.event_name == 'workflow_dispatch' && github.event.inputs.confirm == 'publish-2.1'
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/release/2.1.0' && github.event.head_commit.message == 'Release Hydra Nexus 2.1') || (github.event_name == 'workflow_dispatch' && github.event.inputs.confirm == 'publish-2.1')
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
