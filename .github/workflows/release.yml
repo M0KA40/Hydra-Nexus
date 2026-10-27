@@ -46,3 +46,23 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           $latest = gh api "repos/$env:GITHUB_REPOSITORY/releases/latest" --jq '.tag_name'
           if ($LASTEXITCODE -ne 0 -or $latest -ne 'v2.0.0') { throw 'Publication finished, but the Latest release must be inspected before delivery.' }
+  promote-latest:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/release/2.1.0' && github.event.head_commit.message == 'Set Hydra Nexus 2.1 as latest'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mark the existing 2.1 release as Latest
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: pwsh
+        run: |
+          $before = gh api "repos/$env:GITHUB_REPOSITORY/releases/tags/v2.1.0" | ConvertFrom-Json
+          if ($LASTEXITCODE -ne 0 -or $before.draft -or $before.prerelease) { throw 'Expected the published stable v2.1.0 release.' }
+          gh release edit v2.1.0 --repo "$env:GITHUB_REPOSITORY" --latest=true
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $after = gh api "repos/$env:GITHUB_REPOSITORY/releases/tags/v2.1.0" | ConvertFrom-Json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $beforeAssets = $before.assets | Select-Object id,name,size,digest | ConvertTo-Json -Compress
+          $afterAssets = $after.assets | Select-Object id,name,size,digest | ConvertTo-Json -Compress
+          if ($before.body -cne $after.body -or $before.name -cne $after.name -or $beforeAssets -cne $afterAssets) { throw 'Release notes or assets unexpectedly changed.' }
+          $latest = gh api "repos/$env:GITHUB_REPOSITORY/releases/latest" --jq '.tag_name'
+          if ($LASTEXITCODE -ne 0 -or $latest -ne 'v2.1.0') { throw 'v2.1.0 is not Latest.' }
