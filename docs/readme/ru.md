@@ -10,7 +10,7 @@ Hydra Nexus — расширение сообщества для Hydra Launcher 
 
 ## Steam launch settings
 
-![Steam launch settings](../../assets/features/steam.webp)
+![Steam launch settings](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/ac0b8e5df56367c357d743ffb2c01ea4b1fc9c9a/assets/features/steam.webp)
 
 Назначьте игре сохранённый аккаунт Steam и режим запуска. Default / standalone не просит Nexus запускать Steam или менять аккаунт; открытый сеанс не изменяется. Steam online использует личный аккаунт онлайн. Steam offline принудительно включает автономный режим выбранного, в том числе общего аккаунта. Доступны только сохранённые в Steam аккаунты. Для автоматического переключения отключите запрос выбора аккаунта при запуске Steam.
 

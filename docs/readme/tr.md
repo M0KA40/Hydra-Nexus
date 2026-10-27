@@ -10,7 +10,7 @@ Hydra Nexus, Windows üzerinde Hydra Launcher için topluluk tarafından gelişt
 
 ## Steam launch settings
 
-![Steam launch settings](../../assets/features/steam.webp)
+![Steam launch settings](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/ac0b8e5df56367c357d743ffb2c01ea4b1fc9c9a/assets/features/steam.webp)
 
 Her oyuna kayıtlı bir Steam hesabı ve başlatma modu atayın. Default / standalone, Nexus’tan Steam’i başlatmasını veya hesap değiştirmesini istemez; açık oturum değişmez. Steam online kişisel hesabı çevrimiçi kullanır. Steam offline, paylaşılanlar dahil seçilen hesabı çevrimdışına zorlar. Yalnızca Steam’de kayıtlı hesaplar listelenir. Otomatik geçiş için Steam açılışındaki hesap seçme sorusunu kapatın.
 
