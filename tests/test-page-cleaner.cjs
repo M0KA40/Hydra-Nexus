@@ -5,8 +5,13 @@ assert.equal(sections.length,11);assert.ok(Object.values(defaults()).every(scope
 assert.equal(normalize({gallery:'library'}).stats,'show');assert.equal(change(defaults(),'reviews','all').reviews,'all');
 for(const value of [null,[],{gallery:true},{gallery:'unknown'},{unknown:'show'}])assert.throws(()=>normalize(value),/Invalid/);
 assert.throws(()=>change(defaults(),'__proto__','all'),/Invalid/);assert.deepEqual(normalizeOrder(),{middle:null,sidebar:null});assert.deepEqual(changeOrder(undefined,'middle',[...groups.middle].reverse()).middle,[...groups.middle].reverse());assert.throws(()=>changeOrder(undefined,'middle',['gallery']),/Invalid/);assert.throws(()=>changeOrder(undefined,'sidebar',groups.middle),/Invalid/);
-const root=path.resolve(__dirname,'..'),dir=fs.mkdtempSync(path.join(os.tmpdir(),'nexus-cleaner-native-')),q=value=>"'"+value.replace(/'/g,"''")+"'";
-const native=process.env.HYDRA_NATIVE_FIXTURES||path.resolve(root,'../Development/Fixtures/Native'),original=fs.readFileSync(path.join(native,'hydra-renderer.js'),'utf8');
+const root=path.resolve(__dirname,'..'),native=process.env.HYDRA_NATIVE_FIXTURES||path.resolve(root,'../Development/Fixtures/Native');
+if(!fs.existsSync(path.join(native,'hydra-renderer.js'))){
+ if(process.env.HYDRA_NATIVE_FIXTURES)throw Error('Requested native fixture is unavailable');
+ console.log('PASS: cleanup defaults/validation. SKIP: native marker/repair/removal integration requires the private HYDRA_NATIVE_FIXTURES reference, which is not distributed.');
+}else{
+const dir=fs.mkdtempSync(path.join(os.tmpdir(),'nexus-cleaner-native-')),q=value=>"'"+value.replace(/'/g,"''")+"'";
+const original=fs.readFileSync(path.join(native,'hydra-renderer.js'),'utf8');
 const bat=fs.readFileSync(path.join(root,'dist/Hydra_Nexus.bat'),'utf8'),manager=path.join(dir,'manager.ps1');fs.writeFileSync(manager,'\ufeff'+bat.split(/\r?\n/).slice(bat.split(/\r?\n/).indexOf(':: === HYDRA_SUITE_PS_START ===')+1).join('\n'));
 const output=path.join(dir,'patched.js'),cleaned=path.join(dir,'cleaned.js');
 const code=`$ErrorActionPreference='Stop';. ${q(manager)} -LibraryOnly;$original=[IO.File]::ReadAllText(${q(path.join(native,'hydra-renderer.js'))});$patched=Add-NexusRendererHooks $original;[IO.File]::WriteAllText(${q(output)},$patched);if((Add-NexusRendererHooks $patched) -cne $patched){throw 'Not idempotent'};[IO.File]::WriteAllText(${q(cleaned)},(Remove-NexusRendererHooks $patched))`;
@@ -16,3 +21,5 @@ for(const key of ['achievements','stats','requirements','howLongToBeat','control
 const start=patched.indexOf('function SidebarSection('),end=patched.indexOf('\n__name(SidebarSection,',start);let component=patched.slice(start,end).replace(/\/\* HYDRA_NEXUS_CLEANER_END \*\//g,'');
 if(process.env.HYDRA_CLEANER_NATIVE_COMPONENT)fs.writeFileSync(process.env.HYDRA_CLEANER_NATIVE_COMPONENT,component);
 fs.rmSync(dir,{recursive:true,force:true});console.log('PASS: cleanup defaults/validation; actual native markers, repeated repair and exact removal.');
+
+}
