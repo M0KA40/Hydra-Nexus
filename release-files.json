@@ -255,5 +255,8 @@
   "docs/readme/fr.md",
   "docs/readme/de.md",
   "docs/readme/tr.md",
-  "docs/readme/pl.md"
+  "docs/readme/pl.md",
+  "tests/test-credential-safety.cjs",
+  "tests/test-launch-audit.cjs",
+  "tests/test-review.cjs"
 ]
