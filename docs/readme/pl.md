@@ -18,7 +18,7 @@ Przypisz grze zapisane konto Steam i tryb uruchamiania. Default / standalone nie
 
 ## Game Storage Manager
 
-![Game Storage Manager](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/f575584cd94e2d50d5026ce64f396540ee46fc4c/assets/features/storage.webp)
+![Game Storage Manager](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/1dedee7bd0a56fbe0db332a1fdb326ab8b46ac9a/assets/features/storage.webp)
 
 Przeglądaj zainstalowane gry według dysku, wolnego miejsca i zmierzonego rozmiaru. Wyszukuj i sortuj według rozmiaru lub ostatniej gry. Otwieraj foldery lub przenoś gry po sprawdzeniu celu i miejsca. Kopie są weryfikowane przed zmianą ścieżek i usunięciem oryginałów. Niepewne foldery i niepełne pomiary są oznaczone. Wpisy innych launcherów i skróty nie są zmieniane.
 
