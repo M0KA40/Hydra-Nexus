@@ -17,5 +17,5 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: python build.py
+      - run: python build.py --exe
       - run: python tests/check.py
