@@ -18,7 +18,7 @@ Hydra Nexus إضافة مجتمعية لهايدرا لانشر على ويند�
 
 ## Game Storage Manager
 
-![Game Storage Manager](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/f575584cd94e2d50d5026ce64f396540ee46fc4c/assets/features/storage.webp)
+![Game Storage Manager](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/1dedee7bd0a56fbe0db332a1fdb326ab8b46ac9a/assets/features/storage.webp)
 
 اعرض الألعاب المثبّتة حسب القرص والمساحة المتاحة وأحجام الملفات المقاسة. ابحث ورتّب حسب الحجم أو آخر تشغيل. افتح مجلد اللعبة أو انقل ألعابًا محددة بعد مراجعة الوجهة والمساحة المطلوبة. يُتحقّق من الملفات المنسوخة قبل تحديث المسارات وحذف الأصل. المجلدات غير المؤكدة تحتاج تأكيدًا والفحوص الجزئية مميّزة. لا يعاد تعديل اختصارات سطح المكتب أو تسجيلات المشغّلات الخارجية.
 
