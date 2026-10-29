@@ -18,7 +18,7 @@ Assign a saved Steam account and launch mode to each game. Default / standalone 
 
 ## Game Storage Manager
 
-![Game Storage Manager](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/f575584cd94e2d50d5026ce64f396540ee46fc4c/assets/features/storage.webp)
+![Game Storage Manager](assets/features/storage.webp)
 
 Browse installed games by drive, available space and measured file sizes. Search and sort by size or last played. Open a game folder or move selected games after reviewing the destination and required space. Copied files are verified before Hydra’s paths are updated and originals removed. Uncertain folders require confirmation; partial measurements are labelled. External launcher registrations and desktop shortcuts are not rewritten.
 
