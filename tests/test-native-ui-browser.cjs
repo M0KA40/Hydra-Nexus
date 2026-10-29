@@ -53,7 +53,7 @@ const {catalogs,rendererScript}=require('../src/i18n.cjs'),root=path.join(__dirn
    await quick.evaluate(el=>el.click());await page.waitForFunction(()=>document.querySelector('[data-nexus-invisible]').getAttribute('aria-pressed')==='true'&&!document.querySelector('[data-nexus-invisible]').disabled);
    assert.equal(await quick.locator('[data-invisible-status]').innerText(),catalogs[language].On);assert.equal(await plugin.isChecked(),true);assert.equal(await quick.locator('svg').getAttribute('data-invisible-icon'),'on');
    assert.equal(await quick.getAttribute('aria-label'),catalogs[language]['Invisible Mode']+' — '+catalogs[language].On);
-   await page.locator('[data-plugin-open=invisible]').click();assert.equal(await page.locator('[data-nexus-action=resumePrivateSharing]').isDisabled(),true);await page.evaluate(()=>__nexusPluginDialog.close());
+   await page.locator('[data-plugin-open=invisible]').click();assert.equal(await page.locator('[data-nexus-action=resumePrivateSharing]').count(),0,'independent resume-sharing control removed');await page.evaluate(()=>__nexusPluginDialog.close());
    const on=await quick.locator('svg').evaluate(el=>({color:getComputedStyle(el).color,opacity:getComputedStyle(el).opacity}));
    await quick.evaluate(el=>el.click());await page.waitForFunction(()=>document.querySelector('[data-nexus-invisible]').getAttribute('aria-pressed')==='false'&&!document.querySelector('[data-nexus-invisible]').disabled);
    const off=await quick.locator('svg').evaluate(el=>({color:getComputedStyle(el).color,opacity:getComputedStyle(el).opacity}));assert.notEqual(on.color,off.color);assert.equal(on.opacity,'1');assert.equal(off.opacity,'0.45');colors.push(language);
@@ -108,18 +108,18 @@ const {catalogs,rendererScript}=require('../src/i18n.cjs'),root=path.join(__dirn
   assert.deepEqual(errors,[]);
   await page.locator('[role=dialog] .button--primary').click();await page.locator('[role=dialog]').waitFor({state:'detached'});
   const localizedPack=require('../src/release-content.cjs');
-  await page.evaluate(pack=>__nexusReceive({event:'releaseNotes',value:{id:'2.0.0:1',version:'2.0.0',notes:pack.notes.en,translations:pack.notes}}),localizedPack);
+  await page.evaluate(pack=>__nexusReceive({event:'releaseNotes',value:{id:pack.version+':'+pack.revision,version:pack.version,notes:pack.notes.en,translations:pack.notes}}),localizedPack);
   await page.locator('[role=dialog] article').waitFor();
   for(const language of Object.keys(catalogs)){
    await page.evaluate(l=>document.documentElement.lang=l,language);
    await page.waitForFunction(l=>__nexusReleaseControl.snapshot?.language===l,language);
-   const heading=localizedPack.notes[language].split('\n').find(line=>line.startsWith('## ')).slice(3);
+   const heading=localizedPack.notes[language].split('\n').find(line=>/^#{1,2} /.test(line)).replace(/^#{1,2} /,'');
    await page.getByRole('dialog').getByRole('heading',{name:heading,exact:true}).waitFor();
    assert.equal(await page.locator('[role=dialog] [lang]').first().getAttribute('dir'),language==='ar'?'rtl':'ltr');
    assert.ok(!await page.locator('[role=dialog] article').evaluate(el=>el.scrollWidth>el.clientWidth+2),language+' release notes fit');
   }
   await page.evaluate(()=>document.documentElement.lang='ja');await page.waitForFunction(()=>__nexusReleaseControl.snapshot?.language==='en');
-  assert.ok((await page.locator('[role=dialog] article').innerText()).includes('Game Storage Manager'));
+  assert.ok((await page.locator('[role=dialog] article').innerText()).includes(localizedPack.notes.en.split('\n')[0].replace(/^# /,'')));
   await page.locator('[role=dialog] .button--primary').click();await page.locator('[role=dialog]').waitFor({state:'detached'});
   await page.evaluate(()=>document.documentElement.lang='ar');await page.waitForTimeout(40);assert.equal(await page.locator('[role=dialog]').count(),0,'language switch cannot reopen acknowledged 2.0');
   assert.deepEqual(errors,[]);

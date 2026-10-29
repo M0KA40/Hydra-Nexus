@@ -1,5 +1,6 @@
 function createBackgroundManager({shouldPlay,changed,finishStartup}){
   let active=null,candidate=null,layer=null,generation=0,configured=null,state='ready';
+  const suspended={background:null};
   const requests=new WeakMap();
   const errors={read:'The background file could not be read. Choose the file again.',decode:'The video could not be decoded. Try another H.264 MP4 or WebM file.',format:'This video format is unsupported. Try an H.264 MP4 or WebM file.',image:'The background image could not be loaded. Choose the file again.',cancel:'Background selection was cancelled.',timeout:'The background did not finish loading. Try another file.'};
   function report(next,message=''){state=next;changed(message,next);}
@@ -49,6 +50,8 @@ function createBackgroundManager({shouldPlay,changed,finishStartup}){
   }
   function apply(background){
     const identity=background?.url||null;configured=identity;
+    // An explicit apply supersedes any released (suspended) background.
+    suspended.background=null;
     if(!background){cancel();dispose(active);active=null;layer?.remove();layer=null;document.body.removeAttribute('data-nexus-bg');finishStartup();report('ready');return;}
     if(!document.querySelector('.sidebar'))return;
     if(active?.background.url===identity){active.background={...background};paint();sync();return;}
@@ -66,7 +69,14 @@ function createBackgroundManager({shouldPlay,changed,finishStartup}){
     try{await new Promise((resolve,reject)=>{item.resolve=resolve;item.reject=reject;item.media.src=background.url;});if(candidate!==item||item.disposed)throw Object.assign(Error(errors.cancel),{name:'AbortError'});}
     catch(error){if(candidate===item)candidate=null;dispose(item);throw error;}
   }
-  return {apply,validate,cancel,sync,dispose(){cancel();dispose(active);active=null;layer?.remove();layer=null;},get state(){return state;},get media(){return active?.media;}};
+  return {apply,validate,cancel,sync,
+    // A hidden window keeps the decode pipeline and buffered frames alive unless the
+    // media element is actually torn down. Suspending releases them; resume rebuilds
+    // from the same persisted background without changing the saved choice.
+    suspend(){if(!active||active.background?.type!=='video'||suspended.background)return;suspended.background={...active.background};dispose(active);active=null;layer?.remove();layer=null;document.body.removeAttribute('data-nexus-bg');finishStartup();state='paused';},
+    resume(){if(!suspended.background)return;const background=suspended.background;suspended.background=null;apply(background);},
+    get suspended(){return !!suspended.background;},
+    dispose(){cancel();dispose(active);active=null;layer?.remove();layer=null;},get state(){return state;},get media(){return active?.media;}};
 }
 if(typeof module!=='undefined')module.exports=createBackgroundManager;
 else window.__nexusCreateBackgroundManager=createBackgroundManager;

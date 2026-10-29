@@ -3,18 +3,67 @@ $ErrorActionPreference='Stop'
 $nexusHeld=$false;$nexusMutex=$null;$nexusChanged=$false;$nexusApproved=$false;$nexusStarted=$false;$nexusBackup=$null
 $nexusJobDir=Split-Path -Parent ([IO.Path]::GetFullPath($JobFile))
 $nexusState=Join-Path $nexusJobDir 'state.json'
-function Set-NexusState([string]$Phase,[string]$Message){
-  $state=@{schema=2;id=$nexusJob.id;token=$nexusJob.token;workerPid=$PID;phase=$Phase;message=$Message;at=[DateTime]::UtcNow.ToString('o')}
+function Set-NexusState([string]$Phase,[string]$Message,[long]$Completed=0,[long]$Total=0){
+  $state=@{schema=2;id=$nexusJob.id;token=$nexusJob.token;workerPid=$PID;phase=$Phase;message=$Message;completed=$Completed;total=$Total;at=[DateTime]::UtcNow.ToString('o')}
   $temp=$nexusState+'.tmp';[IO.File]::WriteAllText($temp,($state|ConvertTo-Json -Compress),[Text.UTF8Encoding]::new($false))
   if(Test-Path -LiteralPath $nexusState){[IO.File]::Replace($temp,$nexusState,[System.Management.Automation.Language.NullString]::Value)}else{[IO.File]::Move($temp,$nexusState)}
   [IO.File]::WriteAllText((Join-Path (Split-Path -Parent $nexusJobDir) 'installation-status.txt'),$Message)
 }
+# Real byte progress for recovery copies. Hash verification remains mandatory below.
+function Copy-NexusRecovery([string]$Source,[string]$Destination,[long]$Offset,[long]$Total){
+  $inputStream=[IO.File]::OpenRead($Source);$outputStream=$null
+  try{
+    $outputStream=[IO.File]::Open($Destination,[IO.FileMode]::CreateNew,[IO.FileAccess]::Write,[IO.FileShare]::None)
+    $buffer=New-Object byte[] 1048576;$done=$Offset;$last=[DateTime]::UtcNow
+    while(($count=$inputStream.Read($buffer,0,$buffer.Length)) -gt 0){
+      $outputStream.Write($buffer,0,$count);$done+=$count
+      if(([DateTime]::UtcNow-$last).TotalMilliseconds -ge 150){Set-NexusState 'backing-up' 'Creating and verifying the recovery copy…' $done $Total;$last=[DateTime]::UtcNow}
+    }
+    $outputStream.Flush($true);Set-NexusState 'backing-up' 'Creating and verifying the recovery copy…' $done $Total
+  }finally{$inputStream.Dispose();if($outputStream){$outputStream.Dispose()}}
+}
 function Get-NexusHash([string]$File){$hash=[Security.Cryptography.SHA256]::Create();$stream=[IO.File]::OpenRead($File);try{return [BitConverter]::ToString($hash.ComputeHash($stream)).Replace('-','').ToLowerInvariant()}finally{$stream.Dispose();$hash.Dispose()}}
 function Test-NexusCancelled {return Test-Path -LiteralPath (Join-Path $nexusJobDir 'cancel')}
+function Start-NexusPresentation {
+  if($nexusJob.showProgress -ne $true){return}
+  $scriptFile=Join-Path $nexusJobDir 'progress.ps1'
+  if(!(Test-Path -LiteralPath $scriptFile)){throw 'Update presentation is missing. Hydra was kept open.'}
+  $powershell=Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+  $ui=Start-Process -WindowStyle Hidden -FilePath $powershell -ArgumentList @('-NoLogo','-NoProfile','-NonInteractive','-STA','-ExecutionPolicy','Bypass','-File',('"'+$scriptFile+'"'),'-JobFile',('"'+$JobFile+'"')) -RedirectStandardOutput (Join-Path $nexusJobDir 'progress.log') -RedirectStandardError (Join-Path $nexusJobDir 'progress-errors.log') -PassThru
+  $deadline=[DateTime]::UtcNow.AddSeconds(15)
+  while([DateTime]::UtcNow -lt $deadline){
+    if(Test-NexusCancelled){throw 'Update cancelled before installation.'}
+    $readyFile=Join-Path $nexusJobDir 'progress-ready.json'
+    if(Test-Path -LiteralPath $readyFile){try{$ready=Get-Content -LiteralPath $readyFile -Raw|ConvertFrom-Json;if($ready.schema -eq 1 -and $ready.id -ceq $nexusJob.id -and $ready.token -ceq $nexusJob.token -and $ready.pid -eq $ui.Id){return}}catch{}}
+    if($ui.HasExited){throw 'The update window could not open. Hydra was kept open.'}
+    Start-Sleep -Milliseconds 100
+  }
+  throw 'The update window did not become ready. Hydra was kept open.'
+}
 function Assert-NexusUnlocked {
   # Match the installer's own process exclusion, including manually reopened apps.
   if(@(Get-Process -Name $nexusJob.processNames -ErrorAction SilentlyContinue).Count){throw 'Hydra is still running. Nothing was installed.'}
-  foreach($file in @($nexusJob.exe,$nexusArchive)){$stream=[IO.File]::Open($file,[IO.FileMode]::Open,[IO.FileAccess]::ReadWrite,[IO.FileShare]::None);$stream.Dispose()}
+  foreach($file in @($nexusJob.exe,$nexusArchive)){
+    $stream=$null
+    try{$stream=[IO.File]::Open($file,[IO.FileMode]::Open,[IO.FileAccess]::ReadWrite,[IO.FileShare]::None)}finally{if($stream){$stream.Dispose()}}
+  }
+}
+function Wait-NexusUnlocked([int]$TimeoutMilliseconds=20000,[bool]$AllowCancel=$true,[bool]$WaitForProcesses=$false){
+  $deadline=[DateTime]::UtcNow.AddMilliseconds($TimeoutMilliseconds)
+  while($true){
+    if($AllowCancel -and (Test-NexusCancelled)){throw 'Update cancelled before installation.'}
+    try{Assert-NexusUnlocked;return}catch{
+      $cause=$_.Exception;while($cause.InnerException){$cause=$cause.InnerException}
+      # Backup/hash reads can trigger a short-lived scanner or indexer handle.
+      # Retry sharing/lock violations only; permission, missing-file and live-app
+      # errors remain immediate failures. Never bypass exclusive-access checks.
+      $code=$cause.HResult -band 65535
+      $sharing=($cause -is [IO.IOException]) -and $code -in @(32,33)
+      $closing=$WaitForProcesses -and $cause.Message -eq 'Hydra is still running. Nothing was installed.'
+      if((!$sharing -and !$closing) -or [DateTime]::UtcNow -ge $deadline){throw}
+      Start-Sleep -Milliseconds 200
+    }
+  }
 }
 function Restore-NexusFiles {
   foreach($item in @(@('app.asar',$nexusArchive),@('Hydra.exe',$nexusJob.exe))){
@@ -50,6 +99,7 @@ try{
   $null=$nexusParent.Handle
   if($nexusParent.MainModule.FileName -ine $nexusJob.parentExe){throw 'Update parent identity changed'}
   if(Test-NexusCancelled){throw 'Update cancelled before installation.'}
+  Start-NexusPresentation
   Set-NexusState 'ready' 'Update helper is ready. Saving your work before restarting.'
   $deadline=[DateTime]::UtcNow.AddSeconds(90)
   while($true){
@@ -62,27 +112,27 @@ try{
   }
   Set-NexusState 'waiting' 'Waiting for Hydra to close before installing.'
   if(!$nexusParent.WaitForExit(30000)){throw 'Hydra did not close. Nothing was installed.'}
-  $deadline=[DateTime]::UtcNow.AddSeconds(20)
-  while($true){
-    if(Test-NexusCancelled){throw 'Update cancelled before installation.'}
-    try{Assert-NexusUnlocked;break}catch{if([DateTime]::UtcNow -ge $deadline){throw};Start-Sleep -Milliseconds 200}
-  }
+  Wait-NexusUnlocked -WaitForProcesses $true
   if((Get-NexusHash $nexusJob.installer) -cne $nexusJob.sha256){throw 'Installer checksum changed'}
-  Set-NexusState 'installing' 'Installing the verified update…'
+  Set-NexusState 'backing-up' 'Preparing the verified installer and recovery copy…'
   $env:HYDRA_SUITE_SELF=$nexusJob.installer
   $lines=[IO.File]::ReadAllLines($nexusJob.installer,[Text.Encoding]::UTF8);$marker=[Array]::IndexOf($lines,':: === HYDRA_SUITE_PS_START ===')
   if($marker -lt 0){throw 'Invalid Nexus installer'}
   . ([scriptblock]::Create([string]::Join([char]10,$lines[($marker+1)..($lines.Length-1)]))) -LibraryOnly -HydraDir (Split-Path -Parent $nexusJob.exe)
+  Set-NexusState 'backing-up' 'Creating and verifying the recovery copy…'
   $nexusBackup=Join-Path $nexusJobDir 'recovery';[IO.Directory]::CreateDirectory($nexusBackup)|Out-Null
-  [IO.File]::Copy($nexusArchive,(Join-Path $nexusBackup 'app.asar'),$false)
-  [IO.File]::Copy($nexusJob.exe,(Join-Path $nexusBackup 'Hydra.exe'),$false)
+  $archiveSize=(Get-Item -LiteralPath $nexusArchive).Length;$copyTotal=$archiveSize+(Get-Item -LiteralPath $nexusJob.exe).Length
+  Copy-NexusRecovery $nexusArchive (Join-Path $nexusBackup 'app.asar') 0 $copyTotal
+  Copy-NexusRecovery $nexusJob.exe (Join-Path $nexusBackup 'Hydra.exe') $archiveSize $copyTotal
   if((Get-NexusHash $nexusArchive) -cne (Get-NexusHash (Join-Path $nexusBackup 'app.asar')) -or (Get-NexusHash $nexusJob.exe) -cne (Get-NexusHash (Join-Path $nexusBackup 'Hydra.exe'))){throw 'Recovery copy verification failed'}
   [IO.File]::WriteAllText((Join-Path $nexusBackup 'hashes.json'),(@{'app.asar'=(Get-NexusHash (Join-Path $nexusBackup 'app.asar'));'Hydra.exe'=(Get-NexusHash (Join-Path $nexusBackup 'Hydra.exe'))}|ConvertTo-Json -Compress),[Text.UTF8Encoding]::new($false))
-  Assert-NexusUnlocked
+  Wait-NexusUnlocked
   if(Test-NexusCancelled){throw 'Update cancelled before installation.'}
   $nexusChanged=$true
   $patch=$script:BuiltInPatches|Where-Object Id -eq 'nexus'
+  $script:NexusInstallProgressSink={param($stage) $phase=if($stage -eq 'verifying' -or $stage -eq 'committing'){'verifying'}else{'installing'};Set-NexusState $phase ('Installing the verified update: '+$stage)}
   Invoke-BuiltInPatch $patch Install *> (Join-Path $nexusJobDir 'installer.log')
+  Set-NexusState 'verifying' 'Verifying the installed update…'
   if((Get-PatchStatus $patch (Split-Path -Parent $nexusJob.exe)) -cne 'Installed'){throw 'Post-installation verification failed'}
   # Confirm the installed bridge belongs to this exact verified BAT, not merely
   # that some Nexus hook was already present before the update.
@@ -93,6 +143,7 @@ try{
     if((Get-Integrity $actual).hash -cne (Get-Integrity ([Convert]::FromBase64String($patch.BridgeBase64))).hash){throw 'Installed bridge verification failed'}
   }
   Remove-Item -LiteralPath (Join-Path (Split-Path -Parent $nexusJobDir) 'staged.json') -Force -ErrorAction SilentlyContinue
+  Set-NexusState 'restarting' 'Reopening Hydra…'
   Set-NexusState 'installed' ('Hydra Nexus '+$nexusJob.version+' installed successfully.')
   Start-NexusOnce
   $nexusChanged=$false
@@ -100,7 +151,7 @@ try{
 }catch{
   $failure=$_.Exception.Message
   if($nexusChanged){
-    try{Assert-NexusUnlocked;Restore-NexusFiles;$failure+=' Previous installation restored.'}catch{$failure+=' ROLLBACK NEEDS ATTENTION: '+$_.Exception.Message}
+    try{Wait-NexusUnlocked -AllowCancel $false;Restore-NexusFiles;$failure+=' Previous installation restored.'}catch{$failure+=' ROLLBACK NEEDS ATTENTION: '+$_.Exception.Message}
   }
   if($nexusJob){try{Set-NexusState 'failed' ('Update needs attention: '+$failure)}catch{}}
   # Only a parent that approved and actually exited can be reopened. A startup

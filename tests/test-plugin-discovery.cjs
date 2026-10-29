@@ -2,8 +2,9 @@
 const fs=require('node:fs/promises'),path=require('node:path'),os=require('node:os'),assert=require('node:assert/strict');
 const {createPluginDiscovery}=require('../src/plugin-discovery.cjs'),{createPluginRestart}=require('../src/plugin-restart.cjs'),{createUpdateShutdown}=require('../src/update-shutdown.cjs');
 (async()=>{const directory=await fs.mkdtemp(path.join(os.tmpdir(),'nexus-discovery-'));try{
-  let ledger=createPluginDiscovery({directory});assert.deepEqual(ledger.snapshot().pending,['storage','downloadFinish']);
-  await Promise.all([ledger.acknowledge('storage'),ledger.acknowledge('downloadFinish')]);assert.deepEqual(ledger.snapshot().pending,[]);
+  let ledger=createPluginDiscovery({directory});assert.deepEqual(ledger.snapshot().pending,['storage','downloadFinish','pageCleaner']);
+  let theme=createPluginDiscovery({directory,theme:true});assert.deepEqual(theme.snapshot().pending,['quietMint']);await theme.acknowledge('quietMint');theme=createPluginDiscovery({directory,theme:true});assert.deepEqual(theme.snapshot().pending,[],'theme discovery is durable and separate from plugin discovery');
+  await Promise.all([ledger.acknowledge('storage'),ledger.acknowledge('downloadFinish'),ledger.acknowledge('pageCleaner')]);assert.deepEqual(ledger.snapshot().pending,[]);
   // A new controller after installer reapply/preview-to-final uses the same data and IDs.
   ledger=createPluginDiscovery({directory});assert.deepEqual(ledger.snapshot().pending,[]);await ledger.acknowledge('storage');assert.deepEqual(ledger.snapshot().pending,[]);
   await assert.rejects(()=>ledger.acknowledge('tabs'),/Unknown/);

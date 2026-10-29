@@ -1,0 +1,234 @@
+/* Quiet library detail composition. All outer native frames remain authoritative. */
+.nexus-game-content,.nexus-game-native-content{display:contents}
+.nexus-game-navigation[hidden],.nexus-game-news-slot[hidden],.nexus-game-achievements-empty[hidden],.nexus-game-community-empty[hidden],.nexus-game-developer[hidden]{display:none!important}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *){--nexus-game-material:linear-gradient(125deg,#ffffff08,transparent 58%),rgba(30,35,43,.82);--nexus-game-edge:var(--nexus-quiet-line-soft);display:flex;flex-direction:column;gap:26px;align-items:stretch;min-width:0;container-type:inline-size}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-navigation{min-width:0;position:relative;z-index:1;padding:7px;background:linear-gradient(130deg,#ffffff0b,transparent),rgba(35,41,49,.76);border:1px solid var(--nexus-game-edge);border-radius:18px;backdrop-filter:blur(14px);box-shadow:inset 0 1px #ffffff08,0 8px 24px #0002}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;min-width:0}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-tab{position:relative;display:flex;align-items:center;justify-content:center;gap:9px;min-width:0;min-height:46px;padding:10px 12px;border:1px solid transparent;border-radius:12px;background:transparent;color:var(--nexus-quiet-muted);font:inherit;font-weight:600;line-height:1.35;overflow-wrap:anywhere;cursor:pointer;transition:background-color 140ms,color 140ms,transform 120ms}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-tab svg{flex-shrink:0;opacity:.85}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-tab[aria-selected=true]{color:var(--nexus-quiet-text);background:#e5edf017;border-color:#d9e4ed26;box-shadow:inset 0 1px #ffffff0a}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-tab[aria-selected=true]::after{content:'';position:absolute;inset-inline:calc(50% - 8px);inset-block-end:4px;height:2px;border-radius:2px;background:#b7dcdf}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-tab:active{transform:scale(.97)}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) :is(button,a,input,select,textarea):focus-visible{outline:2px solid #d7edf0;outline-offset:3px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-content{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:24px;align-items:start;min-width:0}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) :is(.game-details__description-content,.content-sidebar,.nexus-game-native-content){display:contents}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) :is(.game-details__description-content,.content-sidebar)>*{min-width:0;grid-column:1/-1}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-news-slot{min-width:0;grid-column:1/-1;order:20}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) :is(.nexus-game-achievements-empty,.nexus-game-community-empty){display:flex;align-items:center;gap:16px;grid-column:1/-1;min-width:0;border:1px solid var(--nexus-game-edge);background:var(--nexus-game-material);border-radius:18px;padding:26px;order:10;color:var(--nexus-quiet-muted)}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) :is(.nexus-game-achievements-empty,.nexus-game-community-empty) h2{font-size:19px;font-weight:650;color:var(--nexus-quiet-text);margin:0}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-achievements-empty svg{width:24px;height:24px;flex-shrink:0}
+/* Content visibility uses display, so inactive content is absent from focus/AX trees.
+   Its React instances remain mounted. Existing cleanup visibility still wins. */
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *):not([data-nexus-game-tab=about]) .game-details__description-content>:not(.similar-games):not([data-nexus-layout-section=similar]):not([data-nexus-layout-section=reviews]):not(.review-prompt-banner):not(:has(>.game-details__reviews-section)){display:none}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *):not([data-nexus-game-tab=overview]) :is(.similar-games,[data-nexus-layout-section=similar],.nexus-game-achievements-empty){display:none}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *):not([data-nexus-game-tab=community]) :is([data-nexus-layout-section=reviews],.review-prompt-banner,.nexus-game-community-empty),html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *):not([data-nexus-game-tab=community]) .game-details__description-content>:has(>.game-details__reviews-section){display:none}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *):not([data-nexus-game-tab=details]) .content-sidebar>:not([data-nexus-clean-section=achievements]){display:none}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *):not([data-nexus-game-tab=overview]) [data-nexus-clean-section=achievements]{display:none}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *):not([data-nexus-game-tab=overview]):not([data-nexus-game-tab=updates]) .nexus-game-news-slot{display:none}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *):not([data-nexus-game-tab=about]) .nexus-game-developer{display:none}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .similar-games{order:30;margin-block-start:12px;gap:20px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .similar-games__title{font-size:22px;line-height:1.35;letter-spacing:-.02em;color:var(--nexus-quiet-text)}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .similar-games__container{gap:16px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .similar-games__card{border-radius:15px;overflow:hidden;border:1px solid var(--nexus-game-edge);background:var(--nexus-game-material);box-shadow:0 6px 18px #0002;transition:transform 160ms,border-color 160ms}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .similar-games__control{border:1px solid var(--nexus-game-edge);border-radius:12px;background:rgba(27,33,41,.93);color:var(--nexus-quiet-text);min-width:36px;min-height:44px}
+/* Achievements become an editorial progress feature using Hydra's real rows. */
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements]{order:10;border-radius:20px;background:var(--nexus-game-material);backdrop-filter:none;box-shadow:inset 0 1px #ffffff06,0 12px 28px #0002;overflow:hidden}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-achievement-summary{padding:26px 28px 16px;min-width:0}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-achievement-heading{display:flex;gap:24px;align-items:center;justify-content:space-between;min-width:0}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-achievement-heading>div{min-width:0}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-achievement-heading h2{font-size:22px;font-weight:650;line-height:1.35;margin:0 0 7px;letter-spacing:-.02em;color:var(--nexus-quiet-text)}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-achievement-heading p{font-size:13px;line-height:1.55;color:var(--nexus-quiet-muted);margin:0;overflow-wrap:anywhere}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-achievement-percent{font-size:clamp(32px,5cqi,52px);line-height:1.1;letter-spacing:-.045em;font-weight:600;color:var(--nexus-quiet-text);font-variant-numeric:tabular-nums;white-space:nowrap;flex-shrink:0}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-achievement-track{height:6px;border-radius:6px;margin-top:24px;background:#f4f7fa12;overflow:hidden}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-achievement-track span{display:block;height:100%;background:linear-gradient(90deg,#7ca4a9,#d5e8e9);border-radius:inherit;transform-origin:left center;transition:transform 200ms cubic-bezier(.22,1,.36,1)}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [dir=rtl] .nexus-game-achievement-track span{transform-origin:right center}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .sidebar-section__header{background:transparent;padding:8px 28px;color:var(--nexus-quiet-muted);font-size:12px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .sidebar-section__content{padding:14px 28px 24px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .list{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;min-width:0}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .list>button,html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .list>a,html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .list>:not(li){grid-column:1/-1;min-width:0;overflow-wrap:anywhere}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .list__item{display:flex;align-items:center;gap:12px;padding:10px;border:1px solid #ffffff0c;border-radius:12px;background:#ffffff04;min-width:0;height:100%;box-sizing:border-box;text-decoration:none}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .list__item>div{min-width:0}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .list__item p{font-size:12px;line-height:1.4;overflow-wrap:anywhere;color:var(--nexus-quiet-text)}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .list__item small{font-size:11px;line-height:1.4;color:var(--nexus-quiet-muted)}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .list__item-image{width:48px;height:48px;border-radius:9px;object-fit:cover;flex-shrink:0;border:1px solid #ffffff18;box-shadow:0 3px 10px #0003}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .list__item-image--locked{filter:grayscale(1);opacity:.45}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .achievements-placeholder__blur{display:none}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .sidebar-section:has(>.sidebar-section__header [aria-expanded=true])>.sidebar-section__content{max-height:none!important;transition:none}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .sidebar-section:has(>.sidebar-section__header [aria-expanded=false])>.sidebar-section__content{display:none}
+/* About: wide media, a narrow readable text measure, and a distinct fact band. */
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .description-header{order:5;min-height:0;background:transparent;border:0;border-bottom:1px solid var(--nexus-game-edge);border-radius:0;box-shadow:none;backdrop-filter:none;padding:4px 0 22px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .description-header__info{display:flex;flex-direction:row;flex-wrap:wrap;gap:10px 32px;align-items:baseline}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-developer{order:6;grid-column:1/-1;display:flex;flex-wrap:wrap;gap:12px 24px;padding-block:2px;color:var(--nexus-quiet-muted);font-size:13px;line-height:1.6;overflow-wrap:anywhere}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-developer strong{color:var(--nexus-quiet-text);font-weight:550}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .gallery-slider__container{order:10;width:auto;max-width:none;justify-self:stretch;padding:14px;background:rgba(25,31,39,.76);border-radius:20px;box-shadow:0 12px 30px #0002}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .gallery-slider__viewport{height:auto;max-height:none;aspect-ratio:16/8;min-height:180px;border-radius:12px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .gallery-slider__preview{justify-content:center;padding-block:9px 2px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .gallery-slider__preview-button{width:106px;max-width:20%;border-radius:8px;flex-shrink:0}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .game-details__description-title{order:20;width:auto;justify-self:start;margin:8px 0 0;font-size:24px;letter-spacing:-.025em}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .game-details__description{order:21;width:auto;max-width:78ch;justify-self:start;align-self:start;margin:0;font-size:14px;line-height:1.85;color:#c9d0d9;overflow-wrap:anywhere}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .game-details__description :is(img,video,iframe){max-width:100%;height:auto}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .game-details__description h2{font-size:20px;line-height:1.45;letter-spacing:-.015em;margin-block:24px 12px;color:var(--nexus-quiet-text)}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .game-details__description-toggle{order:22;justify-self:start;margin:0}
+/* Details: a varied responsive composition rather than the old narrow column. */
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *)[data-nexus-game-tab=details] .content-sidebar>*{grid-column:span 6;align-self:stretch;border-radius:18px;background:var(--nexus-game-material);box-shadow:none;backdrop-filter:none}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *)[data-nexus-game-tab=details] .content-sidebar>[data-nexus-clean-section=stats],html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *)[data-nexus-game-tab=details] .content-sidebar>[data-nexus-clean-section=requirements],html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *)[data-nexus-game-tab=details] .content-sidebar>[data-nexus-clean-section=languages]{grid-column:1/-1}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .stats__section{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;padding:8px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .stats__category{display:flex;flex-direction:column;align-items:flex-start;gap:12px;min-width:0;border-inline-start:1px solid var(--nexus-game-edge);padding-inline-start:20px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .stats__category:first-child{border:0;padding-inline-start:0}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .stats__category-title{font-size:12px;line-height:1.5;flex-wrap:wrap;color:var(--nexus-quiet-muted)}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .stats__category>p:not(.stats__category-title){font-size:25px;line-height:1.3;font-weight:600;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;color:var(--nexus-quiet-text)}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .requirement__button-container{gap:8px;flex-wrap:wrap;margin-bottom:20px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .requirement__button{flex:0 1 auto;min-width:110px;white-space:normal;padding:10px 16px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .requirement__details{font-size:14px;line-height:1.8;overflow-wrap:anywhere;min-width:0}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .requirement__details ul{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 28px;list-style:none;padding:0;margin:0}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .requirement__details li{padding:12px 14px;background:#ffffff03;border-bottom:1px solid var(--nexus-game-edge);border-radius:6px;overflow-wrap:anywhere;min-width:0}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .requirement__details strong{color:var(--nexus-quiet-text)}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .controller-support{display:flex;flex-wrap:wrap;align-items:center;gap:16px;padding:10px 2px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .controller-support__icons{gap:14px;flex-shrink:0}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .controller-support__description{flex-basis:100%;line-height:1.7;color:var(--nexus-quiet-muted)}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .how-long-to-beat__categories-list{padding:6px 0;gap:12px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .how-long-to-beat__category{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px 20px;padding:16px 18px;border:0;border-bottom:1px solid var(--nexus-game-edge);border-radius:8px;background:#ffffff04;font-size:14px;font-variant-numeric:tabular-nums}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .how-long-to-beat__category-label--bold{font-size:15px;font-weight:600;color:var(--nexus-quiet-text)}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .game-language-section{font-size:13px;min-width:0;overflow-x:auto}
+/* Community: the native editor, guards and voting functions remain unchanged. */
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .game-details__reviews-section{gap:26px;margin:0;min-width:0}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .game-details__review-input-container{padding:22px;border-radius:18px;background:var(--nexus-game-material);border:1px solid var(--nexus-game-edge);gap:18px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .game-details__review-input-header{padding:0;background:none;border:0;gap:16px;flex-wrap:wrap}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .game-details__review-input .ProseMirror{min-height:132px;padding:16px;border:1px solid var(--nexus-game-edge);border-radius:12px;background:#11171d55;line-height:1.75;overflow-wrap:anywhere}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .game-details__review-item{padding:24px;border:1px solid var(--nexus-game-edge);border-radius:18px;background:var(--nexus-game-material);gap:18px;min-width:0}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .game-details__review-content{font-size:14px;line-height:1.85;max-width:85ch;overflow-wrap:anywhere}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .game-details__review-header{align-items:flex-start;gap:14px;flex-wrap:wrap}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .game-details__reviews-header{gap:18px;align-items:center;flex-wrap:wrap}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .game-details__reviews-header h2{font-size:23px;letter-spacing:-.025em;line-height:1.4}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .game-details__review-author{min-width:0;overflow-wrap:anywhere}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .game-details__review-avatar{flex-shrink:0}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .game-details__reviews-list-header{gap:18px;flex-wrap:wrap;align-items:center}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .game-details__review-display-name{white-space:normal;overflow-wrap:anywhere;text-align:start;line-height:1.5}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) :is(.game-details__review-meta-row,.game-details__review-actions,.game-details__review-actions-left){flex-wrap:wrap;gap:10px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .game-details__review-header--has-bg{aspect-ratio:auto;max-height:none;min-height:90px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .review-gate-notice__description{color:var(--nexus-quiet-muted);line-height:1.6}
+@media (hover:hover) and (pointer:fine){
+  html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-tab:hover{background:#dce6ef0b;color:var(--nexus-quiet-text)}
+  html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .similar-games__card:hover{transform:translateY(-2px);border-color:#dce6ef60}
+}
+@container (max-width:740px){
+  html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-tab{flex-direction:column;gap:6px;padding:10px 6px;font-size:12px}
+  html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .list{grid-template-columns:repeat(2,minmax(0,1fr))}
+  html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *)[data-nexus-game-tab=details] .content-sidebar>*{grid-column:1/-1}
+  html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .requirement__details ul{grid-template-columns:minmax(0,1fr)}
+}
+@container (max-width:460px){
+  html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}
+  html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-tab{flex-direction:row;justify-content:flex-start;font-size:12px}
+  html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-achievement-summary{padding:20px 18px 12px}
+  html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .sidebar-section__content{padding-inline:18px}
+  html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .list{grid-template-columns:minmax(0,1fr)}
+  html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .stats__section{grid-template-columns:minmax(0,1fr)}
+  html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .stats__category{border-inline-start:0;border-block-start:1px solid var(--nexus-game-edge);padding:16px 0 0}
+  html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .gallery-slider__viewport{min-height:120px;aspect-ratio:16/9}
+}
+
+/* r16: compact overview and centered reading surfaces; native frame unchanged. */
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *)[data-nexus-game-tab=overview] .nexus-game-content{align-items:stretch;gap:20px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *)[data-nexus-game-tab=overview] [data-nexus-clean-section=achievements]{grid-column:span 6;align-self:stretch}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *)[data-nexus-game-tab=overview] .nexus-game-news-slot{grid-column:span 6;display:flex;align-self:stretch}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-achievement-summary{padding:18px 20px 12px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-achievement-percent{font-size:34px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .sidebar-section__content{padding:10px 20px 18px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .list{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .list__item{padding:8px;gap:9px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .list__item-image{width:38px;height:38px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-news--compact{flex:1;gap:14px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-news--compact .nexus-news-heading h2{font-size:20px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-news--compact .nexus-news-list{display:flex;flex:1}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-news--compact .nexus-news-card{width:100%;grid-template-columns:minmax(0,1fr)}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-news--compact .nexus-news-art{aspect-ratio:21/6;min-height:0;height:auto;max-height:130px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-news--compact .nexus-news-copy{padding:18px;gap:12px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-news--compact .nexus-news-copy h3{font-size:21px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *)[data-nexus-game-tab=about] .gallery-slider__container{width:min(100%,780px);justify-self:center;align-self:start}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *)[data-nexus-game-tab=about] .gallery-slider__viewport{aspect-ratio:16/9;min-height:0;height:auto;max-height:330px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *)[data-nexus-game-tab=about] .game-details__description{width:min(100%,78ch);max-width:78ch;justify-self:center}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *)[data-nexus-game-tab=about] .game-details__description-title{width:min(100%,78ch);justify-self:center;text-align:center}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *)[data-nexus-game-tab=about] .game-details__description-toggle{justify-self:center}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *)[data-nexus-game-tab=about] .description-header{width:min(100%,780px);justify-self:center}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *)[data-nexus-game-tab=about] .nexus-game-developer{justify-self:center;justify-content:center;width:min(100%,780px)}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *)[data-nexus-game-tab=community] [data-nexus-layout-section=reviews]{width:min(100%,1000px);justify-self:center}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *)[data-nexus-game-tab=community] .review-prompt-banner{width:min(100%,1000px);justify-self:center}
+@container(max-width:820px){html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *)[data-nexus-game-tab=overview] :is([data-nexus-clean-section=achievements],.nexus-game-news-slot){grid-column:1/-1}}
+html[data-nexus-interface=quiet] .game-details__wrapper:has([data-nexus-game-layout=quiet]):not(#big-picture *) .game-details__hero{height:auto;min-height:260px}
+html[data-nexus-interface=quiet] .game-details__wrapper:has([data-nexus-game-layout=quiet]):not(#big-picture *) .game-details__hero-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+html[data-nexus-interface=quiet] .game-details__wrapper:has([data-nexus-game-layout=quiet]):not(#big-picture *) .game-details__hero-logo-backdrop{position:relative;height:auto;min-height:260px;background:linear-gradient(180deg,transparent 30%,rgba(19,24,31,.12) 52%,rgba(22,28,35,.9) 100%)}
+html[data-nexus-interface=quiet] .game-details__wrapper:has([data-nexus-game-layout=quiet]):not(#big-picture *) .game-details__hero-content{height:auto;min-height:160px;padding:22px 24px 8px;flex-wrap:wrap}
+html[data-nexus-interface=quiet] .game-details__wrapper:has([data-nexus-game-layout=quiet]):not(#big-picture *) .game-details__hero-panel{padding:28px 20px 14px;background:linear-gradient(180deg,transparent,rgba(25,31,39,.48) 45%,rgba(25,31,39,.86))}
+html[data-nexus-interface=quiet] .game-details__wrapper:has([data-nexus-game-layout=quiet]):not(#big-picture *) .hero-panel{border:0;border-radius:0;background:transparent;backdrop-filter:none;box-shadow:none;padding:8px 4px;min-height:54px;gap:12px}
+html[data-nexus-interface=quiet] .game-details__wrapper:has([data-nexus-game-layout=quiet]):not(#big-picture *) .hero-panel--stuck{background:rgba(25,31,39,.96)}
+html[data-nexus-interface=quiet] .game-details__wrapper:has([data-nexus-game-layout=quiet]):not(#big-picture *) .hero-panel__actions{flex:1 1 auto;flex-wrap:wrap}
+html[data-nexus-interface=quiet] .game-details__wrapper:has([data-nexus-game-layout=quiet]):not(#big-picture *) .game-details__game-logo{max-height:100px}
+
+/* Compact native achievement rows, with all actions retained. */
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-achievement-summary{padding:14px 18px 8px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-achievement-heading h2{font-size:20px;margin:0}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-achievement-percent{font-size:30px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .sidebar-section__header{padding:8px 18px;background:transparent}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .sidebar-section__content{padding:6px 18px 14px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .list{gap:8px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .list__item{padding:7px;gap:8px;min-height:52px;height:auto}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .list__item p{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:12px;line-height:1.35}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .list__item-image{width:34px;height:34px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .list__item small{font-size:10px;line-height:1.4}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .subscription-required-button{margin:0;padding:3px 0;min-height:0;line-height:1.4;font-size:12px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .list>a{font-size:12px;line-height:1.5}
+
+/* r17: centered native reviews, right-hand achievements and larger artwork. */
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *)[data-nexus-game-tab=community] .game-details__reviews-section{width:100%;max-width:780px;margin-inline:auto}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .list__item-image{width:46px;height:46px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *)[data-nexus-game-tab=overview] [data-nexus-clean-section=achievements]{order:20}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *)[data-nexus-game-tab=overview] .nexus-game-news-slot{order:10}
+@container(max-width:820px){html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *)[data-nexus-game-tab=overview] [data-nexus-clean-section=achievements]{order:10}html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *)[data-nexus-game-tab=overview] .nexus-game-news-slot{order:20}}
+
+
+/* r18: stable compact side feature, including missing achievement data. */
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *)[data-nexus-game-tab=overview] .nexus-game-content{grid-template-columns:minmax(0,1fr) minmax(240px,320px);align-items:start}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *)[data-nexus-game-tab=overview] .nexus-game-news-slot{grid-column:1;grid-row:1;align-self:start}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *)[data-nexus-game-tab=overview] :is([data-nexus-clean-section=achievements],.nexus-game-achievements-empty){grid-column:2;grid-row:1;align-self:start;width:100%;box-sizing:border-box;order:20}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-achievement-heading h2{font-size:18px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-achievement-percent{font-size:24px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-achievement-summary{padding:14px 16px 8px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .sidebar-section__header{padding:6px 16px;font-size:12px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .sidebar-section__content{padding:6px 14px 14px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .subscription-required-button{font-size:11px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-achievements-empty{flex-direction:column;align-items:flex-start;padding:20px;gap:10px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-achievements-empty h2{font-size:18px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *)[data-nexus-game-tab=community] .game-details__review-input-container{width:100%;box-sizing:border-box}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *)[data-nexus-game-tab=community] .game-details__review-content{text-align:start}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *)[data-nexus-game-tab=community] .game-details__review-display-name{text-align:start}
+@container(max-width:700px){html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *)[data-nexus-game-tab=overview] .nexus-game-content{grid-template-columns:minmax(0,1fr)}html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *)[data-nexus-game-tab=overview] :is([data-nexus-clean-section=achievements],.nexus-game-achievements-empty,.nexus-game-news-slot){grid-column:1;grid-row:auto}}
+
+/* Native links and accessible image names retained in a compact icon shelf. */
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .list{grid-template-columns:repeat(4,minmax(0,1fr))}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .list__item{flex-direction:column;align-items:center;gap:6px;padding:6px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .list__item>div{width:100%;text-align:center}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .list__item p{-webkit-line-clamp:1;font-size:10px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .list__item small{display:none}
+
+/* Owner final direction: separated side list and centered editor heading only. */
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *)[data-nexus-game-tab=overview] .nexus-game-content{column-gap:40px;row-gap:26px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *)[data-nexus-game-tab=overview] .nexus-game-news-slot{max-width:960px;width:100%;justify-self:start}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .list{grid-template-columns:minmax(0,1fr);gap:8px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .list__item{flex-direction:row;align-items:center;gap:10px;padding:5px 0;min-height:48px;background:transparent;border:0}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .list__item>div{width:auto;text-align:start}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .list__item p{display:block;overflow:visible;font-size:12px;line-height:1.4}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-clean-section=achievements] .list__item small{display:block;font-size:10px}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *)[data-nexus-game-tab=community] .game-details__reviews-header{justify-content:center}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *)[data-nexus-game-tab=community] .game-details__reviews-header .game-details__reviews-title{text-align:center}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *)[data-nexus-game-tab=community] .game-details__review-form{width:100%;min-width:0}
+/* Technical information stays open: quiet headings, compact rows, no dead toggle. */
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-static-card]{align-self:start;overflow:hidden}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-static-card]>.sidebar-section__header{padding:15px 18px 9px;background:transparent;min-height:0;gap:12px;flex-wrap:wrap}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) .nexus-game-card-title{font-size:14px;line-height:1.5;font-weight:650;color:var(--nexus-quiet-text)}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-static-card]>.sidebar-section__content{max-height:none;overflow:visible;padding:4px 18px 16px;transition:none}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-static-card] .how-long-to-beat__categories-list{gap:0;padding:0}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-static-card] .how-long-to-beat__category{gap:4px 16px;padding:10px 0;background:transparent;border-radius:0}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-static-card] .how-long-to-beat__category:last-child{border-bottom:0}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-static-card] .controller-support{gap:12px;padding:4px 0}
+html[data-nexus-interface=quiet] [data-nexus-game-layout=quiet]:not(#big-picture *) [data-nexus-static-card] .controller-support__description{font-size:13px;line-height:1.6}

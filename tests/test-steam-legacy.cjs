@@ -10,7 +10,7 @@ const vdf=require('../src/steam-vdf.cjs'),a='76561198000000001',b='7656119800000
  const app=new EventEmitter();app.whenReady=()=>Promise.resolve();
  const fakeCP={execFile(exe,args,options,cb){commands.push({exe,args,options});if(exe==='taskkill.exe'){events.push('kill');const wasRunning=running;running=false;return setImmediate(()=>cb(wasRunning?null:Object.assign(Error('not running'),{code:128}),''));}if(exe==='reg.exe'){if(args[0]==='add')events.push('registry');return setImmediate(()=>cb(null,args[0]==='query'?'SteamPath REG_SZ '+steam:''));}throw Error('Unexpected command '+exe);},spawn(exe,args){spawns.push({exe,args});const steamStart=exe===path.join(steam,'steam.exe');if(steamStart){running=true;events.push('steam-start');}const child=new EventEmitter();child.unref=()=>{};setImmediate(()=>child.emit((steamStart&&failStart)||(!steamStart&&failHide)?'error':'spawn',Error('simulated spawn failure')));return child;}};
  const electron={app,ipcMain:{handle:(name,fn)=>handlers.set(name,fn)},BrowserWindow:{getAllWindows:()=>[]}};
- const ctx={require:id=>id==='./i18n.cjs'?require('../src/i18n.cjs'):id==='electron'?electron:id==='child_process'?fakeCP:id==='./steam-vdf.cjs'?vdf:id==='./steam-ui.js'?require('../src/steam-ui.js'):id==='./themes.cjs'?{atomicText:async(...args)=>{events.push('write');if(failWrite)throw Error('disk full');return require('../src/themes.cjs').atomicText(...args);}}:require(id),process:{platform:'win32',env:{APPDATA:appData}},console:{log(){}},Buffer,setTimeout:(fn,ms,...args)=>{waits.push(ms);return setTimeout(fn,0,...args);},clearTimeout,global:null};ctx.global=ctx;vm.createContext(ctx);vm.runInContext(await fsp.readFile(path.join(__dirname,'../src/steam.cjs'),'utf8'),ctx);await new Promise(r=>setImmediate(r));
+ const ctx={require:id=>id==='./game-actions.js'?require('../src/game-actions.js'):id==='./i18n.cjs'?require('../src/i18n.cjs'):id==='electron'?electron:id==='child_process'?fakeCP:id==='./steam-vdf.cjs'?vdf:id==='./steam-ui.js'?require('../src/steam-ui.js'):id==='./themes.cjs'?{atomicText:async(...args)=>{events.push('write');if(failWrite)throw Error('disk full');return require('../src/themes.cjs').atomicText(...args);}}:require(id),process:{platform:'win32',env:{APPDATA:appData}},console:{log(){}},Buffer,setTimeout:(fn,ms,...args)=>{waits.push(ms);return setTimeout(fn,0,...args);},clearTimeout,global:null};ctx.global=ctx;vm.createContext(ctx);vm.runInContext(await fsp.readFile(path.join(__dirname,'../src/steam.cjs'),'utf8'),ctx);await new Promise(r=>setImmediate(r));
  let nativeLaunches=0;electron.ipcMain.handle('openGame',async()=>{events.push('native-launch');return ++nativeLaunches;});
  async function launch(id=a,mode='online',exe=''){await fsp.writeFile(bindingsFile,JSON.stringify({777:{mode,steamId64:id,accountName:id===a?'alpha':'beta'}}));return handlers.get('openGame')({},'steam','777',exe);}
  await launch();assert.equal(nativeLaunches,1);assert.equal(vdf.accountList(await fsp.readFile(file,'utf8')).find(x=>x.steamId64===a).mostRecent,true);assert.equal(await fsp.readFile(file+'.hydra.bak','utf8'),initial);assert.ok(events.indexOf('kill')<events.indexOf('write'));assert.ok(events.indexOf('write')<events.indexOf('steam-start'));assert.ok(events.indexOf('steam-start')<events.indexOf('native-launch'));assert.ok(waits.includes(4500));
@@ -24,7 +24,6 @@ const vdf=require('../src/steam-vdf.cjs'),a='76561198000000001',b='7656119800000
  assert.ok(commands.some(c=>c.args.includes('AutoLoginUser')&&c.args.includes('beta')));assert.ok(spawns.some(c=>c.args.includes('-applaunch')&&c.args.includes('777')));
  const nativeBefore=nativeLaunches;failWrite=true;await assert.rejects(launch(),/disk full/);assert.equal(nativeLaunches,nativeBefore);failWrite=false;await assert.rejects(launch('76561198000000003'),/not found/);assert.equal(nativeLaunches,nativeBefore);
  failStart=true;await assert.rejects(launch(),/simulated spawn failure/);assert.equal(nativeLaunches,nativeBefore,'failed Steam startup must not launch the game');failStart=false;failHide=true;await launch();await new Promise(r=>setImmediate(r));assert.equal(nativeLaunches,nativeBefore+1,'optional window-hide failure must not crash or repeat the launch');failHide=false;
- const beforeRestore=commands.length;ctx.__NEXUS_RESTORE_ACTIVE__=()=>true;ctx.__HYDRA_NEXUS_ENABLED__=()=>false;await assert.rejects(launch(),/restore to finish/);assert.equal(nativeLaunches,nativeBefore+1);assert.equal(commands.length,beforeRestore,'restore guard runs before Steam shutdown even with the Steam plugin disabled');ctx.__NEXUS_RESTORE_ACTIVE__=()=>false;
  // Existing desktop links call the native run handler, without going through IPC.
  ctx.__HYDRA_NEXUS_ENABLED__=()=>true;
  let directLaunches=0;const options={shop:'steam',objectId:'777',executablePath:'C:\\Games\\game.exe',launchOptions:'--saved'};
@@ -39,11 +38,7 @@ const vdf=require('../src/steam-vdf.cjs'),a='76561198000000001',b='7656119800000
  await fsp.writeFile(bindingsFile,'{}');await direct();assert.equal(commands.length,beforeDirect,'unbound native shortcut passes through');
  await fsp.writeFile(bindingsFile,JSON.stringify({777:{mode:'online',steamId64:a}}));options.shop='gog';await direct();assert.equal(commands.length,beforeDirect,'other store ID does not select Steam binding');options.shop='steam';
  const beforeFail=directLaunches;failStart=true;await assert.rejects(direct(),/simulated spawn failure/);failStart=false;assert.equal(directLaunches,beforeFail,'failed shortcut preparation cannot launch game');
- ctx.__NEXUS_RESTORE_ACTIVE__=()=>true;const beforeGuard=commands.length;await assert.rejects(direct(),/restore to finish/);assert.equal(commands.length,beforeGuard);ctx.__NEXUS_RESTORE_ACTIVE__=()=>false;ctx.__NEXUS_STORAGE_BUSY__=()=>true;const beforeMoveGuard=commands.length;await assert.rejects(direct(),/game transfer/);assert.equal(commands.length,beforeMoveGuard);ctx.__NEXUS_STORAGE_BUSY__=()=>false;
- // A restore starting while Steam is being prepared must also block native execution.
- const priorRestore=ctx.__NEXUS_RESTORE_ACTIVE__;ctx.__NEXUS_RESTORE_ACTIVE__=()=>events.includes('steam-start');events.length=0;
- await assert.rejects(direct(),/restore to finish/);assert.equal(directLaunches,beforeFail);ctx.__NEXUS_RESTORE_ACTIVE__=priorRestore;
-
+ ctx.__NEXUS_STORAGE_BUSY__=()=>true;const beforeMoveGuard=commands.length;await assert.rejects(direct(),/game transfer/);assert.equal(commands.length,beforeMoveGuard);ctx.__NEXUS_STORAGE_BUSY__=()=>false;
  // Different Play/shortcut requests must not touch shared Steam state concurrently.
  await fsp.writeFile(bindingsFile,JSON.stringify({777:{mode:'online',steamId64:a},888:{mode:'offline',steamId64:b}}));
  const fixtureTimer=ctx.setTimeout;let resumeStartup,markStartup,finishNative,markNative;
@@ -72,9 +67,6 @@ const vdf=require('../src/steam-vdf.cjs'),a='76561198000000001',b='7656119800000
  await assert.rejects(ctx.__NEXUS_STEAM_NATIVE_LAUNCH__(async()=>{throw Error('native failed');},sameOptions),/native failed/);await direct();
  // The shared native route guards Classics even when the Steam plugin is disabled.
  let classics=0;const classicOptions={shop:'launchbox',objectId:'classic-fixture'};
- ctx.__NEXUS_RESTORE_ACTIVE__=()=>true;
- for(const enabled of [true,false]){ctx.__HYDRA_NEXUS_ENABLED__=()=>enabled;await assert.rejects(ctx.__NEXUS_STEAM_NATIVE_LAUNCH__(async()=>classics++,classicOptions),/restore to finish/);}
- assert.equal(classics,0);ctx.__NEXUS_RESTORE_ACTIVE__=()=>false;
  const noSteamCommands=commands.length;await ctx.__NEXUS_STEAM_NATIVE_LAUNCH__(async()=>classics++,classicOptions);assert.equal(classics,1);assert.equal(commands.length,noSteamCommands);ctx.__HYDRA_NEXUS_ENABLED__=()=>true;
 
  // Progress stays structured and a hidden login name is never sent to the renderer.

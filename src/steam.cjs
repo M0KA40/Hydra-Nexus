@@ -459,7 +459,6 @@
   function assertLaunchAllowed() {
     if(global.__NEXUS_STORAGE_BUSY__?.())throw Error('Wait for the game transfer to finish.');
     if(global.__NEXUS_UPDATE_BUSY__?.())throw Error('An update operation is already running');
-    if(global.__NEXUS_RESTORE_ACTIVE__?.())throw Error('A game backup is being restored. Wait for the restore to finish before launching a game.');
   }
   async function runSteamLaunch(event, args, listener) {
     assertLaunchAllowed();
@@ -531,7 +530,7 @@
     }
   }
 
-  const UI_INJECTION_SCRIPT = require('./i18n.cjs').rendererScript()+"("+require("./steam-ui.js").toString()+")();";
+  const UI_INJECTION_SCRIPT = require('./i18n.cjs').rendererScript()+"window.__nexusOrderGameActions=("+require("./game-actions.js").toString()+");("+require("./steam-ui.js").toString()+")();";
 
   function attachToWindow(win) {
     if (!win || win.isDestroyed() || win.__hsbAttached) return;

@@ -7,7 +7,7 @@ For a bug, use the issue template and include a short reproduction. For a code c
 - `src/`: bundled runtime, UI adapters and game tools.
 - `installer/`: self-contained BAT/PowerShell installer base.
 - `assets/`: project branding, service icon and screenshots.
-- `tests/`: storage, requirements, idle UI behavior, updater and Backup checks.
+- `tests/`: storage, requirements, idle UI behavior, updater and interface checks.
 - `docs/`: setup, features, privacy, troubleshooting and verification.
 - `build.py`: standard-library-only Python builder. Output is written to `dist/`.
 

@@ -32,9 +32,11 @@ assert pack['schema']==1 and pack['version']==version and pack['revision']==revi
 assert set(pack['notes'])=={'en','pt-BR','es','ru','ar','fr','de','tr','pl'}
 for language,text in pack['notes'].items():
     assert text.strip() and text==(root/f'docs/releases/{version}/{language}.md').read_text(encoding='utf8'), 'Release translations differ'
+import shutil
+shutil.copy2(out/'Hydra_Nexus_Setup.exe',out/f'Hydra_Nexus_{version}.exe')
 notes_name=f'Hydra-Nexus-{version}-release-notes.json'
 (out/notes_name).write_text(json.dumps(pack,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
-names=['Hydra_Nexus.bat',f'Hydra-Nexus-{version}-source.zip',notes_name]
+names=['Hydra_Nexus_2.2.exe','Hydra_Nexus.bat',f'Hydra-Nexus-{version}-source.zip',notes_name]
 (out/'SHA256SUMS.txt').write_text(''.join(hashlib.sha256((out/name).read_bytes()).hexdigest()+'  '+name+'\n' for name in names),encoding='utf8')
 assert f':: HYDRA_NEXUS_RELEASE {version}\r\n'.encode() in (out/'Hydra_Nexus.bat').read_bytes()[:160]
 print('Packaged Hydra Nexus '+version)

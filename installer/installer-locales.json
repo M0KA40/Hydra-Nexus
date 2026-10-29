@@ -1,0 +1,14 @@
+{
+  "en": {
+    "subtitle": "Installation & maintenance",
+    "install": "Install / Update / Repair",
+    "remove": "Remove Nexus (keep personal data)",
+    "check": "Check installation",
+    "folder": "Choose Hydra folder",
+    "exit": "Exit",
+    "select": "Select an option",
+    "enter": "Press Enter to continue",
+    "invalid": "Invalid option. Try again.",
+    "folderPrompt": "Hydra folder (containing Hydra.exe), or 0 to cancel"
+  }
+}

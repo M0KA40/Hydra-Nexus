@@ -1,3 +1,0 @@
-# Verification
-
-Run `python build.py` followed by `python tests/check.py` with Node.js22+ and Python3.12+. Browser suites use Playwright and a compatible Chromium browser; see localization.md. Some native integration checks require private reference fixtures through HYDRA_NATIVE_FIXTURES/HYDRA_NATIVE_REACT/HYDRA_NATIVE_CSS. Native application binaries and fixtures are not redistributed. Tests use temporary synthetic data, mocked accounts and fake power executors. They do not install into the user's running application. Results should distinguish isolated fixture checks from manual application testing.

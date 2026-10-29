@@ -1,0 +1,97 @@
+/* Opt-in interface pilot. Big Picture retains its own native focus/layout model. */
+/* A hidden (tray/minimized) window stops compositor animation work; motion resumes on restore. */
+html[data-nexus-window=hidden] *,html[data-nexus-window=hidden] *::before,html[data-nexus-window=hidden] *::after{animation-play-state:paused!important;transition-duration:0s!important}
+html[data-nexus-interface=quiet]{--nexus-quiet-canvas:#0b0c0d;--nexus-quiet-surface:#1b1d1f;--nexus-quiet-raised:#272b2f;--nexus-quiet-text:#f2f4f5;--nexus-quiet-muted:#adb4bb;--nexus-quiet-accent:#a6eced}
+html[data-nexus-interface=quiet] body{background:var(--nexus-quiet-canvas);color:var(--nexus-quiet-text)}
+html[data-nexus-interface=quiet] :is(.title-bar,.sidebar,.header):not(#big-picture *){background:var(--nexus-quiet-canvas);color:var(--nexus-quiet-text);border-color:#30363b}
+html[data-nexus-interface=quiet] .container__content:not(#big-picture *){background:var(--nexus-quiet-canvas)}
+html[data-nexus-interface=quiet] :is(.header__search,.text-field,.select-field,.settings__content,.modal):not(#big-picture *){background:var(--nexus-quiet-surface);color:var(--nexus-quiet-text);border-color:#68737c;border-radius:12px}
+html[data-nexus-interface=quiet] :is(.settings__sidebar,.settings__panel):not(#big-picture *){background:#121618;color:var(--nexus-quiet-text)}
+html[data-nexus-interface=quiet] :is(.sidebar__menu-item,.settings__sidebar-button):not(#big-picture *){border-radius:10px;transition:background-color 120ms,color 120ms}
+html[data-nexus-interface=quiet] :is(.sidebar__menu-item--active,.settings__sidebar-button--active):not(#big-picture *){background:#253438;color:var(--nexus-quiet-accent)}
+html[data-nexus-interface=quiet] .button:not(#big-picture *){border-radius:10px;transition:background-color 120ms,border-color 120ms,transform 80ms;min-height:40px}
+html[data-nexus-interface=quiet] .button--primary:not(#big-picture *){background:var(--nexus-quiet-accent);border-color:var(--nexus-quiet-accent);color:#082326}
+html[data-nexus-interface=quiet] .button--outline:not(#big-picture *){background:var(--nexus-quiet-surface);border-color:#68737c;color:var(--nexus-quiet-text)}
+html[data-nexus-interface=quiet] .button:not(#big-picture *):active:not(:disabled){transform:scale(.98)}
+html[data-nexus-interface=quiet] :is(button,input,select,textarea):not(#big-picture *):focus-visible{outline:2px solid var(--nexus-quiet-accent);outline-offset:3px}
+html[data-nexus-interface=quiet] .home__content:not(#big-picture *){gap:24px;align-self:stretch;min-width:0}
+html[data-nexus-interface=quiet] .home__content .hero:not(#big-picture *){border-radius:20px;overflow:hidden;border:1px solid #343a40}
+html[data-nexus-interface=quiet] .home__content .hero__content:not(#big-picture *){background:linear-gradient(90deg,#05090cd9,#05090c00);padding:28px}
+html[data-nexus-interface=quiet] .home__content .hero__description:not(#big-picture *){color:#f2f4f5;text-shadow:0 1px 4px #000;max-width:560px}
+html[data-nexus-interface=quiet] .home__header:not(#big-picture *){gap:16px;flex-wrap:wrap}
+html[data-nexus-interface=quiet] .home__buttons-list:not(#big-picture *){gap:6px;padding:4px;border:1px solid #343a40;border-radius:13px;background:#141719;flex-wrap:wrap}
+html[data-nexus-interface=quiet] .home__buttons-list .button:not(#big-picture *){min-height:36px;border-radius:9px;font-size:13px}
+html[data-nexus-interface=quiet] .home__buttons-list .button--primary:not(#big-picture *){color:var(--nexus-quiet-accent);background:#283438;border-color:#637f84}
+html[data-nexus-interface=quiet] .home__title:not(#big-picture *){font-size:21px;color:var(--nexus-quiet-text)}
+html[data-nexus-interface=quiet] .home__cards:not(#big-picture *){display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;min-width:0}
+html[data-nexus-interface=quiet] .nexus-interface-game-group{display:flex;flex-direction:column;min-width:0;gap:12px;border:1px solid #343a40;background:var(--nexus-quiet-surface);padding:12px;border-radius:16px;align-self:start}
+html[data-nexus-interface=quiet] .nexus-interface-game-group .game-card{width:auto;min-width:0;border-radius:10px;flex-shrink:0}
+html[data-nexus-interface=quiet] .nexus-interface-game-group>.game-card:not(:first-child){min-height:80px;height:90px}
+html[data-nexus-interface=quiet] .nexus-interface-game-group>.game-card:not(:first-child) .game-card__content{padding:10px}
+html[data-nexus-interface=quiet] .nexus-interface-game-group>.game-card:not(:first-child) .game-card__title{font-size:12px}
+html[data-nexus-interface=quiet] .modal:not(#big-picture *){animation:nexus-quiet-dialog-in 180ms cubic-bezier(.2,.8,.2,1)}
+.nexus-interface-picker{display:flex;flex-direction:column;gap:16px}.nexus-interface-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.nexus-interface-option{display:flex;flex-direction:column;align-items:flex-start;text-align:start;gap:7px;min-width:0;white-space:normal;line-height:1.5;padding:16px;border-radius:12px}.nexus-interface-option[aria-pressed=true]{outline:2px solid #78bec1;outline-offset:1px}.nexus-interface-option small{font-weight:400;font-size:12px;opacity:.85}.nexus-interface-option[aria-busy=true]:before{content:'';width:14px;height:14px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:nexus-quiet-busy 750ms linear infinite;position:absolute;inset-inline-end:12px;top:12px}.nexus-interface-option{position:relative}.nexus-interface-status{min-height:1.5em;font-size:12px;line-height:1.6}.nexus-interface-status:empty{display:none}
+@keyframes nexus-quiet-dialog-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}@keyframes nexus-quiet-busy{to{transform:rotate(360deg)}}
+@media(max-width:1100px){html[data-nexus-interface=quiet] .home__cards:not(#big-picture *){gap:12px}html[data-nexus-interface=quiet] .nexus-interface-game-group{padding:10px}}
+@media(max-width:800px){html[data-nexus-interface=quiet] .home__cards:not(#big-picture *){grid-template-columns:repeat(2,minmax(0,1fr))}html[data-nexus-interface=quiet] .nexus-interface-game-group:last-child{grid-column:1/-1}.nexus-interface-options{grid-template-columns:1fr}}
+@media(max-width:520px){html[data-nexus-interface=quiet] .home__cards:not(#big-picture *){grid-template-columns:minmax(0,1fr)}}
+/* r10: the shared native frame adopts the reviewed layout, including Settings. */
+html[data-nexus-interface=quiet] .container:not(#big-picture *){flex:1;min-width:0}
+html[data-nexus-interface=quiet] .header:not(#big-picture *){margin:12px 24px 0;width:auto;padding:16px 0;border-bottom:0;min-height:76px;flex-shrink:0}
+html[data-nexus-interface=quiet] .container__content:not(#big-picture *){margin:0 24px 20px;width:auto;border-radius:18px;min-height:0}
+html[data-nexus-interface=quiet] .home__content:not(#big-picture *){height:auto;overflow:visible;gap:22px}
+html[data-nexus-interface=quiet] :is(.home__header,.home__title,.home__cards):not(#big-picture *){padding:0}
+html[data-nexus-interface=quiet] .home__content .hero:not(#big-picture *){height:360px;min-height:300px;flex-shrink:0;text-align:start;position:relative;isolation:isolate}
+html[data-nexus-interface=quiet] .hero__backdrop:not(#big-picture *){background:linear-gradient(90deg,#05090c99,#05090c00 70%),linear-gradient(0deg,#05090caa,transparent 80%)}
+html[data-nexus-interface=quiet] .home__content .hero__content:not(#big-picture *){position:absolute;inset-inline-start:0;bottom:0;padding:30px;background:none;gap:20px;max-width:70%}
+html[data-nexus-interface=quiet] .hero__logo:not(#big-picture *){width:330px;max-width:100%;height:auto;max-height:130px;object-fit:contain;object-position:left bottom}
+html[data-nexus-interface=quiet] .hero__description:not(#big-picture *){font-size:14px;line-height:1.6;max-width:520px}
+.nexus-interface-hero-action{position:absolute;inset-inline-end:28px;bottom:28px;display:flex;align-items:center;gap:14px;background:#a6eced;color:#082326;font:600 14px inherit;padding:13px 20px;border-radius:11px;pointer-events:none;box-shadow:0 1px 2px #0003}.nexus-interface-forward{transform:rotate(180deg)}[dir=rtl] .nexus-interface-forward{transform:none}
+html[data-nexus-interface=quiet] .game-card:not(#big-picture *){transition:background-color 120ms,border-color 120ms,transform 80ms;box-shadow:none}
+html[data-nexus-interface=quiet] .game-card__content:not(#big-picture *){transform:none;gap:6px}
+html[data-nexus-interface=quiet] .game-card__title:not(#big-picture *){text-align:start;font-size:14px;line-height:1.4}
+html[data-nexus-interface=quiet] .nexus-interface-game-group>.game-card:not(:first-child){height:100px;min-height:100px;border:0;border-radius:7px;background:transparent}
+html[data-nexus-interface=quiet] .nexus-interface-game-group>.game-card:not(:first-child) .game-card__backdrop{display:flex;align-items:center;justify-content:flex-start;flex-direction:row;gap:10px;background:none}
+html[data-nexus-interface=quiet] .nexus-interface-game-group>.game-card:not(:first-child) .game-card__cover{position:static;width:100px;height:68px;flex-shrink:0;z-index:auto;border-radius:6px}
+html[data-nexus-interface=quiet] .nexus-interface-game-group>.game-card:not(:first-child) .game-card__content{min-width:0;padding:4px 0;gap:4px}
+html[data-nexus-interface=quiet] .nexus-interface-game-group>.game-card:not(:first-child) .game-card__title{font-size:12px;line-height:1.3}
+.nexus-interface-rail-brand{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 8px 24px;min-height:68px;position:relative}.nexus-interface-rail-brand>img{width:40px;height:40px;object-fit:contain}.nexus-interface-rail-toggle{background:#232b2f;color:#dce8ed;border:1px solid #68737c;border-radius:7px;min-width:24px;min-height:28px;padding:3px;cursor:pointer;display:grid;place-items:center}.nexus-interface-rail-toggle svg{width:15px;height:15px}
+html[data-nexus-interface=quiet] .sidebar__container:not(#big-picture *){display:flex;flex-direction:column;height:100%;min-height:0}
+html[data-nexus-interface=quiet] .sidebar-profile:not(#big-picture *){order:2;margin-top:auto;flex-shrink:0}
+html[data-nexus-interface=quiet] .sidebar__content:not(#big-picture *){order:1}
+html[data-nexus-interface=quiet] .sidebar__menu-item-button:not(#big-picture *){min-height:44px;padding:12px;gap:12px;border-radius:10px}
+html[data-nexus-interface=quiet][data-nexus-rail=collapsed] .sidebar:not(#big-picture *){width:80px!important;min-width:80px!important;max-width:80px!important}
+html[data-nexus-interface=quiet][data-nexus-rail=collapsed] .sidebar__content:not(#big-picture *){padding-inline:12px}
+html[data-nexus-interface=quiet][data-nexus-rail=collapsed] :is(.sidebar__section--games,.sidebar__handle):not(#big-picture *){display:none}
+html[data-nexus-interface=quiet][data-nexus-rail=collapsed] .sidebar__menu-item-button:not(#big-picture *){justify-content:center}
+html[data-nexus-interface=quiet][data-nexus-rail=collapsed] :is(.sidebar__menu-item-button>span,.sidebar-profile__button-information,.sidebar-profile__chevron):not(#big-picture *){position:absolute;clip-path:inset(50%);width:1px;height:1px;overflow:hidden;white-space:nowrap}
+html[data-nexus-interface=quiet][data-nexus-rail=collapsed] .sidebar-profile:not(#big-picture *){padding-inline:12px}
+html[data-nexus-interface=quiet][data-nexus-rail=collapsed] .sidebar-profile__button:not(#big-picture *){padding:8px 0;justify-content:center}
+html[data-nexus-interface=quiet][data-nexus-rail=collapsed] .nexus-interface-rail-brand{padding-inline:0;justify-content:center;flex-direction:column;gap:10px}
+html[data-nexus-interface=quiet][data-nexus-rail=expanded] .nexus-interface-library-filter{display:none}
+html[data-nexus-interface=quiet][data-nexus-rail=collapsed] .sidebar-profile__dropdown{inset-inline-start:0;min-width:230px;bottom:65px;top:auto}
+html[data-nexus-interface=quiet] .sidebar:not(#big-picture *){overflow:visible}
+html[data-nexus-interface=quiet] .sidebar-profile__dropdown:not(#big-picture *){inset-inline-start:0;min-width:230px;bottom:calc(100% + 8px);top:auto;background:#20272b;border-color:#68737c;backdrop-filter:none}
+.nexus-interface-hero-action{font-family:inherit;font-size:14px;font-weight:600}
+html[data-nexus-interface=quiet] .sidebar__menu:not(#big-picture *){overflow:visible}
+html[data-nexus-interface=quiet] .sidebar__menu-item-button:not(#big-picture *){position:relative}
+html[data-nexus-interface=quiet][data-nexus-rail=collapsed] .sidebar__menu-item-button:is(:hover,:focus-visible)>span:not(#big-picture *){clip-path:none;inset-inline-start:60px;top:4px;width:max-content;max-width:260px;height:auto;padding:8px 11px;white-space:normal;background:#e6edef;color:#13191d;border-radius:7px;box-shadow:0 4px 12px #0006;z-index:150;pointer-events:none;font-size:12px;line-height:1.4;animation:nexus-quiet-dialog-in 110ms cubic-bezier(.2,.8,.2,1)}
+/* Settings inherits the native frame; reclaim only its repeated inner surround. */
+html[data-nexus-interface=quiet] .container__content:not(#hbk-panel):not(#nexus-activity-panel):not(#big-picture *)>.settings__container:has(>.settings__content>.settings__sidebar){padding:12px;min-width:0}
+html[data-nexus-interface=quiet] .settings__content:has(>.settings__sidebar):not(#big-picture *){min-width:0;min-height:0}
+html[data-nexus-interface=quiet] .settings__content>.settings__sidebar:not(#big-picture *){min-width:208px;max-width:288px;padding:16px 12px;gap:6px;border-inline-end:1px solid var(--nexus-quiet-line-soft,#8883);border-inline-start:0}
+html[data-nexus-interface=quiet] .settings__sidebar-button:not(#big-picture *){min-height:40px;height:auto;padding:10px 12px;line-height:1.45;white-space:normal;text-align:start;min-width:0;align-items:center}
+html[data-nexus-interface=quiet] .settings__sidebar-button-label:not(#big-picture *){min-width:0;overflow-wrap:anywhere}
+html[data-nexus-interface=quiet] .settings__content>.settings__sidebar+.settings__panel:not(#big-picture *){padding:24px;gap:24px;min-width:0;scroll-padding-block:24px}
+html[data-nexus-interface=quiet] #nexus-settings-panel{gap:24px;align-self:stretch;min-width:0}
+html[data-nexus-interface=quiet] #nexus-settings-panel>.nexus-card{min-width:0}
+html[data-nexus-interface=quiet] #nexus-settings-panel .nexus-interface-options{gap:16px}
+@media(max-width:1100px){html[data-nexus-interface=quiet] .settings__content>.settings__sidebar:not(#big-picture *){min-width:196px;max-width:240px}html[data-nexus-interface=quiet] .settings__content>.settings__sidebar+.settings__panel:not(#big-picture *){padding:20px;gap:20px}}
+@media(max-width:860px){html[data-nexus-interface=quiet] .settings__content>.settings__sidebar:not(#big-picture *){min-width:0;max-width:none;padding:12px;border-inline-end:0}html[data-nexus-interface=quiet] .settings__content>.settings__sidebar+.settings__panel:not(#big-picture *){padding:16px}html[data-nexus-interface=quiet] .settings__sidebar-button:not(#big-picture *){flex:1 1 auto}}
+[dir=rtl] .nexus-interface-rail-toggle svg{transform:rotate(180deg)}
+@media(max-height:700px){html[data-nexus-interface=quiet][data-nexus-rail=collapsed] .sidebar__menu{gap:2px}html[data-nexus-interface=quiet][data-nexus-rail=collapsed] .sidebar__menu-item-button{min-height:36px;padding:8px}html[data-nexus-interface=quiet][data-nexus-rail=collapsed] .nexus-interface-rail-brand{padding:4px 0 12px;gap:4px;min-height:74px}html[data-nexus-interface=quiet][data-nexus-rail=collapsed] .nexus-interface-rail-brand>img{width:30px;height:30px}}
+@media(min-width:1600px){html[data-nexus-interface=quiet] .hero:not(#big-picture *){height:400px}html[data-nexus-interface=quiet] .nexus-interface-game-group{padding:16px;gap:14px}}
+@media(max-width:1280px){html[data-nexus-interface=quiet] .home__content .hero:not(#big-picture *){height:300px;min-height:280px}html[data-nexus-interface=quiet] .hero__logo:not(#big-picture *){width:280px}html[data-nexus-interface=quiet] .hero__description:not(#big-picture *){font-size:13px;max-width:400px}html[data-nexus-interface=quiet] .nexus-interface-game-group>.game-card:not(:first-child) .game-card__cover{width:70px;height:56px}.nexus-interface-hero-action{padding:12px 16px}}
+@media(max-width:800px){html[data-nexus-interface=quiet] .header:not(#big-picture *){margin-inline:16px}html[data-nexus-interface=quiet] .container__content:not(#big-picture *){margin-inline:16px}html[data-nexus-interface=quiet] .home__content .hero__content:not(#big-picture *){max-width:100%;padding:20px}.nexus-interface-hero-action{position:static;align-self:flex-end;margin:0 16px 16px auto;z-index:2}html[data-nexus-interface=quiet] .home__content .hero:not(#big-picture *){height:350px}}
+
+.nexus-quiet-colors{display:flex;gap:12px;justify-content:flex-start;align-self:flex-end;width:calc(50% - 8px);padding:4px 2px}.nexus-quiet-colors[hidden]{display:none!important}.nexus-quiet-color{display:grid;place-items:center;width:42px;height:42px;flex-shrink:0;border-radius:50%;padding:5px;background:transparent;border:1px solid #aebec54d;cursor:pointer;transition:transform 120ms,border-color 120ms}.nexus-quiet-color>span{width:100%;height:100%;border-radius:50%;background:linear-gradient(140deg,#73818d,#20262e);box-shadow:inset 0 1px #ffffff40}.nexus-quiet-color[data-quiet-color=mint]>span{background:linear-gradient(140deg,#a5f7db,#28b6bc)}.nexus-quiet-color[aria-pressed=true]{border-color:currentColor;box-shadow:0 0 0 1px currentColor}.nexus-quiet-color[aria-pressed=true]>span:after{content:'✓';display:grid;place-items:center;height:100%;font-size:16px;color:white;text-shadow:0 1px 3px #000}.nexus-quiet-color[data-quiet-color=mint]>span:after{color:#102b29;text-shadow:none}.nexus-quiet-color:active{transform:scale(.94)}.nexus-quiet-color:focus-visible{outline:2px solid currentColor;outline-offset:4px}.nexus-quiet-color:disabled{cursor:wait;opacity:.6}@media(max-width:800px){.nexus-quiet-colors{width:100%;align-self:stretch}}

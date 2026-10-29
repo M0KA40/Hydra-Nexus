@@ -1,0 +1,11 @@
+/* Shared material roles, including native portals and Nexus-owned dialogs. */
+html[data-nexus-interface=quiet][data-nexus-color=mint]{--nexus-quiet-canvas:#101f22;--nexus-quiet-surface:rgba(27,48,51,.82);--nexus-quiet-raised:rgba(43,75,75,.88);--nexus-quiet-text:#f1f8f6;--nexus-quiet-muted:#b8ceca;--nexus-quiet-accent:#9cf5da;--nexus-quiet-line:rgba(156,245,218,.28);--nexus-quiet-line-soft:rgba(156,245,218,.15);--nexus-quiet-border:rgba(156,245,218,.2);--nexus-field:#162c2f;--nexus-text:#f1f8f6;--nexus-surface:#1b3033;--nexus-border:#52736d;--nexus-game-material:linear-gradient(125deg,#9cf5da08,transparent 58%),rgba(27,48,51,.85)}
+html[data-nexus-interface=quiet][data-nexus-color=mint] body:not([data-nexus-bg=on]){background-color:#101f22;background-image:url('./assets/nexus-mint-background.webp');background-size:cover;background-position:center top;background-attachment:fixed}
+html[data-nexus-interface=quiet][data-nexus-color=mint] :is(.modal,#hsb-dialog>section,#hbk-profile,.dropdown-menu__content,.context-menu__list):not(#big-picture *){background:rgba(22,43,46,.96);color:var(--nexus-quiet-text);border-color:var(--nexus-quiet-line)}
+html[data-nexus-interface=quiet][data-nexus-color=mint] :is(.button--primary,.nexus-discovery-feature-action):not(#big-picture *){background:#9cf5da;border-color:#9cf5da;color:#102b29}
+html[data-nexus-interface=quiet][data-nexus-color=mint] :is(.nexus-top-nav-item[aria-current=page],.nexus-discovery-thumbnail[aria-pressed=true]):not(#big-picture *){border-color:#9cf5da}
+html[data-nexus-interface=quiet][data-nexus-color=mint] :is(.nexus-game-tab[aria-selected=true],.settings__sidebar-button--active):not(#big-picture *){background:#9cf5da18;color:#c4ffea}
+html[data-nexus-interface=quiet][data-nexus-color=mint] :is(button,a,input,select,textarea):focus-visible{outline-color:#9cf5da}
+html[data-nexus-interface=quiet][data-nexus-color=mint] .nexus-quiet-color[aria-pressed=true]{color:#9cf5da}
+html[data-nexus-interface=quiet][data-nexus-color=mint] .nexus-top-indicator{background:linear-gradient(135deg,#b1fbe5,#68d7c9);border-color:#9cf5da;box-shadow:inset 0 1px #ffffff40,0 4px 14px #0002}
+html[data-nexus-interface=quiet][data-nexus-color=mint][data-nexus-rail=top] .sidebar__menu-item--active>.sidebar__menu-item-button:not(#big-picture *){color:#102b29;text-shadow:none}

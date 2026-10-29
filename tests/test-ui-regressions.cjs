@@ -12,7 +12,14 @@ const checks=[
   ['only the update check button shows its own busy label',/activeAction==='checkUpdates'\?tr\("Checking…"\):tr\("Check for updates"\)/],
   ['stale hardware comparison responses cannot replace a newer dialog',/if\(modal!==loading\|\|key\(\)!==k\)return;/],
   ['dialogs restore focus to the opener',/const previous=modalReturn;modal\?\.remove\(\);modal=null;modalReturn=null;if\(previous\?\.isConnected\)previous\.focus\(\{preventScroll:true\}\);/],
-  ['keyboard focus remains inside open dialogs',/e\.key==='Tab'[\s\S]*?getClientRects\(\)\.length[\s\S]*?list\.at\(-1\)\?\.focus\(\)[\s\S]*?list\[0\]\?\.focus\(\)/]
+  ['keyboard focus remains inside open dialogs',/e\.key==='Tab'[\s\S]*?getClientRects\(\)\.length[\s\S]*?list\.at\(-1\)\?\.focus\(\)[\s\S]*?list\[0\]\?\.focus\(\)/],
+  // 2.2 fix: Home discovery must reach the bounded Steam feed. The renderer used to
+  // read window.__nexusDiscovery while nothing defined it, so every launch fell back
+  // to Hydra categories behind a "Steam is unavailable" banner.
+  ['home discovery is wired to the Steam feed action',/window\.__nexusDiscovery=\{load:options=>request\('discoveryFeed',options\|\|\{\}\)\}/],
+  ['a hidden tray window reports itself to the stylesheet',/document\.documentElement\.dataset\.nexusWindow=state\?\.visible===false\?'hidden':'active'/]
 ];
 for(const [name,pattern] of checks)assert.match(nexus+'\n'+workspace,pattern,name);
-console.log('PASS: UI regression contract retains settings drafts, update retry, per-action busy labels, stale-dialog rejection, and dialog focus containment.');
+const quiet=fs.readFileSync(path.join(root,'interface-quiet.css'),'utf8');
+assert.match(quiet,/html\[data-nexus-window=hidden\][^{]*\{animation-play-state:paused!important/,'hidden windows suspend compositor animation work');
+console.log('PASS: UI regression contract retains settings drafts, update retry, per-action busy labels, stale-dialog rejection, discovery wiring, hidden-window suspension and dialog focus containment.');

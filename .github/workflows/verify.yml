@@ -7,7 +7,7 @@ permissions:
   contents: read
 jobs:
   checks:
-    if: github.event_name != 'push' || github.event.head_commit.message != 'Release Hydra Nexus 2.0'
+    if: github.event_name != 'push' || github.event.head_commit.message != 'Release Hydra Nexus 2.2'
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
