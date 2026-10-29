@@ -8,14 +8,6 @@ Hydra Nexus to społecznościowe rozszerzenie Hydra Launcher dla Windows. Dodaje
 
 **[Pobierz instalator](https://github.com/M0KA40/Hydra-Nexus/releases/latest/download/Hydra_Nexus_2.2.exe)** · [Informacje o wydaniu](https://github.com/M0KA40/Hydra-Nexus/releases/tag/v2.2) · [Zgłoś problem](https://github.com/M0KA40/Hydra-Nexus/issues/new/choose)
 
-## Nexus Quiet (Beta)
-
-Strona główna oferuje filmową karuzelę i rozszerzone odkrywanie z danymi Steam oraz pamięcią podręczną. Strony gier mają Overview, Updates, About, Community i Details. Updates pokazuje wiadomości i informacje o aktualizacjach Steam we wbudowanym czytniku. Gry spoza biblioteki otwierają About.
-
-[Nowości w 2.2](https://github.com/M0KA40/Hydra-Nexus/releases/tag/v2.2)
-
-
-
 ## Steam launch settings
 
 ![Steam launch settings](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/ac0b8e5df56367c357d743ffb2c01ea4b1fc9c9a/assets/features/steam.webp)
@@ -87,6 +79,8 @@ Wybierz lokalny obraz lub film jako tło. Ustaw przyciemnienie i rozmycie, opcjo
 **Gdzie używać:** Hydra Nexus Settings → Themes → Choose image or video
 
 ## Dodatkowe narzędzia
+
+- Game Page Layout — Wybierz sekcje stron gier i ustaw ich kolejność w Plugins.
 
 - Game Notes — tekst i linki dla gry, osobne okno, zawsze na wierzchu i skrót ustawiania fokusu.
 - Nexus Mods — otwiera właściwą stronę modów lub wyszukiwanie, gdy brak pewnego dopasowania.

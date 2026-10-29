@@ -8,17 +8,6 @@ Hydra Nexus إضافة مجتمعية لهايدرا لانشر على ويند�
 
 **[تحميل المثبت](https://github.com/M0KA40/Hydra-Nexus/releases/latest/download/Hydra_Nexus_2.2.exe)** · [ملاحظات الإصدار](https://github.com/M0KA40/Hydra-Nexus/releases/tag/v2.2) · [الإبلاغ عن مشكلة](https://github.com/M0KA40/Hydra-Nexus/issues/new/choose)
 
-## Nexus Quiet (Beta)
-
-هذا ليس مجرد تغيير ألوان مثل الثيمات العادية. يعيد Nexus Quiet تصميم التنقل والرئيسية وصفحات الألعاب، ويضيف أدوات تحسّن تجربة التصفح. يتوفر بلونين: Quiet Slate وNexus Mint، ويمكن التبديل بينهما من الدوائر الملونة في الإعدادات ← الثيمات. الوظائف والتصميم متطابقان في اللونين. هذه مرحلة بيتا أولية، وسيستمر تطويرها وتحسينها.
-
-[الجديد في 2.2](https://github.com/M0KA40/Hydra-Nexus/releases/tag/v2.2)
-
-## Game Page Layout
-
-تحكم بالأقسام الظاهرة ورتّبها من Plugins، مع إمكانية تطبيق الإخفاء على ألعاب المكتبة أو جميع الألعاب. إخفاء أقسام المحتوى الأوسط يحافظ على مساحتها، بينما إخفاء الأقسام الجانبية يحرر المساحة. تُحفظ الخيارات مباشرة مع الحفاظ على حالة الحقول والمسودات.
-
-
 ## Steam launch settings
 
 ![Steam launch settings](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/ac0b8e5df56367c357d743ffb2c01ea4b1fc9c9a/assets/features/steam.webp)
@@ -90,6 +79,8 @@ https://github.com/user-attachments/assets/f69ff1b4-6250-43b1-a5d7-98ca3722d952
 **مكان الاستخدام:** إعدادات Hydra Nexus ← Themes ← اختيار صورة أو فيديو
 
 ## أدوات إضافية
+
+- Game Page Layout — تحكّم بالأقسام الظاهرة في صفحة اللعبة ورتّبها من Plugins.
 
 - Game Notes — نصوص وروابط لكل لعبة ونافذة مستقلة وخيار البقاء فوق النوافذ واختصار للتركيز.
 - Nexus Mods — افتح صفحة مودات اللعبة المطابقة أو ابحث عند غياب مطابقة موثوقة.

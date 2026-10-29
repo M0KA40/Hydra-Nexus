@@ -8,14 +8,6 @@ Hydra Nexus — расширение сообщества для Hydra Launcher 
 
 **[Скачать установщик](https://github.com/M0KA40/Hydra-Nexus/releases/latest/download/Hydra_Nexus_2.2.exe)** · [Примечания к выпуску](https://github.com/M0KA40/Hydra-Nexus/releases/tag/v2.2) · [Сообщить о проблеме](https://github.com/M0KA40/Hydra-Nexus/issues/new/choose)
 
-## Nexus Quiet (Beta)
-
-Главная получила кинематографическую карусель и расширенный поиск новых игр по данным Steam с кэшем. Страницы включают Overview, Updates, About, Community и Details. Updates показывает новости и заметки Steam во встроенном читателе. Игры вне библиотеки открывают About.
-
-[Что нового в 2.2](https://github.com/M0KA40/Hydra-Nexus/releases/tag/v2.2)
-
-
-
 ## Steam launch settings
 
 ![Steam launch settings](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/ac0b8e5df56367c357d743ffb2c01ea4b1fc9c9a/assets/features/steam.webp)
@@ -87,6 +79,8 @@ https://github.com/user-attachments/assets/f69ff1b4-6250-43b1-a5d7-98ca3722d952
 **Где открыть:** Hydra Nexus Settings → Themes → Choose image or video
 
 ## Другие инструменты
+
+- Game Page Layout — Выбирайте разделы страниц игр и меняйте их порядок в Plugins.
 
 - Game Notes — текст и ссылки для каждой игры, отдельное окно, поверх других окон и горячая клавиша фокуса.
 - Nexus Mods — страница модов подходящей игры или поиск при отсутствии надёжного совпадения.

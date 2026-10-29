@@ -8,17 +8,6 @@ Hydra Nexus is a community extension for Hydra Launcher on Windows. It adds game
 
 **[Download installer](https://github.com/M0KA40/Hydra-Nexus/releases/latest/download/Hydra_Nexus_2.2.exe)** · [Release notes](https://github.com/M0KA40/Hydra-Nexus/releases/tag/v2.2) · [Report a problem](https://github.com/M0KA40/Hydra-Nexus/issues/new/choose)
 
-## Nexus Quiet (Beta)
-
-Nexus Quiet goes beyond a conventional Hydra color theme. It redesigns navigation, Home and game pages, with integrated features that improve everyday browsing. Choose Quiet Slate or Nexus Mint using the circular color selectors in Settings → Themes. Both share the same layout and functionality. This is an initial beta; development and refinement will continue.
-
-[What’s new in 2.2](https://github.com/M0KA40/Hydra-Nexus/releases/tag/v2.2)
-
-## Game Page Layout
-
-Choose which game-page sections appear and arrange their order from Plugins. Visibility can apply to library games or all games. Hidden middle sections retain their space; hidden sidebar sections release theirs. Preferences are saved without replacing unrelated controls or drafts.
-
-
 ## Steam launch settings
 
 ![Steam launch settings](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/ac0b8e5df56367c357d743ffb2c01ea4b1fc9c9a/assets/features/steam.webp)
@@ -90,6 +79,8 @@ Choose your own local image or video as Hydra’s background. Adjust darkness an
 **Where to use it:** Hydra Nexus Settings → Themes → Choose image or video
 
 ## Additional tools
+
+- Game Page Layout — Choose which game-page sections appear and arrange their order from Plugins.
 
 - Game Notes — text and links per game, an independent window, Always on top and a focus shortcut.
 - Nexus Mods — open the matched game’s mods page or search when no reliable match is available.

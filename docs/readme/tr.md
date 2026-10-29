@@ -8,14 +8,6 @@ Hydra Nexus, Windows üzerinde Hydra Launcher için topluluk tarafından gelişt
 
 **[Yükleyiciyi indir](https://github.com/M0KA40/Hydra-Nexus/releases/latest/download/Hydra_Nexus_2.2.exe)** · [Sürüm notları](https://github.com/M0KA40/Hydra-Nexus/releases/tag/v2.2) · [Sorun bildir](https://github.com/M0KA40/Hydra-Nexus/issues/new/choose)
 
-## Nexus Quiet (Beta)
-
-Ana sayfada sinematik karusel ve Steam verileri ile önbellek kullanan genişletilmiş keşif bulunur. Oyun sayfaları Overview, Updates, About, Community ve Details bölümlerine ayrılır. Updates, Steam haberleri ve yama notlarını uygulama içinde gösterir. Kütüphane dışındaki oyunlar About ile açılır.
-
-[2.2 yenilikleri](https://github.com/M0KA40/Hydra-Nexus/releases/tag/v2.2)
-
-
-
 ## Steam launch settings
 
 ![Steam launch settings](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/ac0b8e5df56367c357d743ffb2c01ea4b1fc9c9a/assets/features/steam.webp)
@@ -87,6 +79,8 @@ Arka plan olarak yerel resim veya video seçin. Karartma ve bulanıklığı ayar
 **Kullanım yeri:** Hydra Nexus Settings → Themes → Choose image or video
 
 ## Diğer araçlar
+
+- Game Page Layout — Oyun sayfası bölümlerini seçin ve sıralarını Plugins üzerinden düzenleyin.
 
 - Game Notes — oyun başına metin ve bağlantılar, bağımsız pencere, her zaman üstte ve odak kısayolu.
 - Nexus Mods — eşleşen mod sayfasını veya güvenilir eşleşme yoksa aramayı açar.
