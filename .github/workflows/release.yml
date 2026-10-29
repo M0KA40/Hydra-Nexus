@@ -52,3 +52,26 @@ jobs:
               if ($LASTEXITCODE -ne 0) { throw "Could not hide release $($release.tag_name)" }
             }
           }
+
+  documentation:
+    if: github.event_name == 'push' && github.event.head_commit.message == 'Restore Hydra Nexus documentation'
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Sync documentation and release source
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download v2.2 --repo "$env:GITHUB_REPOSITORY" --dir dist --pattern Hydra_Nexus_2.2.exe --pattern Hydra_Nexus.bat --pattern Hydra-Nexus-2.2-release-notes.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Copy-Item -LiteralPath dist/Hydra_Nexus_2.2.exe -Destination dist/Hydra_Nexus_Setup.exe
+          python release.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          gh release upload v2.2 dist/Hydra-Nexus-2.2-source.zip dist/SHA256SUMS.txt --clobber --repo "$env:GITHUB_REPOSITORY"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          gh release edit v2.2 --notes-file docs/releases/2.2.md --repo "$env:GITHUB_REPOSITORY"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
