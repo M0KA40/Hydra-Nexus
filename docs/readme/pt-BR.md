@@ -18,7 +18,7 @@ Associe a cada jogo uma conta Steam salva e um modo de inicialização. Default 
 
 ## Game Storage Manager
 
-![Game Storage Manager](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/f575584cd94e2d50d5026ce64f396540ee46fc4c/assets/features/storage.webp)
+![Game Storage Manager](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/1dedee7bd0a56fbe0db332a1fdb326ab8b46ac9a/assets/features/storage.webp)
 
 Veja jogos instalados por unidade, espaço livre e tamanho medido. Pesquise e ordene por tamanho ou último uso. Abra pastas ou mova jogos após revisar destino e espaço. As cópias são verificadas antes de atualizar caminhos e remover os originais. Pastas incertas e medições parciais são sinalizadas. Registros de outros launchers e atalhos não são alterados.
 
