@@ -121,3 +121,7 @@ and source ZIPs. The release body revision marker belongs to BAT 2.3; EXE
 revision belongs to its JSON manifest. Future EXE releases must update their
 manifest version/revision consistently with the compiled EXE. Older 3.0 r2
 downloads are preserved in v3.0; the primary latest EXE includes this fix. Revision 4 also removes installer implementation details from all localized release announcements.
+
+## BAT migration recipes (revision 5)
+
+The installer must accept the reviewed BAT 2.2 and 2.3 patched main/renderer states on Hydra 4.3.0, in addition to the clean host and prior native states. During an explicit compatibility refresh, set HYDRA_LEGACY_BATS to a JSON array of trusted local BAT paths. The development compiler derives their exact patched chunks from the reviewed clean fixture and emits hash-bound transformations to the native target. Matching prior recipes remain supported. Never admit arbitrary live chunks without matching this provenance. Test legacy-to-native installation, repair, rollback and unknown-input rejection with isolated copies before publishing. Keep replaced release assets locally, not as duplicate public downloads.

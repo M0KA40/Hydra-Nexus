@@ -51,7 +51,14 @@ if os.environ.get('HYDRA_REFRESH_COMPATIBILITY')=='1':
     variants=[{k:v.read_bytes() for k,v in inputs.items()}]
     legacy=workspace/'Play-Activity-Lab-r7/Hydra-Nexus/dist/Hydra_Nexus.bat'
     if legacy.exists():variants.append(compile_output(legacy,'activity04'))
+    for index,bat in enumerate(json.loads(os.environ.get('HYDRA_LEGACY_BATS','[]'))):
+        variants.append(compile_output(Path(bat),'legacy-'+str(index)))
     recipes={kind:[recipe(v[kind],target[kind]) for v in variants]+[recipe(target[kind],target[kind])] for kind in target}
+    if compatibility.exists():
+        previous=json.loads(compatibility.read_text(encoding='utf8'))
+        for kind in recipes:
+            for old in previous['recipes'][kind]:
+                if old['output']==digest(target[kind]) and not any(r['input']==old['input'] for r in recipes[kind]):recipes[kind].append(old)
     compatibility.write_text(json.dumps({'schema':1,'host':'Hydra 4.3.0 (verified exact native chunks)','recipes':recipes},separators=(',',':')),encoding='utf8')
 data=json.loads(compatibility.read_text(encoding='utf8'))
 brand=(root/'src/brand.cjs').read_text(encoding='utf8')
