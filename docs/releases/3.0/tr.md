@@ -1,8 +1,5 @@
 # Hydra Nexus 3.0
 
-## Yerel EXE yükleyici
-İsteğe bağlı dil seçimi, kendi penceresi ve görev çubuğu simgesi ve Hydra’yı yeniden açma özelliğiyle tam Windows yükleyicisi. Gelecek güncellemeler doğrulanmış EXE kullanır. Bilinen eski bileşenler değiştirilir, ayarlar korunur.
-
 ## Nexus Cloud · BETA
 Desteklenen kayıtları ve yerel başarımları kendi Dropbox veya OneDrive hesabınızın NexusCloud klasörüne yedekleyin. Tarayıcıdan tek bir hizmet bağlayın; eşitleme uygulaması gerekmez, yetkilendirme yerelde şifrelenir. Oyunları tarayın, dosyaları inceleyin veya elle klasör ekleyin. Bir oyunu veya uygun tüm oyunları yedekleyin; dışlananlar atlanır. İsteğe bağlı otomatik yedek oyun kapandıktan sonra çalışır; alt çubukta ilerleme ve yeniden başlatma sonrasında hata ayrıntıları gösterilir.
 

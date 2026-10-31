@@ -1,8 +1,5 @@
 # Hydra Nexus 3.0
 
-## Nativer EXE-Installer
-Vollständiger Windows-Installer mit optionaler Sprachwahl, eigenem Fenster und Taskleistensymbol sowie erneutem Öffnen von Hydra. Künftige Updates verwenden geprüfte EXE-Pakete. Bekannte alte Komponenten werden ersetzt, Einstellungen bleiben erhalten.
-
 ## Nexus Cloud · BETA
 Sichere unterstützte Spielstände und lokale Erfolge im Ordner NexusCloud deines Dropbox- oder OneDrive-Kontos. Verbinde jeweils einen Dienst im Browser, ohne Synchronisierungs-App; die Autorisierung wird lokal verschlüsselt. Scanne Spiele, prüfe Dateien oder ergänze einen Ordner manuell. Sichere ein Spiel oder alle geeigneten Spiele; ausgeschlossene Spiele werden übersprungen. Optionale automatische Sicherungen starten nach dem Beenden, mit Fortschritt unten und Fehlermeldungen auch nach einem Neustart.
 

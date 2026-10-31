@@ -1,8 +1,5 @@
 # Hydra Nexus 3.0
 
-## Instalador EXE nativo
-Instalador Windows completo com idioma opcional, janela e ícone próprios e reabertura do Hydra. Atualizações futuras usam EXE verificados. Componentes antigos conhecidos são substituídos, preservando as configurações.
-
 ## Nexus Cloud · BETA
 Salve os saves e conquistas locais compatíveis na pasta NexusCloud da sua conta Dropbox ou OneDrive. Conecte um serviço por vez pelo navegador, sem aplicativo de sincronização; a autorização fica criptografada localmente. Examine os jogos, revise os arquivos ou adicione uma pasta manualmente. Copie um jogo ou todos os elegíveis; jogos excluídos são ignorados. O backup automático opcional ocorre após fechar o jogo, com acompanhamento na barra inferior e falhas disponíveis após reiniciar.
 

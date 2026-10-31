@@ -1,8 +1,5 @@
 # Hydra Nexus 3.0
 
-## Native EXE installer
-A complete Windows installer with optional language selection, a native window and taskbar icon, and automatic reopening of Hydra. Future updates use verified EXE packages. Known old Nexus components are replaced while settings are preserved.
-
 ## Nexus Cloud · BETA
 Back up supported game saves and local achievement files to your own Dropbox or OneDrive account, in the NexusCloud folder. Connect one provider at a time through the browser; no sync app is required. Authorization is encrypted locally. Scan games, review detected files or add a save folder manually. Back up one game or all eligible games; excluded games are skipped. Optional automatic backup runs after a game closes, with persistent feedback in the bottom status bar and retry details after restart.
 

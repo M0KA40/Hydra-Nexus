@@ -1,8 +1,5 @@
 # Hydra Nexus 3.0
 
-## Natywny instalator EXE
-Pełny instalator Windows z opcjonalnym językiem, własnym oknem i ikoną oraz ponownym otwarciem Hydra. Przyszłe aktualizacje używają zweryfikowanych EXE. Znane stare składniki są zastępowane z zachowaniem ustawień.
-
 ## Nexus Cloud · BETA
 Twórz kopie obsługiwanych zapisów i lokalnych osiągnięć w folderze NexusCloud swojego Dropbox lub OneDrive. Łącz jeden serwis przez przeglądarkę, bez aplikacji synchronizacji; autoryzacja jest szyfrowana lokalnie. Skanuj gry, sprawdzaj pliki lub dodaj folder ręcznie. Kopiuj grę lub wszystkie kwalifikujące się gry; wykluczone są pomijane. Opcjonalne kopie automatyczne działają po zamknięciu gry, z postępem na dolnym pasku i błędami dostępnymi po restarcie.
 

@@ -120,4 +120,4 @@ Keep SHA256SUMS.txt entries for BOTH installers, plus separate versioned notes
 and source ZIPs. The release body revision marker belongs to BAT 2.3; EXE
 revision belongs to its JSON manifest. Future EXE releases must update their
 manifest version/revision consistently with the compiled EXE. Older 3.0 r2
-downloads are preserved in v3.0; the primary latest EXE is r3 with this fix.
+downloads are preserved in v3.0; the primary latest EXE includes this fix. Revision 4 also removes installer implementation details from all localized release announcements.
