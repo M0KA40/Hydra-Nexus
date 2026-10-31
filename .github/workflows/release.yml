@@ -24,4 +24,5 @@ jobs:
             dist/Hydra_Nexus.exe
             dist/Hydra-Nexus-3.0-source.zip
             dist/Hydra-Nexus-3.0-release-notes.json
+            dist/Hydra-Nexus-exe-release.json
             dist/SHA256SUMS.txt

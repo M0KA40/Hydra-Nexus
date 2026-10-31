@@ -108,3 +108,16 @@ the `automatic` filters and durable failure indicators. Cancel the closing Cloud
 screen’s owned animations before removing its DOM, so animation targets do not
 retain detached panels/listeners across repeated visits. This does not gate motion
 on Windows/system animation preferences.
+
+## Mixed Latest release: BAT 2.3 and EXE 3.0
+
+The owner uses GitHub Latest v2.3 so old 2.2 clients discover a compatible BAT.
+The same release carries Hydra_Nexus.exe (3.0) and
+Hydra-Nexus-exe-release.json (`schema`, EXE `version`, internal EXE `revision`).
+The native updater reads this bounded, same-tag manifest when present; it does
+not infer the EXE version from the legacy release tag or BAT revision marker.
+Keep SHA256SUMS.txt entries for BOTH installers, plus separate versioned notes
+and source ZIPs. The release body revision marker belongs to BAT 2.3; EXE
+revision belongs to its JSON manifest. Future EXE releases must update their
+manifest version/revision consistently with the compiled EXE. Older 3.0 r2
+downloads are preserved in v3.0; the primary latest EXE is r3 with this fix.

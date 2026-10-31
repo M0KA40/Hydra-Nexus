@@ -6,7 +6,9 @@
 
 Hydra Nexus, Windows üzerinde Hydra Launcher için topluluk tarafından geliştirilen bir eklentidir. Depolama araçları, oyuna özel Steam hesapları, oyun etkinliği, sekmeler, notlar ve kendi arka planlarınızı ekler. İstediğiniz araçları Plugins bölümünden açın. Hydra dilini ve temaya uyan yerel denetimleri kullanır. Hydra Launcher önceden kurulu olmalıdır.
 
-**[Yükleyiciyi indir](https://github.com/M0KA40/Hydra-Nexus/releases/download/v3.0/Hydra_Nexus.exe)** · [Sürüm notları](https://github.com/M0KA40/Hydra-Nexus/releases/tag/v3.0) · [Sorun bildir](https://github.com/M0KA40/Hydra-Nexus/issues/new/choose)
+**[Yükleyiciyi indir](https://github.com/M0KA40/Hydra-Nexus/releases/latest/download/Hydra_Nexus.exe)** · [Sürüm notları](https://github.com/M0KA40/Hydra-Nexus/releases/latest) · [Sorun bildir](https://github.com/M0KA40/Hydra-Nexus/issues/new/choose)
+
+Eski Hydra için: [uyumlu BAT 2.3](https://github.com/M0KA40/Hydra-Nexus/releases/download/v2.3/Hydra_Nexus.bat). Yeni özellikler EXE 3.0 gerektirir.
 
 ## Nexus Cloud · BETA
 

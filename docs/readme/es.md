@@ -6,7 +6,9 @@
 
 Hydra Nexus es una extensión comunitaria de Hydra Launcher para Windows. Añade gestión del almacenamiento, cuentas de Steam por juego, actividad, pestañas, notas y fondos propios. Activa las herramientas que necesites en Plugins. Sigue el idioma de Hydra y utiliza controles nativos compatibles con tu tema. Requiere una instalación previa de Hydra Launcher.
 
-**[Descargar instalador](https://github.com/M0KA40/Hydra-Nexus/releases/download/v3.0/Hydra_Nexus.exe)** · [Notas de versión](https://github.com/M0KA40/Hydra-Nexus/releases/tag/v3.0) · [Informar de un problema](https://github.com/M0KA40/Hydra-Nexus/issues/new/choose)
+**[Descargar instalador](https://github.com/M0KA40/Hydra-Nexus/releases/latest/download/Hydra_Nexus.exe)** · [Notas de versión](https://github.com/M0KA40/Hydra-Nexus/releases/latest) · [Informar de un problema](https://github.com/M0KA40/Hydra-Nexus/issues/new/choose)
+
+Para Hydra anterior: [BAT 2.3 de compatibilidad](https://github.com/M0KA40/Hydra-Nexus/releases/download/v2.3/Hydra_Nexus.bat). Las nuevas funciones requieren EXE 3.0.
 
 ## Nexus Cloud · BETA
 

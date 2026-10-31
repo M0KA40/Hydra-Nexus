@@ -6,7 +6,9 @@
 
 Hydra Nexus إضافة مجتمعية لهايدرا لانشر على ويندوز. تضيف أدوات لتخزين الألعاب، وحساب Steam لكل لعبة، ونشاط اللعب والتبويبات والملاحظات وخلفياتك الخاصة. فعّل الأدوات التي تحتاجها من Plugins. تتبع الواجهة لغة هايدرا وتستخدم عناصره الأصلية لتتناسب مع الثيم. يلزم وجود تثبيت Hydra Launcher مسبقًا.
 
-**[تحميل المثبت](https://github.com/M0KA40/Hydra-Nexus/releases/download/v3.0/Hydra_Nexus.exe)** · [ملاحظات الإصدار](https://github.com/M0KA40/Hydra-Nexus/releases/tag/v3.0) · [الإبلاغ عن مشكلة](https://github.com/M0KA40/Hydra-Nexus/issues/new/choose)
+**[تحميل المثبت](https://github.com/M0KA40/Hydra-Nexus/releases/latest/download/Hydra_Nexus.exe)** · [ملاحظات الإصدار](https://github.com/M0KA40/Hydra-Nexus/releases/latest) · [الإبلاغ عن مشكلة](https://github.com/M0KA40/Hydra-Nexus/issues/new/choose)
+
+لنسخ Hydra القديمة: [إصدار التوافق BAT 2.3](https://github.com/M0KA40/Hydra-Nexus/releases/download/v2.3/Hydra_Nexus.bat). الميزات الجديدة تتطلب EXE 3.0.
 
 ## Nexus Cloud · BETA
 

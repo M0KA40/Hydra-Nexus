@@ -32,3 +32,5 @@ Choose which game-page sections appear and arrange their order from Plugins. Vis
 - Fixed updates failing when the executable remained briefly locked after closing Hydra. The updater now retries temporary lock conflicts within a bounded wait and preserves recovery if the lock persists.
 
 Available in all nine supported interface languages. The interface redesign remains beta even though this is the 2.2 application release.
+
+For older Hydra: [BAT 2.3 compatibility edition](https://github.com/M0KA40/Hydra-Nexus/releases/download/v2.3/Hydra_Nexus.bat). New features require EXE 3.0.

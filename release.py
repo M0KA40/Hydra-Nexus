@@ -74,7 +74,9 @@ notes_name=f'Hydra-Nexus-{version}-release-notes.json'
 
 (out/notes_name).write_text(json.dumps(pack,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
 
-names=['Hydra_Nexus.exe',f'Hydra-Nexus-{version}-source.zip',notes_name]
+shutil.copy2(root/'Hydra-Nexus-exe-release.json',out/'Hydra-Nexus-exe-release.json')
+
+names=['Hydra_Nexus.exe',f'Hydra-Nexus-{version}-source.zip',notes_name,'Hydra-Nexus-exe-release.json']
 
 (out/'SHA256SUMS.txt').write_text(''.join(hashlib.sha256((out/name).read_bytes()).hexdigest()+'  '+name+'\n' for name in names),encoding='utf8')
 

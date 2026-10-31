@@ -26,3 +26,5 @@ subprocess.run([node,str(root/'tests/test-interface.cjs')],check=True,cwd=root)
 
 # Native distribution replaces the retired BAT worker integration suites.
 subprocess.run([node,str(root/"tests/test-exe-contract.cjs")],check=True,cwd=root)
+
+subprocess.run([node,str(root/"tests/test-hybrid-release.cjs")],check=True,cwd=root)
