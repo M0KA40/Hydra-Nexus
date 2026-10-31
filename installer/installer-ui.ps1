@@ -16,6 +16,9 @@ function Show-NexusInstallerBanner {
     Write-Host '  └──────────────────────────────────────────────────────────┘' -ForegroundColor DarkGray
     Write-Host ('  '+(Get-NexusInstallerText 'subtitle')) -ForegroundColor Gray
     Write-Host ''
+    Write-Host ('  '+(Get-NexusInstallerText 'legacyWarning')) -ForegroundColor Yellow
+    Write-Host ('  '+(Get-NexusInstallerText 'legacyDetails')) -ForegroundColor Gray
+    Write-Host ''
 }
 function Start-NexusInstaller {
     try{[Console]::InputEncoding=New-Object Text.UTF8Encoding($false);[Console]::OutputEncoding=New-Object Text.UTF8Encoding($false)}catch{}
@@ -23,6 +26,8 @@ function Start-NexusInstaller {
 function Show-NexusMenu($Patch){
     while($true){
         Show-NexusInstallerBanner
+        Write-Host ('  [D]  '+(Get-NexusInstallerText 'downloadNew')) -ForegroundColor Cyan
+        Write-Host ''
         Write-Host ('  [1]  '+(Get-NexusInstallerText 'install')) -ForegroundColor White
         Write-Host ('  [2]  '+(Get-NexusInstallerText 'remove')) -ForegroundColor White
         Write-Host ('  [3]  '+(Get-NexusInstallerText 'check')) -ForegroundColor White
@@ -33,6 +38,7 @@ function Show-NexusMenu($Patch){
         $choice=(Read-Host ('  '+(Get-NexusInstallerText 'select'))).Trim()
         if($choice -eq '0'){return}
         try{switch($choice){
+            'D'{Start-Process -FilePath 'https://github.com/M0KA40/Hydra-Nexus/releases/download/v2.3/Hydra_Nexus.exe';Write-Host (Get-NexusInstallerText 'downloadOpened') -ForegroundColor Green;Wait-ForMenu}
             '1'{Invoke-BuiltInPatch $Patch Install;Wait-ForMenu}
             '2'{Invoke-BuiltInPatch $Patch Remove;Wait-ForMenu}
             '3'{$dir=Resolve-HydraDirectory;Write-Host (Get-PatchStatus $Patch $dir);Wait-ForMenu}

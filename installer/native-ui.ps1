@@ -8,7 +8,10 @@ function Add-NexusExtractionHooks([string]$Text){
     $Text=Remove-NexusExtractionHooks $Text
     if($Text -notmatch '\bclass\s+GameFilesManager\b'){return $Text}
     foreach($required in @('class SevenZip','downloadsSublevel','deleteArchiveFile','static async handleExtraction(download, game)')){if(!$Text.Contains($required)){throw 'Unsupported Hydra extraction service. The archive was not replaced.'}}
-    $event='const registerEvent = (name, listener)=>{'
+    $events=@('const registerEvent = (name, listener)=>{','const registerEvent = (name, listener, { jsonSafeResult = false } = {})=>{')
+    $knownEvents=@($events|Where-Object {$Text.Contains($_)})
+    if($knownEvents.Count -ne 1){throw 'Unsupported Hydra download event registration. The archive was not replaced.'}
+    $event=$knownEvents[0]
     $entry='static async handleExtraction(download, game) {'
     if([regex]::Matches($Text,[regex]::Escape($event)).Count -ne 1 -or [regex]::Matches($Text,[regex]::Escape($entry)).Count -ne 1){throw 'Unsupported Hydra download events. The archive was not replaced.'}
     $Text=$Text.Replace($event,$event+'/* HYDRA_NEXUS_DOWNLOAD_EVENT_V1 */ listener=globalThis.__NEXUS_DOWNLOAD_EVENT__?.(name,listener)||listener;')

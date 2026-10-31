@@ -2,7 +2,7 @@
 module.exports={
   "schema": 1,
   "version": "2.3",
-  "revision": 1,
+  "revision": 2,
   "notes": {
     "en": "# Hydra Nexus 2.3 — Legacy compatibility\n\n## A new Nexus is ready\n\nKeep Nexus 2.3 on this Hydra version. Update Hydra, then install Nexus 3.0 for Cloud and the new Activity and game statistics.\n\nYour settings are preserved. This compatibility release keeps the 2.2 features; it does not include Nexus Cloud or the redesigned Activity. Nexus 3.0 supports the reviewed Hydra 4.3.0 build.\n\n**[Download Nexus 3.0 (EXE)](https://github.com/M0KA40/Hydra-Nexus/releases/download/v2.3/Hydra_Nexus.exe)**\n",
     "pt-BR": "# Hydra Nexus 2.3 — Compatibilidade legada\n\n## O novo Nexus está pronto\n\nUse Nexus 2.3 nesta versão do Hydra. Atualize o Hydra e instale Nexus 3.0 para Cloud, a nova Atividade e estatísticas.\n\nSuas configurações são preservadas. Esta versão mantém os recursos da 2.2; não inclui Nexus Cloud nem a Atividade redesenhada. Nexus 3.0 suporta a versão revisada Hydra 4.3.0.\n\n**[Baixar Nexus 3.0 (EXE)](https://github.com/M0KA40/Hydra-Nexus/releases/download/v2.3/Hydra_Nexus.exe)**\n",

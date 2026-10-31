@@ -9,6 +9,10 @@
     "select": "Select an option",
     "enter": "Press Enter to continue",
     "invalid": "Invalid option. Try again.",
-    "folderPrompt": "Hydra folder (containing Hydra.exe), or 0 to cancel"
+    "folderPrompt": "Hydra folder (containing Hydra.exe), or 0 to cancel",
+    "legacyWarning": "This is a compatibility edition, not the latest Hydra Nexus.",
+    "legacyDetails": "For the new features, download Nexus 3.0 EXE. Your existing settings are kept.",
+    "downloadNew": "Download latest Nexus 3.0 EXE",
+    "downloadOpened": "The direct EXE download has opened. Run the downloaded EXE to install the new version."
   }
 }
