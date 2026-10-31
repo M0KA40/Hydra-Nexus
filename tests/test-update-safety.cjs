@@ -1,5 +1,6 @@
 'use strict';
 const fs=require('node:fs'),fsp=fs.promises,path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict'),cp=require('node:child_process'),{EventEmitter}=require('node:events'),crypto=require('node:crypto');
+const {atomicText}=require('../src/themes.cjs');
 const audit=fs.mkdtempSync(path.join(require('node:os').tmpdir(),'nexus-safety-')),subject=path.resolve(__dirname,'..'),{createUpdateShutdown}=require(path.join(subject,'src/update-shutdown.cjs')),{createUpdateJobs}=require(path.join(subject,'src/update-job.cjs')),results=[];
 (async()=>{
 fs.mkdirSync(path.join(audit,'Temp'));fs.mkdirSync(path.join(audit,'Results'));
@@ -20,7 +21,7 @@ for(const acknowledge of [true,false]){
  cp.spawn=()=>{const child=new EventEmitter();child.unref=()=>{};setImmediate(async()=>{
   try{const current=JSON.parse(await fsp.readFile(path.join(folder2,'active-job.json'),'utf8')),dir2=path.join(folder2,'job-'+current.id),state2={...current,workerPid:process.pid,phase:'ready',message:'ready'};
    await fsp.writeFile(path.join(dir2,'state.json'),JSON.stringify(state2));
-   watcher=setInterval(async()=>{if(!fs.existsSync(path.join(dir2,'approved')))return;clearInterval(watcher);await fsp.writeFile(path.join(dir2,'state.json'),JSON.stringify({...state2,phase:acknowledge?'waiting':'failed'}));},5);
+   watcher=setInterval(async()=>{if(!fs.existsSync(path.join(dir2,'approved')))return;clearInterval(watcher);await atomicText(path.join(dir2,'state.json'),JSON.stringify({...state2,phase:acknowledge?'waiting':'failed'}));},5);
    child.emit('exit',0);
   }catch(error){child.emit('error',error);}
  });return child;};

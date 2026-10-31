@@ -1,0 +1,19 @@
+# Permanent page geometry rule — owner instruction, 2026-10-27
+
+Native Hydra Settings is the reference for every full Nexus page. This rule applies to future work as well as Backup and Game statistics. It is a repository instruction, not an optional visual suggestion.
+
+1. Reuse the active native `.container`, `.header` and `.container__content` geometry. If a temporary page owns separate nodes, clone the native frame's classes/inline layout properties before hiding it; populate only owned content. Keep originals intact and restore them exactly on close/navigation.
+2. Theme-owned margins, outer width, corner spacing and padding remain authoritative. Do not force `margin:0`, `width:100%`, fixed viewport offsets/heights or fixed pixel desktop caps on replacement outer frames. Make content fit the available native panel using flexible tracks, `min-width:0` and one controlled inner scroll area.
+3. Full-page data cards use the available panel width. Readability limits may apply to text passages within a card, not shrink the entire page to a left-aligned 1100/1280px strip.
+4. Keep the native Settings wrapper classes for background, content and panel spacing. Responsive adjustments should reorganize owned cards, controls and columns, rather than override the theme's outer frame. Sidebar/header/body edges and gaps must remain aligned at every supported size.
+5. Use a native control fixture and compare actual header/content left/right bounds and header-to-content gap, not only copied CSS values. Test native default **1200×860**, minimum **1024×600**, **1280×720**, **1920×1080**, and any narrower supported surface. These default/minimum values are from the retained Hydra 4.2.0 reference; re-check them if the host changes.
+6. Test all nine languages, Arabic RTL, long German/Russian copy and representative light/dark/glass/community-style themes. Verify full-width use, no horizontal overflow, reachable buttons and scrolling, live language changes, navigation and restoration of the untouched native frame. Test controls with real theme margins; all-zero fixtures hide this defect.
+7. Run the affected browser geometry regressions before handing over a preview. Document the tested dimensions and themes in the handoff. Build/runtime fixture checks do not establish acceptance in the owner's installed application.
+
+Current enforcement: `tests/test-i18n-browser.cjs` compares Backup/native frame geometry; `test-game-statistics-browser.cjs` compares statistics/native geometry and available panel width across four window sizes, eight themes and nine languages. New full pages need equivalent assertions. Do not remove these assertions to make an inconsistent design pass.
+
+## Cloud full-window exception — owner approval, 2026-10-30
+
+The owner explicitly requested and approved a dedicated full-window internal Cloud page, like Play Activity, with a fixed background and Back to Hydra. This exception applies only to Nexus Cloud. Other Nexus pages retain the native frame requirements above.
+
+Cloud owns one overlay that fills the current client window (it does not force OS fullscreen or resize the window). It leaves native frame nodes, geometry, DOM, drafts, selection and scroll intact underneath and restores native accessibility/focus on return. Geometry acceptance still tests 1200×860, 1024×600, 1280×720 and 1920×1080 in all nine languages and ten native themes: the owned surface must cover the client window without overflow while the underlying native header/content bounds remain exactly the baseline. Native Settings tests remain unchanged.

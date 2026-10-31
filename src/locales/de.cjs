@@ -872,5 +872,9 @@ module.exports={
   "Could not send the friend request. Please sign in to Hydra and try again.": "Die Anfrage konnte nicht gesendet werden. Melde dich bei Hydra an und versuche es erneut.",
   "Enable the features you need. Close running games before changing Steam or Play Activity.": "Aktiviere benötigte Funktionen. Schließe Spiele vor Änderungen an Steam oder Spielaktivität.",
   "Available updates can be installed here. Nexus verifies the download, asks for confirmation, then restarts Hydra once to apply it. Settings, notes and play history are kept.": "Installiere Updates hier. Nexus prüft den Download, bittet um Bestätigung und startet Hydra einmal neu. Einstellungen, Notizen und Spielverlauf bleiben erhalten.",
-  "Close games before restarting to update": "Schließe Spiele vor dem Neustart zur Aktualisierung."
+  "Close games before restarting to update": "Schließe Spiele vor dem Neustart zur Aktualisierung.",
+  "Legacy compatibility": "Kompatibilität mit älteren Versionen",
+  "A new Nexus is ready": "Der neue Nexus ist bereit",
+  "Keep Nexus 2.3 on this Hydra version. Update Hydra, then install Nexus 3.0 for Cloud and the new Activity and game statistics.": "Nutze Nexus 2.3 mit dieser Hydra-Version. Aktualisiere Hydra und installiere Nexus 3.0 für Cloud, die neue Aktivität und Statistiken.",
+  "Download Nexus 3.0 (EXE)": "Nexus 3.0 herunterladen (EXE)"
 };

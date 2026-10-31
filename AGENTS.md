@@ -1,3 +1,8 @@
+# Legacy compatibility scope
+
+- This is the owner-authorized BAT 2.3 compatibility branch based on 2.2; native EXE-only work belongs to main/3.0. Do not import new Cloud or Activity features here.
+- Preserve optional Arabic support; do not audit or test Arabic/RTL unless explicitly requested.
+
 # Hydra Nexus development
 
 - Mandatory page layout rule: read `docs/page-layout.md` before any page change. Inherit native Settings/header/content dimensions and theme spacing. Compare actual geometry at 1200×860, 1024×600, 1280×720 and 1920×1080, all nine languages/RTL and representative themes. No fixed full-page desktop caps or zeroing native margins. Preserve and extend the Backup/statistics geometry regressions.
