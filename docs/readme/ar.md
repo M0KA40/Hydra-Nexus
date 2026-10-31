@@ -6,7 +6,17 @@
 
 Hydra Nexus إضافة مجتمعية لهايدرا لانشر على ويندوز. تضيف أدوات لتخزين الألعاب، وحساب Steam لكل لعبة، ونشاط اللعب والتبويبات والملاحظات وخلفياتك الخاصة. فعّل الأدوات التي تحتاجها من Plugins. تتبع الواجهة لغة هايدرا وتستخدم عناصره الأصلية لتتناسب مع الثيم. يلزم وجود تثبيت Hydra Launcher مسبقًا.
 
-**[تحميل المثبت](https://github.com/M0KA40/Hydra-Nexus/releases/latest/download/Hydra_Nexus_2.2.exe)** · [ملاحظات الإصدار](https://github.com/M0KA40/Hydra-Nexus/releases/tag/v2.2) · [الإبلاغ عن مشكلة](https://github.com/M0KA40/Hydra-Nexus/issues/new/choose)
+**[تحميل المثبت](https://github.com/M0KA40/Hydra-Nexus/releases/download/v3.0/Hydra_Nexus.exe)** · [ملاحظات الإصدار](https://github.com/M0KA40/Hydra-Nexus/releases/tag/v3.0) · [الإبلاغ عن مشكلة](https://github.com/M0KA40/Hydra-Nexus/issues/new/choose)
+
+## Nexus Cloud · BETA
+
+![Nexus Cloud](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/cloud.webp)
+
+احفظ ملفات حفظ ألعابك والإنجازات المحلية المدعومة في حسابك الشخصي على Dropbox أو OneDrive. اربط خدمة واحدة من المتصفح، وانسخ لعبة واحدة أو جميع الألعاب المؤهلة، وفعّل النسخ بعد إغلاق اللعبة إذا رغبت. على الجهاز نفسه أو جهاز آخر، اربط الحساب نفسه وتحقق من النسخ وراجع وجهات الحفظ ثم أكّد الاسترجاع.
+
+تستخدم Cloud مساحة حسابك. التشفير الاختياري يحمي الحزم الجديدة؛ احتفظ بكلمة المرور الأصلية خارج الجهاز. يعتمد الكشف على المواقع المدعومة مع إمكانية إضافة مجلد يدويًا. استرجاع الملفات المحلية لا يفتح إنجازات Steam أو Epic.
+
+**مكان الاستخدام: الإعدادات ← Hydra Nexus ← الإضافات ← Nexus Cloud، ثم افتح Nexus Cloud من الشريط الجانبي.**
 
 ## Steam launch settings
 
@@ -103,7 +113,7 @@ https://github.com/user-attachments/assets/f69ff1b4-6250-43b1-a5d7-98ca3722d952
 
 ## التثبيت والتحديث
 
-1. حمّل Hydra_Nexus_2.2.exe من الإصدارات.
+1. حمّل Hydra_Nexus.exe من الإصدارات.
 2. أغلق هايدرا بالكامل، بما في ذلك أيقونة شريط المهام.
 3. شغّل EXE واختر Install / Update / Repair.
 4. افتح Hydra ← Settings ← Hydra Nexus ← Plugins.

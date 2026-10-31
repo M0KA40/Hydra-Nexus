@@ -27,7 +27,12 @@ function createBackgroundMedia({directory,approved,log=()=>{}}){
       if((await fsp.realpath(target)).toLowerCase()!==target.toLowerCase())return new Response(null,{status:404});
       handle=await fsp.open(target,fs.constants.O_RDONLY| (fs.constants.O_NOFOLLOW||0));const stat=await handle.stat();
       if(!stat.isFile()||stat.ino!==entry.ino||stat.dev!==entry.dev||stat.nlink!==1){await handle.close();handle=null;return new Response(null,{status:404});}
-      const headers={'Content-Type':MIME[id.split('.').pop().toLowerCase()],'Accept-Ranges':'bytes','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'};
+      // Static wallpapers may be revalidated from the browser's disk cache after the
+      // hidden-window teardown. Video stays completely uncached: a media file pinned in
+      // the cache keeps decoder buffers and up to the whole clip alive across restarts.
+      const video=/^(mp4|webm|mov)$/i.test(id.split('.').pop());
+      const cacheable=!video&&stat.size<=8*1024*1024;
+      const headers={'Content-Type':MIME[id.split('.').pop().toLowerCase()],'Accept-Ranges':'bytes','Cache-Control':cacheable?'private, max-age=3600':'no-store','X-Content-Type-Options':'nosniff'};
       let range;
       try{range=method==='HEAD'?null:byteRange(request.headers?.get('range'),stat.size);}catch{await handle.close();handle=null;return new Response(null,{status:416,headers:{...headers,'Content-Range':'bytes */'+stat.size,'Content-Length':'0'}});}
       const length=range?range.end-range.start+1:stat.size;headers['Content-Length']=String(length);if(range)headers['Content-Range']='bytes '+range.start+'-'+range.end+'/'+stat.size;

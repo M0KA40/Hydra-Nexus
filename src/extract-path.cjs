@@ -4,6 +4,7 @@
 const fs=require('node:fs'),fsp=fs.promises,path=require('node:path'),crypto=require('node:crypto');
 const {atomicText}=require('./themes.cjs');
 const {validKey}=require('./activity.cjs');
+const {archiveEntries,validateEntries}=require('./extract-guard.cjs');
 const within=(root,file)=>{const r=path.relative(root,file);return !r||(!r.startsWith('..'+path.sep)&&r!=='..'&&!path.isAbsolute(r));};
 const validPath=p=>typeof p==='string'&&p.length>0&&p.length<32000&&!/[\x00-\x1f]/.test(p)&&path.isAbsolute(p);
 const same=(a,b)=>path.resolve(a).toLowerCase()===path.resolve(b).toLowerCase();
@@ -95,11 +96,28 @@ function createExtractPaths({directory,getNative,enabled=()=>true,changed=()=>{}
     if(disk.bavail*disk.bsize<bytes+512n*1024n*1024n)throw Error('There is not enough free space in the extraction folder.');
   }
   async function room(native,archive,destination){
-    let required=0n;
-    // Encrypted headers cannot be listed without a password; native extraction
-    // still owns its password attempts and reports any write/decode failure.
-    if(native.zip.listEntries)try{const entries=await native.zip.listEntries(archive);for(const e of entries)if(Number.isSafeInteger(e.size)&&e.size>0)required+=BigInt(e.size);}catch{}
-    await checkSpace(destination,required);
+    const entries=await archiveEntries(native.zip,archive);validateEntries(entries);
+    let required=0n;for(const e of entries)if(Number.isSafeInteger(e.size)&&e.size>0)required+=BigInt(e.size);
+    await checkSpace(destination,required);return entries;
+  }
+  async function verifyWritten(base,destination){
+    // Defence in depth for whatever the native extractor did write: nothing may
+    // resolve outside the target and no link/junction may appear inside it.
+    let seen=0;const pending=[destination];
+    while(pending.length){
+      const folder=pending.pop();let listing;
+      try{listing=await fsp.readdir(folder,{withFileTypes:true});}catch{throw Error('The extracted files could not be verified.');}
+      for(const entry of listing){
+        if(++seen>200000)throw Error('The extracted folder is too large to verify.');
+        const file=path.join(folder,entry.name);
+        const stat=await fsp.lstat(file),real=await fsp.realpath(file);
+        if(stat.isSymbolicLink()||!within(base,real)||stat.isFile()&&stat.nlink!==1)throw Error('The extracted archive contains an unsafe link.');
+        if(!within(base,file))throw Error('The extracted archive wrote outside the chosen folder.');
+        if(entry.isSymbolicLink())throw Error('The extracted archive contains an unsafe link.');
+        if(entry.isDirectory())pending.push(file);
+        else if(!entry.isFile())throw Error('The extracted archive contains an unsupported entry.');
+      }
+    }
   }
   async function verifyOutput(base,output){
     const realBase=await fsp.realpath(base),stat=await fsp.lstat(output),realOutput=await fsp.realpath(output);
@@ -191,7 +209,8 @@ function createExtractPaths({directory,getNative,enabled=()=>true,changed=()=>{}
       for(let pass=0;pass<passes;pass++){
         const files=pass===0?initial:await archiveGroups(destination),selected=files.filter(g=>!done.has(g.archive));
         for(let i=0;i<selected.length;i++){
-          const {archive,parts}=selected[i];await verifyOutput(targetBase,destination);await room(native,archive,destination);
+          const {archive,parts}=selected[i];await verifyOutput(targetBase,destination);const listed=await room(native,archive,destination);
+          validateEntries(listed);
           const fingerprints=await Promise.all(parts.map(async file=>{const s=await fsp.lstat(file);if(!s.isFile()||s.isSymbolicLink())throw Error('The downloaded archive could not be found.');return {file,size:s.size,mtimeMs:s.mtimeMs};}));
           const result=await native.zip.extractFile({filePath:archive,outputPath:destination,passwords:['online-fix.me','steamrip.com']},p=>manager.updateExtractionProgress((pass+(i+(p.percent||0)/100)/selected.length)/passes));
           if(!result?.success)throw Error('Extraction did not finish. The downloaded archives were kept.');
@@ -200,6 +219,7 @@ function createExtractPaths({directory,getNative,enabled=()=>true,changed=()=>{}
         }
       }
       if(!done.size)return false;
+      await verifyWritten(realTarget,realTarget);
       // Discovery must see the destination before the native completion runs.
       // Never rewrite downloadPath/folderName: the torrent still needs them.
       await serialize(()=>save({...state,jobs:{...state.jobs,[key]:{...state.jobs[key],phase:'extracted',resultPath:destination,cleanup:[...consumed.values()]}}}));

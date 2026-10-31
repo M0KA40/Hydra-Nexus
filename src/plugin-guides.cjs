@@ -127,5 +127,22 @@ module.exports={
       "Find the monitor icon in a game cover’s upper corner, including games outside your library. Review Windows-detected or manual specifications, then compare them with published minimum requirements.",
       "Requirements are fetched automatically. Supported CPU/GPU models use dated published benchmark references; RAM and storage type are checked separately. Unrated models are shown clearly. This estimates minimum suitability, not FPS."
     ]
+  },
+  "cloud": {
+    "location": "Settings → Hydra Nexus → Plugins → Nexus Cloud.",
+    "steps": [
+      "Connect one Dropbox or OneDrive account in Nexus Cloud. Backups use your own account storage; no sync app is required.",
+      "Scan your games, review detected saves and supported local achievements, or add a save folder manually.",
+      "Back up one game or all eligible games. Optional automatic backup runs after a game closes; disabled games are excluded.",
+      "To recover on another PC, connect the same account, choose Restore from cloud, download and verify, then review destinations and confirm before files are replaced.",
+      "Encrypted backups require their original password. Keep it outside this PC. Disconnecting removes local authorization, not your cloud backups.",
+      "BETA: detection depends on supported locations. Steam or Epic achievements are not unlocked by restoring local files."
+    ],
+    "images": [
+      {
+        "src": "./assets/nexus-guide-cloud.webp",
+        "caption": "Nexus Cloud"
+      }
+    ]
   }
 };

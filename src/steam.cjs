@@ -27,11 +27,20 @@
     return path.join(hydraDir, "steam-account-bindings.json");
   }
 
+  // Steam state is read on every preference event and every settings open. Cache the
+  // parsed result against the file's mtime/size and hand out copies, so a caller can
+  // never mutate the cached object and an unchanged file is never re-parsed.
+  let bindingsCache=null;
   function loadBindings() {
+    const file=getConfigPath();
+    let stat=null;
+    try{stat=fs.statSync(file);}catch(e){if(e.code==='ENOENT'){bindingsCache=null;return {};}log("Error reading bindings:",e);throw Error("Steam settings are damaged. The original file was preserved.");}
+    if(bindingsCache&&bindingsCache.file===file&&bindingsCache.mtimeMs===stat.mtimeMs&&bindingsCache.size===stat.size)return Object.fromEntries(Object.entries(bindingsCache.value).map(([key,row])=>[key,{...row}]));
     try {
-      const data=JSON.parse(fs.readFileSync(getConfigPath(), "utf8"));
+      const data=JSON.parse(fs.readFileSync(file, "utf8"));
       if(!data||Array.isArray(data)||typeof data!=="object"||Object.entries(data).some(([key,row])=>!/^(?:steam:)?\d+$/.test(key)||!row||Array.isArray(row)||typeof row!=="object"||!["crack","online","offline"].includes(row.mode)||row.steamId64!=null&&!/^\d{17}$/.test(row.steamId64)||[row.accountName,row.personaName].some(value=>value!=null&&(typeof value!=="string"||value.length>300))))throw Error("Invalid Steam binding data");
-      return data;
+      bindingsCache={file,mtimeMs:stat.mtimeMs,size:stat.size,value:data};
+      return Object.fromEntries(Object.entries(data).map(([key,row])=>[key,{...row}]));
     } catch (e) {
       if(e.code==='ENOENT')return {};
       log("Error loading bindings:",e);
@@ -42,12 +51,13 @@
   async function saveBindings(data) {
     try {
       await require("./themes.cjs").atomicText(getConfigPath(),JSON.stringify(data,null,2));
+      bindingsCache=null;
     } catch (e) {
       log("Error saving bindings:", e);throw e;
     }
   }
 
-  let steamPathCache=null,steamPathPending=null,steamAccountsCache=[],bindingsQueue=Promise.resolve();
+  let steamPathCache=null,steamPathPending=null,steamAccountsCache={file:null,mtimeMs:-1,size:-1,value:[]},bindingsQueue=Promise.resolve();
   const execSteam=(file,args)=>new Promise((resolve,reject)=>cp.execFile(file,args,{encoding:"utf8",windowsHide:true,timeout:10000,maxBuffer:1024*1024},(error,out)=>error?reject(error):resolve(out)));
   async function getSteamPath() {
     if(steamPathCache)return steamPathCache;
@@ -80,12 +90,17 @@
   async function getSteamAccounts() {
     const steamPath = await getSteamPath();
     const vdfPath = path.join(steamPath, "config", "loginusers.vdf");
-    if (!fs.existsSync(vdfPath)) return [];
+    let stat=null;
+    try{stat=await fs.promises.stat(vdfPath);}catch{steamAccountsCache={file:null,mtimeMs:-1,size:-1,value:[]};return [];}
+    // Hand out copies: a caller that trims or annotates an account must never alter the
+    // cached list, and an unchanged loginusers.vdf is served without touching the disk.
+    if(steamAccountsCache.file===vdfPath&&steamAccountsCache.mtimeMs===stat.mtimeMs&&steamAccountsCache.size===stat.size)return steamAccountsCache.value.map(account=>({...account}));
 
     try {
       const content = await fs.promises.readFile(vdfPath, "utf8");
       const accounts = vdf.accountList(content);
-      steamAccountsCache=accounts;return accounts;
+      steamAccountsCache={file:vdfPath,mtimeMs:stat.mtimeMs,size:stat.size,value:accounts};
+      return accounts.map(account=>({...account}));
     } catch (e) {
       log("Error parsing loginusers.vdf:", e);
       return [];
@@ -231,32 +246,13 @@
   }
 
   function hideSteamWindowOnce() {
-    if (process.platform !== "win32") return;
-    const psScript = `
-      Add-Type @"
-      using System;
-      using System.Runtime.InteropServices;
-      public class Win32 {
-        [DllImport("user32.dll")] public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
-      }
-"@
-      Get-Process steamwebhelper, steam -ErrorAction SilentlyContinue | ForEach-Object {
-        if ($_.MainWindowHandle -ne 0 -and $_.MainWindowTitle -match "Steam|Friends") {
-          [Win32]::ShowWindowAsync($_.MainWindowHandle, 0) | Out-Null
-        }
-      }
-    `;
-    try {
-      const p = cp.spawn("powershell.exe", ["-NoProfile", "-WindowStyle", "Hidden", "-Command", psScript], {
-        windowsHide: true,
-        stdio: "ignore"
-      });
-      p.once('error',e=>log('Steam window hide skipped:',e.message));
-      p.unref();
-    } catch (_) {}
+    if(process.platform==='win32')require('./native-tools.cjs').run('hide-steam').catch(e=>log('Steam window hide skipped:',e.message));
   }
 
-  let activeFsWatcher = null,statsTimer=null,statsTask=null;
+  let activeFsWatcher = null,statsTimer=null,statsTask=null,statsGame=null,statsSeen=false,statsStartTimer=null,statsGeneration=0,statsSync=null;
+  function stopAchievementBridge(){statsGeneration++;clearTimeout(statsTimer);clearTimeout(statsStartTimer);statsTimer=statsStartTimer=null;try{activeFsWatcher?.close();}catch{}activeFsWatcher=null;statsGame=null;statsSeen=false;statsSync=null;}
+  global.__NEXUS_STEAM_STOP__=stopAchievementBridge;
+  global.__NEXUS_STEAM_RUNNING__=items=>{if(!statsGame)return;const present=items.some(item=>(typeof item==='string'?item:item.id||item.shop+':'+item.objectId)===statsGame);if(present){statsSeen=true;clearTimeout(statsStartTimer);}else if(statsSeen){statsSync?.(true);stopAchievementBridge();}};
 
   function steamId64ToAccountId3(steamId64) {
     try {
@@ -428,14 +424,10 @@
     const steamId3 = steamId64ToAccountId3(steamId64);
     if (!steamId3 || !appId) return;
 
-    clearTimeout(statsTimer);
-    if (activeFsWatcher) {
-      try { activeFsWatcher.close(); } catch (_) {}
-      activeFsWatcher = null;
-    }
-
-    const sync=()=>{const task=(statsTask||Promise.resolve()).then(()=>syncSteamStatsBinToGoldberg(steamPath,steamId3,appId));statsTask=task;task.finally(()=>{if(statsTask===task)statsTask=null;});};
-    sync();
+    stopAchievementBridge();statsGame='steam:'+appId;const generation=statsGeneration;
+    statsStartTimer=setTimeout(()=>{if(!statsSeen)stopAchievementBridge();},120000);statsStartTimer.unref?.();
+    const sync=(final=false)=>{const task=(statsTask||Promise.resolve()).catch(()=>{}).then(()=>final||generation===statsGeneration?syncSteamStatsBinToGoldberg(steamPath,steamId3,appId):undefined);statsTask=task;task.then(()=>{if(statsTask===task)statsTask=null;},error=>{if(statsTask===task)statsTask=null;log('Stats sync failed:',error);});};
+    statsSync=sync;sync();
 
     const statsDir = path.join(steamPath, "appcache", "stats");
     const targetFile = `UserGameStats_${steamId3}_${appId}.bin`.toLowerCase();
@@ -492,12 +484,12 @@
         notifyRendererToast({kind:'steam-switch',account,mode:gameCfg.mode});
         await switchSteamAccountAndLaunch(gameCfg.steamId64,gameCfg.mode,objectId,Boolean(exePath));
       } catch (err) {
-        log("Error in pre-launch Steam switch:", err);
+        stopAchievementBridge();log("Error in pre-launch Steam switch:", err);
         notifyRendererToast("Steam Switch Error: " + (err.message || String(err)), true);
         throw err;
       }
       assertLaunchAllowed();
-      return await listener(event, ...args);
+      try{return await listener(event, ...args);}catch(error){stopAchievementBridge();throw error;}
     })();
     try { return await operation.task; }
     finally { if (activeSteamLaunch === operation) activeSteamLaunch = null; }
@@ -515,7 +507,7 @@
 
   function notifyRendererToast(msg, isError = false) {
     if(global.__NEXUS_STEAM_PRIVACY__?.()){
-      const redact=value=>{for(const a of steamAccountsCache)if(a.accountName)value=String(value).split(a.accountName).join("[private]");return value;};
+      const redact=value=>{for(const a of steamAccountsCache.value)if(a.accountName)value=String(value).split(a.accountName).join("[private]");return value;};
       if(msg?.kind==='steam-switch')msg={...msg,account:msg.account==null?null:redact(msg.account)};
       else msg=redact(msg);
     }
@@ -537,8 +529,12 @@
     win.__hsbAttached = true;
 
     const inject = () => {
-      if (!win.isDestroyed() && global.__HYDRA_NEXUS_TRUSTED__?.(win)!==false) {
+      // One injection per document. This script carries the whole translation table,
+      // so re-running it on every hash navigation was pure parse/transfer cost.
+      if (!win.isDestroyed() && global.__HYDRA_NEXUS_TRUSTED__?.(win)===true && !win.webContents.__nexusSteamInjected) {
+        win.webContents.__nexusSteamInjected = true;
         win.webContents.executeJavaScript(UI_INJECTION_SCRIPT).catch((err) => {
+          win.webContents.__nexusSteamInjected = false;
           log("UI inject error:", err);
         });
       }
@@ -546,10 +542,10 @@
 
     win.webContents.on("dom-ready", inject);
     win.webContents.on("did-finish-load", inject);
-    win.webContents.on("did-navigate-in-page", inject);
+    win.webContents.on("did-navigate", () => { win.webContents.__nexusSteamInjected = false; });
 
     win.webContents.on("console-message", async (...eventArgs) => {
-      if(global.__HYDRA_NEXUS_ENABLED__?.("steam")===false || global.__HYDRA_NEXUS_TRUSTED__?.(win)===false)return;
+      if(global.__HYDRA_NEXUS_ENABLED__?.("steam")===false || global.__HYDRA_NEXUS_TRUSTED__?.(win)!==true)return;
       const details=eventArgs.find(x=>x&&typeof x==="object"&&typeof x.message==="string");
       const message=details?details.message:eventArgs[2];
       if (typeof message === "string" && message.startsWith("__HYDRA_STEAM_IPC__")) {
@@ -564,7 +560,7 @@
               .executeJavaScript(
                 `window.__hydraSteamReceive && window.__hydraSteamReceive(${JSON.stringify({
                   accounts,
-                  bindings: publicBindings(bindings)
+                  bindings
                 })});`
               )
               .catch(() => {});
@@ -624,11 +620,5 @@
     }
   });
 
-  app.on("before-quit", () => {
-    clearTimeout(statsTimer);
-    if (activeFsWatcher) {
-      try { activeFsWatcher.close(); } catch (_) {}
-      activeFsWatcher = null;
-    }
-  });
+  app.on("before-quit", stopAchievementBridge);
 })();

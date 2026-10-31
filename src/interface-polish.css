@@ -3,7 +3,7 @@ html[data-nexus-interface=quiet]{--nexus-quiet-canvas:#13171d;--nexus-quiet-surf
 html[data-nexus-interface=quiet] body:not([data-nexus-bg=on]){background-color:var(--nexus-quiet-canvas);background-image:url('./assets/nexus-quiet-background.png'),linear-gradient(125deg,#20262e,#13171d 68%);background-size:cover;background-position:center top;background-repeat:no-repeat;background-attachment:fixed}
 html[data-nexus-interface=quiet] :is(.title-bar,.header):not(#big-picture *){background:transparent;color:var(--nexus-quiet-text);border-color:var(--nexus-quiet-line-soft)}
 html[data-nexus-interface=quiet] .container__content:not(#big-picture *){background:transparent;color:var(--nexus-quiet-text)}
-html[data-nexus-interface=quiet] :is(.settings__content,.modal):not(#big-picture *){background:rgba(23,27,33,.88);border:1px solid var(--nexus-quiet-line-soft);box-shadow:0 18px 52px #0003;backdrop-filter:blur(22px)}
+html[data-nexus-interface=quiet] :is(.settings__content,.modal):not(#big-picture *){background:rgba(23,27,33,.88);border:1px solid var(--nexus-quiet-line-soft);box-shadow:0 18px 52px #0003;backdrop-filter:blur(8px)}
 html[data-nexus-interface=quiet] :is(.settings__panel,.settings__sidebar):not(#big-picture *){background:rgba(28,33,40,.58);color:var(--nexus-quiet-text)}
 html[data-nexus-interface=quiet] :is(.nexus-card,.nexus-plugin-card):not(#big-picture *){background:linear-gradient(135deg,#ffffff05,transparent),var(--nexus-quiet-surface);border-color:var(--nexus-quiet-line-soft);border-radius:16px}
 html[data-nexus-interface=quiet] :is(.header__search,.text-field,.select-field,.text-field-container__text-field):not(#big-picture *){background:rgba(22,26,32,.65);border:1px solid var(--nexus-quiet-line);border-radius:12px;color:var(--nexus-quiet-text);box-shadow:inset 0 1px #ffffff05;transition:border-color 120ms,background-color 120ms,box-shadow 160ms}
@@ -39,9 +39,9 @@ html[data-nexus-interface=quiet] .game-details__hero-standard-meta:not(#big-pict
 html[data-nexus-interface=quiet] :is(.game-details__game-logo-text,.game-details__hero-classics-title):not(#big-picture *){text-align:start;color:#fff;letter-spacing:-.035em;max-width:100%;font-size:clamp(26px,2.6vw,40px);line-height:1.12}
 html[data-nexus-interface=quiet] .game-details__game-logo:not(#big-picture *){max-width:min(340px,100%);max-height:125px;object-fit:contain;filter:drop-shadow(0 3px 15px #0007)}
 html[data-nexus-interface=quiet] .game-details__hero-buttons--right:not(#big-picture *){margin-left:0;margin-inline-start:auto;flex-wrap:wrap;justify-content:flex-end;max-width:50%}
-html[data-nexus-interface=quiet] :is(.game-details__edit-custom-game-button,.game-details__cloud-sync-button,.game-details__randomizer-button):not(#big-picture *){border:1px solid #e0e7ef45;background:#1d222acc;box-shadow:0 4px 10px #0003;border-radius:11px;backdrop-filter:blur(14px);transition:background-color 160ms,border-color 160ms,transform 100ms}
+html[data-nexus-interface=quiet] :is(.game-details__edit-custom-game-button,.game-details__cloud-sync-button,.game-details__randomizer-button):not(#big-picture *){border:1px solid #e0e7ef45;background:#1d222acc;box-shadow:0 4px 10px #0003;border-radius:11px;backdrop-filter:blur(8px);transition:background-color 160ms,border-color 160ms,transform 100ms}
 html[data-nexus-interface=quiet] .game-details__hero-panel:not(#big-picture *){padding:0 16px 16px}
-html[data-nexus-interface=quiet] .hero-panel:not(#big-picture *){height:auto;min-height:68px;gap:16px;flex-wrap:wrap;padding:14px 18px;border:1px solid var(--nexus-quiet-line);border-radius:14px;background:linear-gradient(120deg,#ffffff08,transparent),#20262dcc;backdrop-filter:blur(22px);box-shadow:0 5px 22px #0003;overflow:visible;position:relative}
+html[data-nexus-interface=quiet] .hero-panel:not(#big-picture *){height:auto;min-height:68px;gap:16px;flex-wrap:wrap;padding:14px 18px;border:1px solid var(--nexus-quiet-line);border-radius:14px;background:linear-gradient(120deg,#ffffff08,transparent),#20262dcc;backdrop-filter:blur(8px);box-shadow:0 5px 22px #0003;overflow:visible;position:relative}
 html[data-nexus-interface=quiet] .hero-panel--stuck:not(#big-picture *){background:#20262df2}
 html[data-nexus-interface=quiet] .hero-panel__content:not(#big-picture *){min-width:0;flex:1 1 160px;overflow-wrap:anywhere}
 html[data-nexus-interface=quiet] :is(.hero-panel__actions,.hero-panel-actions__container):not(#big-picture *){gap:8px;flex-wrap:wrap;max-width:100%;min-width:0}
@@ -50,7 +50,7 @@ html[data-nexus-interface=quiet] .hero-panel__actions .button:not(#big-picture *
 html[data-nexus-interface=quiet] .hero-panel__progress-bar:not(#big-picture *){border-radius:0 0 14px 14px;overflow:hidden}
 html[data-nexus-interface=quiet] .game-details__description-container:not(#big-picture *){background:transparent;gap:24px;padding:0 4px 20px;align-items:flex-start}
 html[data-nexus-interface=quiet] .game-details__description-content:not(#big-picture *){gap:18px}
-html[data-nexus-interface=quiet] .description-header:not(#big-picture *){height:auto;min-height:60px;background:var(--nexus-quiet-surface);border:1px solid var(--nexus-quiet-line-soft);border-radius:14px;box-shadow:inset 0 1px #ffffff05;padding:14px 18px;backdrop-filter:blur(16px)}
+html[data-nexus-interface=quiet] .description-header:not(#big-picture *){height:auto;min-height:60px;background:var(--nexus-quiet-surface);border:1px solid var(--nexus-quiet-line-soft);border-radius:14px;box-shadow:inset 0 1px #ffffff05;padding:14px 18px;backdrop-filter:blur(8px)}
 html[data-nexus-interface=quiet] .description-header__info:not(#big-picture *){min-width:0;gap:6px;overflow-wrap:anywhere}
 html[data-nexus-interface=quiet] .description-header__info p:not(#big-picture *){color:var(--nexus-quiet-muted);line-height:1.5}
 html[data-nexus-interface=quiet] .description-header__info p:first-child:not(#big-picture *){color:var(--nexus-quiet-text)}
@@ -61,7 +61,7 @@ html[data-nexus-interface=quiet] .gallery-slider__viewport:not(#big-picture *) v
 html[data-nexus-interface=quiet] .gallery-slider__preview:not(#big-picture *){width:100%;padding:2px 0 4px;gap:8px;min-width:0;height:auto}
 html[data-nexus-interface=quiet] .gallery-slider__preview-button:not(#big-picture *){width:92px;max-width:26%;aspect-ratio:16/9;border:1px solid var(--nexus-quiet-line-soft);border-radius:7px;transition:border-color 160ms,opacity 160ms,box-shadow 180ms;opacity:.6}
 html[data-nexus-interface=quiet] .gallery-slider__preview-button--active:not(#big-picture *){border-color:#e4ebef;box-shadow:0 0 0 1px #e4ebef40;opacity:1}
-html[data-nexus-interface=quiet] .gallery-slider__button:not(#big-picture *){background:#1c222bcf;border:1px solid #e0e7ef60;border-radius:10px;backdrop-filter:blur(10px)}
+html[data-nexus-interface=quiet] .gallery-slider__button:not(#big-picture *){background:#1c222bcf;border:1px solid #e0e7ef60;border-radius:10px;backdrop-filter:blur(6px)}
 html[data-nexus-interface=quiet] :is(.game-details__description-title,.game-details__description):not(#big-picture *){width:min(100%,720px);margin-inline:auto;max-width:100%;align-self:center;box-sizing:border-box;text-align:start}
 html[data-nexus-interface=quiet] .game-details__description :is(img,video):not(#big-picture *){margin-inline:auto}
 html[data-nexus-interface=quiet] .game-details__description-title:not(#big-picture *){font-size:22px;line-height:1.4;padding-block:4px;color:var(--nexus-quiet-text);letter-spacing:-.02em}
@@ -70,7 +70,7 @@ html[data-nexus-interface=quiet] .game-details__description:not(#big-picture *) 
 html[data-nexus-interface=quiet] .game-details__description--collapsed:not(#big-picture *)::after{background:linear-gradient(transparent,#171c23)}
 html[data-nexus-interface=quiet] .game-details__description-toggle:not(#big-picture *){align-self:center;padding:9px 15px;margin-top:0;background:var(--nexus-quiet-surface);border-color:var(--nexus-quiet-line);border-radius:10px;color:var(--nexus-quiet-text)}
 html[data-nexus-interface=quiet] .content-sidebar:not(#big-picture *){gap:14px;min-width:0}
-html[data-nexus-interface=quiet] .sidebar-section:not(#big-picture *){background:var(--nexus-quiet-surface);border:1px solid var(--nexus-quiet-line-soft);border-radius:15px;box-shadow:0 8px 24px #0002;backdrop-filter:blur(18px)}
+html[data-nexus-interface=quiet] .sidebar-section:not(#big-picture *){background:var(--nexus-quiet-surface);border:1px solid var(--nexus-quiet-line-soft);border-radius:15px;box-shadow:0 8px 24px #0002;backdrop-filter:blur(8px)}
 html[data-nexus-interface=quiet] .sidebar-section__header:not(#big-picture *){padding:16px;background:linear-gradient(120deg,#ffffff08,transparent)}
 html[data-nexus-interface=quiet] .sidebar-section__header:not(#big-picture *):hover{background:#ffffff0b}
 html[data-nexus-interface=quiet] .sidebar-section__content:not(#big-picture *){background:transparent;color:#c4cbd4}
@@ -84,7 +84,7 @@ html[data-nexus-interface=quiet] .similar-games__card:not(#big-picture *){border
 
 /* Catalogue becomes an art-led discovery grid; existing filters and add commands remain native. */
 html[data-nexus-interface=quiet] .catalogue:not(#big-picture *){gap:22px}
-html[data-nexus-interface=quiet] .catalogue__header:not(#big-picture *){background:var(--nexus-quiet-surface);border:1px solid var(--nexus-quiet-line-soft);border-radius:16px;padding:16px 18px;backdrop-filter:blur(18px)}
+html[data-nexus-interface=quiet] .catalogue__header:not(#big-picture *){background:var(--nexus-quiet-surface);border:1px solid var(--nexus-quiet-line-soft);border-radius:16px;padding:16px 18px;backdrop-filter:blur(8px)}
 html[data-nexus-interface=quiet] .catalogue__content:not(#big-picture *){grid-template-columns:minmax(0,1fr) clamp(240px,21%,300px);gap:22px}
 html[data-nexus-interface=quiet] .catalogue__games-container:not(#big-picture *){display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:start}
 html[data-nexus-interface=quiet] .catalogue__pagination-container:not(#big-picture *){grid-column:1/-1;justify-content:center;padding:16px}
@@ -99,9 +99,9 @@ html[data-nexus-interface=quiet] .game-item__details>span:first-child:not(#big-p
 html[data-nexus-interface=quiet] .game-item__genres:not(#big-picture *){font-size:11px;line-height:1.5;text-align:start;color:var(--nexus-quiet-muted);margin:0}
 html[data-nexus-interface=quiet] .game-item__repackers:not(#big-picture *){gap:5px;max-width:100%}
 html[data-nexus-interface=quiet] .game-item__repackers .badge:not(#big-picture *){font-size:10px;background:#ffffff0b;border-color:#ffffff20}
-html[data-nexus-interface=quiet] .game-item__plus-wrapper:not(#big-picture *){opacity:1;width:32px;height:32px;display:grid;place-items:center;background:#171c24df;border:1px solid #ffffff4d;color:#fff;top:10px;right:auto;inset-inline-end:10px;backdrop-filter:blur(12px)}
+html[data-nexus-interface=quiet] .game-item__plus-wrapper:not(#big-picture *){opacity:1;width:32px;height:32px;display:grid;place-items:center;background:#171c24df;border:1px solid #ffffff4d;color:#fff;top:10px;right:auto;inset-inline-end:10px;backdrop-filter:blur(6px)}
 html[data-nexus-interface=quiet] .game-item__plus-wrapper:not(#big-picture *):hover:not(:disabled){background:#e7edf0;color:#171b22;transform:scale(1.06)}
-html[data-nexus-interface=quiet] :is(.filter-section,.catalogue-mode-toggle):not(#big-picture *){background:var(--nexus-quiet-surface);border:1px solid var(--nexus-quiet-line-soft);border-radius:14px;box-shadow:0 8px 24px #0002;backdrop-filter:blur(18px)}
+html[data-nexus-interface=quiet] :is(.filter-section,.catalogue-mode-toggle):not(#big-picture *){background:var(--nexus-quiet-surface);border:1px solid var(--nexus-quiet-line-soft);border-radius:14px;box-shadow:0 8px 24px #0002;backdrop-filter:blur(8px)}
 html[data-nexus-interface=quiet] .filter-section__button:not(#big-picture *){background:transparent;padding:16px;color:var(--nexus-quiet-text)}
 html[data-nexus-interface=quiet] .filter-section__content:not(#big-picture *){background:#11151b35}
 html[data-nexus-interface=quiet] .filter-section__title:not(#big-picture *){white-space:normal;font-size:14px;line-height:1.4}
@@ -110,7 +110,7 @@ html[data-nexus-interface=quiet] :is(.catalogue-mode-toggle__option--active,.fil
 
 /* Library preserves native 2:3 virtual-card measurements. New artwork captions are inside each card. */
 html[data-nexus-interface=quiet] .library__content:not(#big-picture *){gap:18px;color:var(--nexus-quiet-text)}
-html[data-nexus-interface=quiet] .library__controls-row:not(#big-picture *){padding:12px;border:1px solid var(--nexus-quiet-line-soft);border-radius:16px;background:var(--nexus-quiet-surface);overflow:visible;gap:12px;backdrop-filter:blur(18px)}
+html[data-nexus-interface=quiet] .library__controls-row:not(#big-picture *){padding:12px;border:1px solid var(--nexus-quiet-line-soft);border-radius:16px;background:var(--nexus-quiet-surface);overflow:visible;gap:12px;backdrop-filter:blur(8px)}
 html[data-nexus-interface=quiet] :is(.library__page-header,.library__controls-row):not(#big-picture *){flex-shrink:0}
 html[data-nexus-interface=quiet] :is(.library__quick-action,.library-view-options__option):not(#big-picture *){border:1px solid var(--nexus-quiet-line-soft);border-radius:10px;background:#ffffff08;color:var(--nexus-quiet-text);min-height:38px;transition:background-color 180ms,transform 180ms,border-color 180ms}
 html[data-nexus-interface=quiet] .library-view-options__option.active:not(#big-picture *){background:#e5ebee;color:#151a21;border-color:#e5ebee}
@@ -137,13 +137,13 @@ html[data-nexus-interface=quiet] .header__search:not(#big-picture *):focus-withi
 html[data-nexus-interface=quiet] .header__search>.header__action-button:not(#big-picture *){flex:0 0 38px;align-self:stretch;outline-offset:-4px;display:grid;place-items:center}
 /* Body portals paint above the complete native frame, including the top navigation. */
 html[data-nexus-interface=quiet][data-nexus-header-search=hidden] .header .header__search:not(#big-picture *){display:none}
-html[data-nexus-interface=quiet] .backdrop:not(#big-picture *){--nexus-dialog-shade:color-mix(in srgb,var(--nexus-quiet-canvas) 58%,transparent);z-index:1000;background-color:var(--nexus-dialog-shade);backdrop-filter:blur(10px) saturate(1.08);isolation:isolate;transition:none;animation:nexus-glass-backdrop-in 400ms var(--nexus-quiet-ease) both}
+html[data-nexus-interface=quiet] .backdrop:not(#big-picture *){--nexus-dialog-shade:color-mix(in srgb,var(--nexus-quiet-canvas) 58%,transparent);z-index:1000;background-color:var(--nexus-dialog-shade);backdrop-filter:blur(6px) saturate(1.08);isolation:isolate;transition:none;animation:nexus-glass-backdrop-in 400ms var(--nexus-quiet-ease) both}
 html[data-nexus-interface=quiet] .backdrop--closing:not(#big-picture *){animation-name:nexus-glass-backdrop-out}
-html[data-nexus-interface=quiet] .modal:not(#big-picture *){background:linear-gradient(135deg,#ffffff14,#ffffff03 38%,#00000008),color-mix(in srgb,var(--nexus-quiet-canvas) 82%,transparent);border:1px solid var(--nexus-quiet-line);border-radius:18px;box-shadow:inset 0 1px #ffffff26,inset 0 -1px #ffffff05,0 24px 85px #0006;backdrop-filter:blur(24px) saturate(1.18);animation:nexus-glass-modal-in 400ms var(--nexus-quiet-ease) both;scale:1}
+html[data-nexus-interface=quiet] .modal:not(#big-picture *){background:linear-gradient(135deg,#ffffff14,#ffffff03 38%,#00000008),color-mix(in srgb,var(--nexus-quiet-canvas) 82%,transparent);border:1px solid var(--nexus-quiet-line);border-radius:18px;box-shadow:inset 0 1px #ffffff26,inset 0 -1px #ffffff05,0 24px 85px #0006;backdrop-filter:blur(8px) saturate(1.18);animation:nexus-glass-modal-in 400ms var(--nexus-quiet-ease) both;scale:1}
 html[data-nexus-interface=quiet] .modal--closing:not(#big-picture *){animation-name:nexus-glass-modal-out}
 html[data-nexus-interface=quiet] :is(.modal,.modal__close-button-icon):not(#big-picture *){color:var(--nexus-quiet-text)}
-@keyframes nexus-glass-backdrop-in{from{background-color:transparent;backdrop-filter:blur(0px) saturate(1)}to{background-color:var(--nexus-dialog-shade);backdrop-filter:blur(10px) saturate(1.08)}}
-@keyframes nexus-glass-backdrop-out{from{background-color:var(--nexus-dialog-shade);backdrop-filter:blur(10px) saturate(1.08)}to{background-color:transparent;backdrop-filter:blur(0px) saturate(1)}}
+@keyframes nexus-glass-backdrop-in{from{background-color:transparent;backdrop-filter:blur(0px) saturate(1)}to{background-color:var(--nexus-dialog-shade);backdrop-filter:blur(6px) saturate(1.08)}}
+@keyframes nexus-glass-backdrop-out{from{background-color:var(--nexus-dialog-shade);backdrop-filter:blur(6px) saturate(1.08)}to{background-color:transparent;backdrop-filter:blur(0px) saturate(1)}}
 @keyframes nexus-glass-modal-in{from{opacity:0;transform:translateY(10px) scale(.975)}to{opacity:1;transform:translateY(0) scale(1)}}
 @keyframes nexus-glass-modal-out{from{opacity:1;transform:translateY(0) scale(1)}to{opacity:0;transform:translateY(10px) scale(.975)}}
 html[data-nexus-interface=quiet] .modal__header:not(#big-picture *){background:#ffffff04;padding:18px 20px;border-color:var(--nexus-quiet-line-soft)}

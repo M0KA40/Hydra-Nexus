@@ -2,7 +2,7 @@
 // Isolated native CSS/React. Public-looking names below are synthetic UI data.
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
 const {chromium}=require(process.env.HYDRA_PLAYWRIGHT_PATH||'playwright');
-const root=path.resolve(__dirname,'..'),native=path.resolve(root,'../Development/Fixtures/Native'),art=path.resolve(root,'../Development/Studies/NexusQuietPrototype/assets'),{catalogs}=require('../src/i18n.cjs');
+const root=path.resolve(__dirname,'..'),native=process.env.HYDRA_NATIVE_FIXTURES||path.resolve(root,'../Development/Fixtures/Native'),art=(process.env.HYDRA_ART_FIXTURES||path.resolve(root,'../Development/Studies/NexusQuietPrototype/assets')),{catalogs}=require('../src/i18n.cjs');
 const css=fs.readFileSync(path.join(native,'hydra-native.css'),'utf8')+fs.readFileSync(path.join(root,'dist/interface-colors.css'),'utf8');
 const sizes=[{width:1200,height:860},{width:1024,height:600},{width:1280,height:720},{width:1920,height:1080}];
 const names=['Cyberpunk 2077','ELDEN RING','CONTROL Ultimate Edition','Hades','Ghost of Tsushima','Hollow Knight','Ori and the Will of the Wisps','Portal 2'];

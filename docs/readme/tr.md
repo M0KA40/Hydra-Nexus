@@ -6,7 +6,17 @@
 
 Hydra Nexus, Windows üzerinde Hydra Launcher için topluluk tarafından geliştirilen bir eklentidir. Depolama araçları, oyuna özel Steam hesapları, oyun etkinliği, sekmeler, notlar ve kendi arka planlarınızı ekler. İstediğiniz araçları Plugins bölümünden açın. Hydra dilini ve temaya uyan yerel denetimleri kullanır. Hydra Launcher önceden kurulu olmalıdır.
 
-**[Yükleyiciyi indir](https://github.com/M0KA40/Hydra-Nexus/releases/latest/download/Hydra_Nexus_2.2.exe)** · [Sürüm notları](https://github.com/M0KA40/Hydra-Nexus/releases/tag/v2.2) · [Sorun bildir](https://github.com/M0KA40/Hydra-Nexus/issues/new/choose)
+**[Yükleyiciyi indir](https://github.com/M0KA40/Hydra-Nexus/releases/download/v3.0/Hydra_Nexus.exe)** · [Sürüm notları](https://github.com/M0KA40/Hydra-Nexus/releases/tag/v3.0) · [Sorun bildir](https://github.com/M0KA40/Hydra-Nexus/issues/new/choose)
+
+## Nexus Cloud · BETA
+
+![Nexus Cloud](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/cloud.webp)
+
+Desteklenen kayıtları ve yerel başarımları kendi Dropbox veya OneDrive hesabınızda saklayın. Tarayıcıdan tek hizmet bağlayın, bir oyunu veya uygun tüm oyunları yedekleyin; isterseniz oyun kapandıktan sonra otomatik yedeklemeyi açın. Bu veya başka bir bilgisayarda aynı hesabı bağlayın, kopyaları ve hedefleri inceleyip geri yüklemeyi onaylayın.
+
+Cloud hesabınızdaki alanı kullanır. İsteğe bağlı şifreleme yeni paketleri korur; özgün parolayı bu bilgisayarın dışında saklayın. Algılama desteklenen konumlara bağlıdır, elle klasör eklenebilir. Yerel dosyalar Steam veya Epic başarımlarını açmaz.
+
+**Konum: Ayarlar → Hydra Nexus → Eklentiler → Nexus Cloud; ardından kenar çubuğundan Nexus Cloud’u açın.**
 
 ## Steam launch settings
 
@@ -103,7 +113,7 @@ Arka plan olarak yerel resim veya video seçin. Karartma ve bulanıklığı ayar
 
 ## Kurulum ve güncelleme
 
-1. Releases bölümünden Hydra_Nexus_2.2.exe indirin.
+1. Releases bölümünden Hydra_Nexus.exe indirin.
 2. Tepsi simgesi dahil Hydra’yı tamamen kapatın.
 3. EXE dosyasını çalıştırıp Install / Update / Repair seçin.
 4. Hydra → Settings → Hydra Nexus → Plugins açın.

@@ -1,0 +1,21 @@
+'use strict';
+const assert=require('node:assert/strict'),path=require('node:path'),{pathToFileURL}=require('node:url');
+const {trustedRendererURL,webLink,redactLog}=require('../src/runtime-policy.cjs');
+const {safeEntryName,archiveEntries,validateEntries,parseListing}=require('../src/extract-guard.cjs');
+(async()=>{
+ const root=path.resolve('fixture-app');
+ assert.equal(trustedRendererURL(pathToFileURL(path.join(root,'out/renderer/index.html')).href+'?nexusBackground=1#/settings',root),true);
+ for(const url of ['file:///C:/Other/renderer/index.html','file://server/share/renderer/index.html','https://release-v4-2-0.hydra-eqi.pages.dev','file:///C:/Other/renderer/index.html%00'])assert.equal(trustedRendererURL(url,root),false,url);
+ assert.equal(webLink('https://localhost.com/'),'https://localhost.com/');
+ for(const url of ['http://localhost/','http://127.1/','http://[::ffff:192.168.1.5]/','http://[fd00::1]/','http://[fe80::1]/','https://name:password@example.com/','file:///C:/x'])assert.throws(()=>webLink(url),undefined,url);
+ assert.equal(redactLog('Failed at C:\\Users\\John Smith\\private\\file.txt'), 'Failed at <path>');
+ assert.equal(redactLog('Failed at \\\\server\\share\\private.txt'),'Failed at <path>');
+ for(const name of ['../x','a/../../x','C:\\x','/x','\\\\host\\x','game.exe:stream','a/.. /x','NUL.txt','a\u0000b'])assert.equal(safeEntryName(name),false,name);
+ assert.equal(safeEntryName('Game/bin/game.exe'),true);
+ await assert.rejects(archiveEntries({listEntries:async()=>{throw Error('Encrypted headers');}},'fixture'),/could not be verified/);
+ await assert.rejects(archiveEntries({},'fixture'),/could not be verified/);
+ assert.throws(()=>validateEntries([{size:1}]),/unsafe/);
+ const entries=parseListing('Path = bin/game.exe\nSize = 42\n\nPath = shortcut\nSymbolic Link = ../outside\nSize = 0');
+ assert.equal(entries.length,2);assert.throws(()=>validateEntries(entries),/unsafe/);
+ console.log('PASS: installed renderer path pinning; web-link IPv4/IPv6 boundaries; log paths with spaces; archive paths/links and fail-closed listing.');
+})().catch(error=>{console.error(error);process.exitCode=1;});

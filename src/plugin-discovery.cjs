@@ -2,7 +2,7 @@
 const fs=require('node:fs'),path=require('node:path');
 const {atomicText}=require('./themes.cjs');
 // Public feature identities, deliberately independent of installer version/revision.
-const introductions=Object.freeze({storage:'1.3/storage',downloadFinish:'1.3/download-finish',pageCleaner:'2.0.1/page-cleaner'});
+const introductions=Object.freeze({storage:'1.3/storage',downloadFinish:'1.3/download-finish',pageCleaner:'2.0.1/page-cleaner',cloud:'2.3.2/cloud-beta',activity:'2.3.2/activity-cinematic'});
 function createPluginDiscovery({directory,log=()=>{},theme=false}){
   const identities=theme?{quietMint:'2.1.1/quiet-mint'}:introductions;
   const file=path.join(directory,theme?'theme-discovery.json':'plugin-discovery.json');let seen=[],failed=false,queue=Promise.resolve();

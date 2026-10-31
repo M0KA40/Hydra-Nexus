@@ -1,0 +1,6 @@
+'use strict';
+const fs=require('node:fs/promises'),path=require('node:path');
+const limits=Object.freeze({manifest:32*1024*1024,files:100000,bytes:128*1024**3,package:130*1024**3,reserve:32*1024*1024});
+async function space(directory,required){if(!Number.isSafeInteger(required)||required<0||required>limits.bytes*4)throw Error('Backup exceeds the supported size');if(typeof fs.statfs!=='function')throw Error('Free space could not be checked on this device');let cursor=path.resolve(directory);for(;;){try{const stat=await fs.statfs(cursor);if(stat.bavail*stat.bsize<required+limits.reserve)throw Error('Not enough free space for backup staging and safety copies');return;}catch(e){if(e.code!=='ENOENT')throw e;const parent=path.dirname(cursor);if(parent===cursor)throw e;cursor=parent;}}}
+function size(files){if(!Array.isArray(files)||!files.length||files.length>limits.files)throw Error('Backup file count exceeds the supported limit');let total=0;for(const f of files){if(!Number.isSafeInteger(f.size)||f.size<0)throw Error('Invalid backup size');total+=f.size;if(!Number.isSafeInteger(total)||total>limits.bytes)throw Error('Backup exceeds the supported size');}return total;}
+module.exports={limits,space,size};

@@ -1,5 +1,15 @@
 # Hydra Nexus 2.2
 
+## Nexus Cloud · BETA
+
+![Nexus Cloud](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/cloud.webp)
+
+Keep supported game saves and local achievements in your own Dropbox or OneDrive account. Connect one provider through your browser, back up one game or all eligible games, and optionally back up after a game closes. On this PC or another, connect the same account, verify your cloud copies, review destinations and confirm before restoring.
+
+Cloud uses your account storage. Optional password encryption protects new backup packages; keep the original password outside this PC. Detection depends on supported locations, with manual save folders available. Restoring local files does not unlock Steam or Epic achievements.
+
+**Where to use it: Settings → Hydra Nexus → Plugins → Nexus Cloud, then open Nexus Cloud from the sidebar.**
+
 ## Nexus Quiet — a redesigned interface, in beta
 
 Nexus Quiet goes beyond a conventional Hydra color theme. It redesigns navigation, Home and game pages, with integrated features that improve everyday browsing. Choose Quiet Slate or Nexus Mint using the circular color selectors in Settings → Themes. Both share the same layout and functionality. This is an initial beta; development and refinement will continue.

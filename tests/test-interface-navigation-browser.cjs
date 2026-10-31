@@ -2,7 +2,7 @@
 // Native SidebarProfile component and native CSS, isolated adapters and library data.
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
 const {chromium}=require(process.env.HYDRA_PLAYWRIGHT_PATH||'playwright');
-const root=path.resolve(__dirname,'..'),native=path.resolve(root,'../Development/Fixtures/Native');
+const root=path.resolve(__dirname,'..'),native=process.env.HYDRA_NATIVE_FIXTURES||path.resolve(root,'../Development/Fixtures/Native');
 const source=fs.readFileSync(path.join(native,'hydra-renderer.js'),'utf8'),css=fs.readFileSync(path.join(native,'hydra-native.css'),'utf8');
 const start=source.indexOf('function SidebarProfile$1('),end=source.indexOf('\n__name(SidebarProfile$1,',start),profile=source.slice(start,end);
 const {catalogs,rendererScript}=require('../src/i18n.cjs'),themes=require('./theme-profiles.cjs');

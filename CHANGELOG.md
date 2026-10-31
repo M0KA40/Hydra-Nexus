@@ -1,3 +1,7 @@
+# 2.3.1 — internal testing, 2026-10-30
+
+Continues Draft-2.3 with installed-renderer trust, archive metadata validation before extraction, corrected Notes links and log redaction, Steam watcher lifecycle/final sync, native visibility-aware discovery backoff, and complete versioned test packaging. No public release.
+
 <!-- HYDRA_NEXUS_REVISION 2 -->
 # Hydra Nexus 2.2
 

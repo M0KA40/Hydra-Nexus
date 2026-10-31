@@ -6,7 +6,17 @@
 
 Hydra Nexus es una extensión comunitaria de Hydra Launcher para Windows. Añade gestión del almacenamiento, cuentas de Steam por juego, actividad, pestañas, notas y fondos propios. Activa las herramientas que necesites en Plugins. Sigue el idioma de Hydra y utiliza controles nativos compatibles con tu tema. Requiere una instalación previa de Hydra Launcher.
 
-**[Descargar instalador](https://github.com/M0KA40/Hydra-Nexus/releases/latest/download/Hydra_Nexus_2.2.exe)** · [Notas de versión](https://github.com/M0KA40/Hydra-Nexus/releases/tag/v2.2) · [Informar de un problema](https://github.com/M0KA40/Hydra-Nexus/issues/new/choose)
+**[Descargar instalador](https://github.com/M0KA40/Hydra-Nexus/releases/download/v3.0/Hydra_Nexus.exe)** · [Notas de versión](https://github.com/M0KA40/Hydra-Nexus/releases/tag/v3.0) · [Informar de un problema](https://github.com/M0KA40/Hydra-Nexus/issues/new/choose)
+
+## Nexus Cloud · BETA
+
+![Nexus Cloud](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/cloud.webp)
+
+Guarda partidas y logros locales compatibles en tu cuenta Dropbox o OneDrive. Conecta un servicio desde el navegador, copia un juego o todos los aptos y activa, si quieres, copias al cerrar el juego. En este PC o en otro, conecta la misma cuenta, verifica las copias, revisa los destinos y confirma la restauración.
+
+Cloud usa el almacenamiento de tu cuenta. El cifrado opcional protege paquetes nuevos; guarda la contraseña original fuera de este PC. La detección depende de ubicaciones compatibles y admite carpetas manuales. Restaurar archivos locales no desbloquea logros Steam o Epic.
+
+**Dónde usarlo: Ajustes → Hydra Nexus → Complementos → Nexus Cloud; después abre Nexus Cloud en la barra lateral.**
 
 ## Steam launch settings
 
@@ -103,7 +113,7 @@ Elige una imagen o vídeo local como fondo. Ajusta oscuridad y desenfoque, pausa
 
 ## Instalación y actualización
 
-1. Descarga Hydra_Nexus_2.2.exe desde Releases.
+1. Descarga Hydra_Nexus.exe desde Releases.
 2. Cierra Hydra por completo, incluido el icono de la bandeja.
 3. Ejecuta el EXE y elige Install / Update / Repair.
 4. Abre Hydra → Settings → Hydra Nexus → Plugins.

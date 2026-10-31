@@ -39,6 +39,6 @@ const root=path.join(__dirname,'..');
    assert.equal(await page.locator('.nexus-plugin-dialog .modal__content').evaluate(el=>getComputedStyle(el).scrollbarWidth),'thin');await page.waitForTimeout(500);if(output&&width===1280)await page.screenshot({path:path.join(output,theme+'-'+language+'.png')});await page.evaluate(()=>__nexusPluginDialog.close());
   }
  }
- await page.emulateMedia({reducedMotion:'reduce'});await page.evaluate(()=>{cfg.discovery={pending:['storage']};__hydraNexusUI.configure(cfg);});assert.equal(await page.locator('.sidebar .nexus-discovery-dot').evaluate(el=>getComputedStyle(el).animationName),'none');
+ await page.emulateMedia({reducedMotion:'reduce'});await page.evaluate(()=>{cfg.discovery={pending:['storage']};__hydraNexusUI.configure(cfg);});assert.equal(await page.locator('.sidebar .nexus-discovery-dot').evaluate(el=>getComputedStyle(el).animationName),'nexus-discovery-pulse','owner rule: Nexus motion is independent of system reduced-motion preferences');
  assert.deepEqual(errors,[]);console.log('PASS: twelve immediate rounded switches and separate native plugin guides, all nine locales, one Steam composition, consistent artwork geometry/zoom, drafts/focus, new-feature acknowledgement, restart cancellation and native Modal at 700/1280px across three palettes.');
 }finally{await browser.close();}})().catch(error=>{console.error(error);process.exitCode=1;});

@@ -1,0 +1,15 @@
+# Hydra Nexus 2.3.2 — revisión 7
+
+Página interna Cloud con fondo fijo, marca Hydra Nexus, portadas verticales y animaciones de entrada. Gestión desplegable con tres acciones claras: guardar ahora, restaurar de la nube y descargar una copia. Fuentes y preferencias por juego separadas.
+
+Una última copia correcta por juego contiene partidas y archivos locales de logros. La copia nueva se sube y verifica antes de sustituir la anterior. Los archivos de transferencia son temporales; se conservan las copias locales antiguas. Copias internas de seguridad protegen la restauración. El complemento y la copia automática son opcionales.
+
+La recuperación busca en la nube, permite elegir juegos o todos, descarga y verifica las copias y pide revisión explícita antes de restaurarlas en secuencia. Las copias nuevas guardan rutas originales y portátiles, adaptan carpetas de usuario Windows e instalaciones conocidas y crean directorios. Las ubicaciones sin resolver muestran la ruta anterior y permiten elegir carpeta en el mismo paso. Las copias antiguas sin rutas requieren un destino.
+
+Notificación durante la copia al cerrar el juego. Los fallos e interrupciones dejan un aviso persistente en el juego y la navegación Cloud. Marcar como leído no supone una copia correcta; otro aviso ofrece guardar ahora o Entendido. Controles de ventana sin duplicados, imágenes con caché y peticiones limitadas, listas paginadas y campos conservados. Inglés como referencia y traducciones existentes mantenidas.
+
+Vista previa local sin publicar, probada con archivos y servicios simulados. No implica pruebas con cuentas reales ni instalación activa. El nuevo plan EXE sigue aplazado.
+
+Revisión 6: Recupera las ubicaciones adicionales por ID Steam de 2.1, incluidos Documentos públicos y ProgramData, sin exigir el juego instalado. La búsqueda resuelve nombres mediante el ID Steam y asocia los resultados al juego correcto. Las rutas portátiles recrean carpetas borradas. Un análisis incompleto no sustituye la copia anterior. Se indica si solo se encontraron logros. La restauración muestra un resultado temporal animado, con la causa del fallo y detalles conservados en la página. El gestor muestra hasta 20 estados recientes, con operaciones activas primero.
+
+Revisión 7: Copia de todos los juegos aptos con un solo análisis. Cada copia nueva usa un paquete comprimido y verificado; las anteriores siguen siendo legibles. La recuperación de un juego se limita al juego elegido. Barra persistente con cancelación fuera de Cloud y resultados de operaciones importantes. Se aíslan registros dañados y se revisa la reparación de restauraciones interrumpidas. Temporales y copias de seguridad limitados; clientes simultáneos no borran copias ajenas. Cifrado opcional por contraseña para paquetes nuevos; guárdala fuera del PC. La biblioteca muestra la última copia; se conservan por seguridad las de otros dispositivos o sesiones. Sin clasificar velocidades sin mediciones. Volver a Hydra aparece bajo la marca, sobre las acciones, con un degradado continuo.

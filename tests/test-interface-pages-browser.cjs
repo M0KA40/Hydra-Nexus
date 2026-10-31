@@ -18,7 +18,7 @@ const routeSource=source.slice(routeStart,routeEnd).replace('const buildGameDeta
 const ownCSS=['interface-quiet.css','interface-navigation.css','interface-polish.css'].map(name=>fs.readFileSync(path.join(root,'src',name),'utf8')).join('\n');
 const interfaceSource=fs.readFileSync(path.join(root,'src/interface-ui.js'),'utf8').replace("'__NEXUS_INTERFACE_CSS__'",JSON.stringify(ownCSS));
 const sizes=[{width:1200,height:860},{width:1024,height:600},{width:1280,height:720},{width:1920,height:1080}];
-const artRoot=path.resolve(root,'../Development/Studies/NexusQuietPrototype/assets'),art=['cyberpunk.jpg','elden.jpg','control.jpg','hades.jpg','ghost.jpg','hollow.jpg','ori.jpg','portal.jpg'];
+const artRoot=(process.env.HYDRA_ART_FIXTURES||path.resolve(root,'../Development/Studies/NexusQuietPrototype/assets')),art=['cyberpunk.jpg','elden.jpg','control.jpg','hades.jpg','ghost.jpg','hollow.jpg','ori.jpg','portal.jpg'];
 const titles=['Cyberpunk 2077','ELDEN RING','CONTROL Ultimate Edition','Hades','Ghost of Tsushima','Hollow Knight','Ori and the Will of the Wisps','Portal 2'];
 const games=Array.from({length:16},(_,i)=>({shop:'steam',objectId:String(i+1),title:titles[i%titles.length],libraryImageUrl:'https://pages.fixture/'+(i%8)+'.jpg',libraryHeroImageUrl:'https://pages.fixture/'+(i%8)+'.jpg',genres:['Action','Adventure'],downloadSources:['Fixture source'],lastTimePlayed:i<8?'2026-10-'+String(20+i).padStart(2,'0')+'T10:00:00Z':null}));
 (async()=>{const browser=await chromium.launch({headless:true,executablePath:process.env.HYDRA_BROWSER_EXE});let cases=0;try{for(const theme of themes){

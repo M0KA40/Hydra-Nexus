@@ -1,12 +1,13 @@
 from pathlib import Path
 from theme_palette import mint_css
-import base64,json,re,argparse
+import base64,json,re,argparse,subprocess,sys,hashlib
 parser=argparse.ArgumentParser()
 parser.add_argument('--exe',action='store_true',help='Also build the Windows graphical frontend')
 args=parser.parse_args()
 root=Path(__file__).resolve().parent
 source=root/'src';output=root/'dist';output.mkdir(exist_ok=True)
 version=re.search(r"version:'([^']+)'",(source/'brand.cjs').read_text(encoding='utf8')).group(1)
+subprocess.run([sys.executable,str(root/'installer/native/build-tools.py')],check=True)
 modules={}
 for name in ['core.cjs']:
     text=(source/name).read_text(encoding='utf-8')
@@ -15,11 +16,12 @@ steam=(source/'steam.cjs').read_text(encoding='utf8')
 modules['./steam.cjs']=steam
 modules['./discovery-feed.cjs']=(source/'discovery-feed.cjs').read_text(encoding='utf8')
 modules['./steam-news.cjs']=(source/'steam-news.cjs').read_text(encoding='utf8')
-for name in ['setup-copy.cjs','embedded-notes-ui.js','notes-style.cjs','notes-store.cjs','notes-markdown.js','game-actions.js','dom-patch.js','page-cleaner.cjs','page-cleaner-ui.js','plugin-guides.cjs','plugin-discovery.cjs','plugin-restart.cjs','storage-roots.cjs','storage-transfer.cjs','storage.cjs','download-finish.cjs','tools-ui.js','replay.cjs','replay-ui.js','background-media.cjs','background-manager.js','activity.cjs','themes.cjs','extract-path.cjs','nexus-ui.js','updater.cjs','controller.cjs','notes.cjs','notes-ui.js','hardware.cjs','services.cjs','workspace-ui.js','steam-vdf.cjs','steam-ui.js','mod-catalog.cjs','game-links.cjs','ratings.cjs','requirements.cjs','brand.cjs','privacy.cjs','release-content.cjs','release-localization.cjs','release-notes.cjs','update-job.cjs','update-shutdown.cjs','update-assets.cjs','update-confirmation.cjs','update-recovery.cjs','update-presentation.cjs']:
+for name in ['cloud-resources.cjs','exe-metadata.cjs','native-tools.cjs','cloud-limits.cjs','cloud-package.cjs','cloud-vault.cjs','cloud-maintenance.cjs','cloud-journal.cjs','cloud-status.cjs','cloud-locations.cjs','cloud-recovery.cjs','cloud-tools.cjs','cloud-service.cjs','cloud-backup.cjs','cloud-discovery.cjs','cloud-rclone.cjs','cloud-ui.js','cloud-locales.cjs','runtime-policy.cjs','extract-guard.cjs','setup-copy.cjs','embedded-notes-ui.js','notes-style.cjs','notes-store.cjs','notes-markdown.js','game-actions.js','dom-patch.js','page-cleaner.cjs','page-cleaner-ui.js','plugin-guides.cjs','plugin-discovery.cjs','plugin-restart.cjs','storage-roots.cjs','storage-transfer.cjs','storage.cjs','download-finish.cjs','tools-ui.js','replay.cjs','replay-ui.js','background-media.cjs','background-manager.js','activity.cjs','themes.cjs','extract-path.cjs','nexus-ui.js','updater.cjs','controller.cjs','notes.cjs','notes-ui.js','hardware.cjs','services.cjs','workspace-ui.js','steam-vdf.cjs','steam-ui.js','mod-catalog.cjs','game-links.cjs','ratings.cjs','requirements.cjs','brand.cjs','privacy.cjs','release-content.cjs','release-localization.cjs','release-notes.cjs','update-job.cjs','update-shutdown.cjs','update-assets.cjs','update-confirmation.cjs','update-recovery.cjs','update-presentation.cjs']:
     modules['./'+name]=(source/name).read_text(encoding='utf-8').replace('__NEXUS_REPOSITORY__',json.dumps('M0KA40/Hydra-Nexus')).replace('__NEXUS_BRAND_ICON__','data:image/svg+xml;base64,'+base64.b64encode((root/'assets/brand/Hydra-Nexus-transparent.svg').read_bytes()).decode()).replace('__NEXUS_BRAND_WINDOW_ICON__','data:image/png;base64,'+base64.b64encode((root/'assets/brand/Hydra-Nexus-transparent.png').read_bytes()).decode()).replace('__NEXUS_MODS_ICON__','data:image/png;base64,'+base64.b64encode((root/'assets/nexus-mods.png').read_bytes()).decode())
+modules['./native-tools.cjs']=modules['./native-tools.cjs'].replace('__NEXUS_NATIVE_TOOLS__',base64.b64encode((output/'NexusNative.exe').read_bytes()).decode()).replace('__NEXUS_NATIVE_TOOLS_SHA256__',hashlib.sha256((output/'NexusNative.exe').read_bytes()).hexdigest())
 surface_ui=(root/'installer/setup-surface.ps1').read_text(encoding='utf8').replace('__NEXUS_SURFACE_XAML_BASE64__',base64.b64encode((root/'installer/setup-window.xaml').read_bytes()).decode())
 progress_ui=(root/'installer/update-progress.ps1').read_text(encoding='utf8').replace('# __NEXUS_SHARED_SURFACE__',surface_ui).replace('__NEXUS_PROGRESS_LOGO__',base64.b64encode((root/'assets/brand/Hydra-Nexus-transparent.png').read_bytes()).decode())
-modules['./update-assets.cjs']="'use strict';module.exports={worker:"+json.dumps((root/'installer/update-worker.ps1').read_text(encoding='utf8'))+",progress:"+json.dumps(progress_ui)+"};"
+modules['./update-assets.cjs']="'use strict';module.exports={native:true};"
 for file in [source/'i18n.cjs',*sorted((source/'locales').glob('*.cjs'))]:
     modules['./'+file.relative_to(source).as_posix()]=file.read_text(encoding='utf-8')
 logo=(root/'assets/brand/Hydra-Nexus-transparent.svg').read_text(encoding='utf8')
@@ -30,6 +32,8 @@ head_end=logo.index('<!-- Center: the "Nexus"',head_start)
 logo=logo[:head_start]+'<g class="replay-head">'+logo[head_start:head_end]+'</g>'+logo[head_end:]
 logo=logo.replace('</svg>','<path d="M512 414V484L355 575V744L512 835V1080" fill="none" stroke="#D3FFE9" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" pathLength="1" class="replay-flow"/><path d="M150 1080H874" stroke="#24463D" stroke-width="6" stroke-linecap="round"/><path d="M512 1080H150" fill="none" stroke="#A4FFD9" stroke-width="7" stroke-linecap="round" pathLength="1" class="replay-rail"/><path d="M512 1080H874" fill="none" stroke="#A4FFD9" stroke-width="7" stroke-linecap="round" pathLength="1" class="replay-rail"/></svg>')
 modules['./replay-ui.js']=modules['./replay-ui.js'].replace('__NEXUS_REPLAY_CSS__',(source/'replay.css').read_text(encoding='utf8')).replace('__NEXUS_REPLAY_MARK__',logo)
+cloud_catalogs=subprocess.check_output(['node','-e',"process.stdout.write(JSON.stringify(require('./src/cloud-locales.cjs')))"],cwd=root).decode('utf8')
+modules['./cloud-ui.js']=modules['./cloud-ui.js'].replace("'__NEXUS_CLOUD_CSS__'",json.dumps((source/'cloud-ui.css').read_text(encoding='utf8'))).replace('__NEXUS_CLOUD_LOCALES__',cloud_catalogs).replace('__NEXUS_CLOUD_HERO__','data:image/webp;base64,'+base64.b64encode((root/'assets/cloud/vault-hero.webp').read_bytes()).decode())
 missing=set()
 for name,text in modules.items():
     for match in re.finditer(r"require\(['\"](\./[^'\"]+)['\"]\)",text):
@@ -142,7 +146,7 @@ native_installer=(root/'installer/native-ui.ps1').read_text(encoding='utf8').rep
 guide_assets=','.join("@{Name='nexus-guide-"+p.stem+".webp';Data='"+base64.b64encode(p.read_bytes()).decode()+"'}" for p in sorted((root/'assets/plugin-guides').glob('*.webp')) if p.stem!='backup')
 guide_assets+=",@{Name='nexus-quiet-background.png';Data='"+base64.b64encode((root/'assets/theme/quiet-charcoal.png').read_bytes()).decode()+"'}"
 guide_assets+=",@{Name='nexus-mint-background.webp';Data='"+base64.b64encode((root/'assets/theme/mint-clouds.webp').read_bytes()).decode()+"'}"
-guide_assets+=",@{Name='nexus-release-2.2.webp';Data='"+base64.b64encode((root/'assets/promo/release-2.2.webp').read_bytes()).decode()+"'}"
+guide_assets+=",@{Name='nexus-release-3.0.webp';Data='"+base64.b64encode((root/'assets/promo/release-3.0.webp').read_bytes()).decode()+"'}"
 native_installer=native_installer.replace('# __NEXUS_PLUGIN_GUIDE_ASSETS__',guide_assets)
 registry+='\n'+native_installer+'\n'+(root/'installer/retired-components.ps1').read_text(encoding='utf8')
 base=base.replace("Add-Type -TypeDefinition @'",registry+"\nAdd-Type -TypeDefinition @'",1)
@@ -173,8 +177,9 @@ base=base.replace('__NEXUS_RELEASE_VERSION__',version).replace('__NEXUS_RELEASE_
 base=base.replace('Hydra Nexus 1.0.0','Hydra Nexus '+version).replace('v1.0.0','v'+version)
 base=f':: HYDRA_NEXUS_RELEASE {version}\n:: HYDRA_NEXUS_REVISION {revision}\n'+base
 (output/'Hydra_Nexus.bat').write_bytes(base.replace('\r\n','\n').replace('\n','\r\n').encode())
-print('Built Hydra Nexus '+version+': 11 plugins, backgrounds, safe updater and per-game tools. GameShift is not bundled.')
+print('Built Hydra Nexus '+version+': 12 plugins, backgrounds, safe updater and per-game tools. GameShift is not bundled.')
 
 if args.exe:
     import subprocess,sys
-    subprocess.run([sys.executable,str(root/'installer/build-setup.py')],check=True)
+    subprocess.run([sys.executable,str(root/'installer/native/prepare.py')],check=True)
+    subprocess.run([sys.executable,str(root/'installer/native/build.py')],check=True)

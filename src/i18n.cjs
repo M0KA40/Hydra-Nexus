@@ -1,6 +1,10 @@
 'use strict';
 // English messages are catalog keys. Keep every message in all nine catalogs.
 const catalogs={en:require('./locales/en.cjs'),'pt-BR':require('./locales/pt-BR.cjs'),es:require('./locales/es.cjs'),ru:require('./locales/ru.cjs'),ar:require('./locales/ar.cjs'),fr:require('./locales/fr.cjs'),de:require('./locales/de.cjs'),tr:require('./locales/tr.cjs'),pl:require('./locales/pl.cjs')};
+// Cloud messages share Hydra's language authority and native-dialog translator.
+// Preserve existing translations when a common control label is already defined.
+const cloudCatalogs=require('./cloud-locales.cjs');
+for(const [language,table]of Object.entries(catalogs))catalogs[language]={...cloudCatalogs[language],...table};
 
 // Self-contained: this factory also runs inside sandboxed Electron renderers.
 function createTranslator(catalogs,initialLanguage='en'){

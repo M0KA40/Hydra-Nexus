@@ -3,7 +3,7 @@
 // missing artwork and Empty/One enter through props, not modified component markup.
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
 const {chromium}=require(process.env.HYDRA_PLAYWRIGHT_PATH||'playwright');
-const root=path.resolve(__dirname,'..'),native=path.resolve(root,'../Development/Fixtures/Native'),out=process.env.HYDRA_INTERFACE_PREVIEW||path.join(__dirname,'.correction-results');
+const root=path.resolve(__dirname,'..'),native=process.env.HYDRA_NATIVE_FIXTURES||path.resolve(root,'../Development/Fixtures/Native'),out=process.env.HYDRA_INTERFACE_PREVIEW||path.join(__dirname,'.correction-results');
 const css=fs.readFileSync(path.join(native,'hydra-native.css'),'utf8')+['interface-quiet.css','interface-polish.css','interface-discovery.css'].map(f=>fs.readFileSync(path.join(root,'src',f),'utf8')).join('\n');
 (async()=>{const browser=await chromium.launch({headless:true,executablePath:process.env.HYDRA_BROWSER_EXE});const errors=[];let cases=0;
 try{const page=await browser.newPage({reducedMotion:'reduce'});page.on('pageerror',e=>errors.push(e.message));

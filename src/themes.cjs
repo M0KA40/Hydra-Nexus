@@ -12,7 +12,7 @@ async function fetchCSS(url,fetcher,seen=new Set(),deadline=Date.now()+60000){
   const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),Math.min(30000,deadline-Date.now()));let text='';
   try{const response=await fetcher(url,{signal:controller.signal,credentials:'omit',redirect:'error'});if(response.redirected||response.url&&trustedCSSURL(response.url).href!==u.href)throw Error('Theme redirects are not supported');if(!response.ok)throw Error('Theme download failed ('+response.status+'). Check that the link contains theme CSS.');let length=0;const chunks=[];for await(const chunk of response.body){length+=chunk.length;if(length>MAX_CSS)throw Error('Theme CSS is too large');chunks.push(Buffer.from(chunk));}text=Buffer.concat(chunks).toString('utf8');}finally{clearTimeout(timeout);}
   const imports=[...text.matchAll(/@import\s+(?:url\(\s*)?["']([^"']+)["']\s*\)?\s*;/gi)];
-  for(const match of imports){const imported=new URL(match[1],url).toString();text=text.replace(match[0],await fetchCSS(imported,fetcher,seen,deadline));}
+  for(const match of imports){const imported=new URL(match[1],url).toString();const replacement=await fetchCSS(imported,fetcher,seen,deadline);text=text.replace(match[0],()=>replacement);}
   if(/@import/i.test(text))throw Error('Unsupported theme import syntax');
   text=text.replace(/url\(\s*(["']?)([^"')]+)\1\s*\)/gi,(full,_quote,value)=>{if(/^(data:|#)/i.test(value))return full;const absolute=trustedCSSURL(value.trim(),url);return 'url('+JSON.stringify(absolute.toString())+')';});
   if(Buffer.byteLength(text)>MAX_CSS)throw Error('Combined theme CSS is too large');return text;

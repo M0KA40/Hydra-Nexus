@@ -63,8 +63,8 @@ const sampleVdf=String.raw`"users"
   const failingThemes={atomicText:async()=>{throw Error('disk is full');}};
   let themes=failingThemes;
   const electron={app,ipcMain:{handle:(name,fn)=>handlers.set(name,fn)},BrowserWindow:{getAllWindows:()=>[win]}};
-  const ctx={require:id=>id==='./game-actions.js'?require('../src/game-actions.js'):id==='./i18n.cjs'?require('../src/i18n.cjs'):id==='electron'?electron:id==='child_process'?fakeCP:id==='./themes.cjs'?themes:id==='./steam-vdf.cjs'?vdf:id==='./steam-ui.js'?require('../src/steam-ui.js'):require(id),process:{platform:'win32',env:{APPDATA:appData}},console:{log(){}},setTimeout:(fn,ms,...args)=>setTimeout(fn,[1800,4500].includes(ms)?0:ms,...args),clearTimeout,setImmediate,Buffer,global:null};
-  ctx.global=ctx;ctx.__NEXUS_STEAM_PRIVACY__=()=>true;vm.createContext(ctx);
+  const ctx={require:id=>id==='./native-tools.cjs'?{run:async()=>''}:id==='./game-actions.js'?require('../src/game-actions.js'):id==='./i18n.cjs'?require('../src/i18n.cjs'):id==='electron'?electron:id==='child_process'?fakeCP:id==='./themes.cjs'?themes:id==='./steam-vdf.cjs'?vdf:id==='./steam-ui.js'?require('../src/steam-ui.js'):require(id),process:{platform:'win32',env:{APPDATA:appData}},console:{log(){}},setTimeout:(fn,ms,...args)=>setTimeout(fn,[1800,4500].includes(ms)?0:ms,...args),clearTimeout,setImmediate,Buffer,global:null};
+  ctx.global=ctx;ctx.__NEXUS_STEAM_PRIVACY__=()=>true;ctx.__HYDRA_NEXUS_TRUSTED__=()=>true;vm.createContext(ctx);
   vm.runInContext(fs.readFileSync(path.join(__dirname,'../src/steam.cjs'),'utf8'),ctx);
   await new Promise(r=>setImmediate(r));
   const toasts=()=>sent.filter(s=>s.includes('__hydraSteamShowToast')).map(s=>/window.__hydraSteamShowToast\((.*), (?:true|false)\);/.exec(s)?.[1]??'');

@@ -4,8 +4,8 @@ const {atomicText}=require('./themes.cjs');
 const i18n=require('./i18n.cjs');
 const KEY=/^[\w-]+:[\w.-]+$/;
 function createPrivacy({directory,getConfig,log=()=>{},changed=()=>{}}){
-  // Retain the old ledger only to protect screenshots captured under the earlier
-  // privacy contract. It must never suppress profile activity or integration sync.
+  // Retain historical screenshot protections. Strict mode rejects publication at
+  // the API boundary; it never acknowledges or rewrites a native playtime write.
   const file=path.join(directory,'invisible-state.json'),checkpoint=path.join(directory,'invisible-checkpoint.json');
   let records=Object.create(null),integrationHolds=Object.create(null),legacyScreenshotCutoff=0,error=null,binding={},transition=false,writing=null,dirty=false,saveTimer=null,noticeTimer=null,exiting=false;
   const indexes=new Map(),scopeCache=new Map();
@@ -68,16 +68,23 @@ function createPrivacy({directory,getConfig,log=()=>{},changed=()=>{}}){
   }
   function status(){
     const supported=!!(typeof binding.api?.put==='function'&&typeof binding.api?.post==='function'&&typeof binding.realtime?.close==='function'&&typeof binding.realtime?.connect==='function');
-    return {supported,requested:requested(),active:supported&&enabled(),held:0,integrationHeld:false,profileSync:true,legacyScreenshotsProtected:!!(error||legacyScreenshotCutoff),error,visibilityVerified:false,serverNotificationsVerified:false};
+    return {supported,requested:requested(),active:supported&&enabled(),strict:true,held:0,integrationHeld:enabled(),profileSync:!enabled(),legacyScreenshotsProtected:!!(error||legacyScreenshotCutoff),error,visibilityVerified:false,serverNotificationsVerified:false};
   }
   // Kept for reversible native createGame/trackGamePlaytime hooks. A presence
   // preference never acknowledges or discards a native profile activity write.
   const blockGame=()=>false;
-  const presenceError=()=>Object.assign(Error(i18n.main.t('Realtime presence is paused by Invisible Mode.')),{code:'NEXUS_INVISIBLE'});
+  const presenceError=()=>Object.assign(Error(i18n.main.t('Invisible Mode paused this activity upload.')),{code:'NEXUS_INVISIBLE'});
   function policy(method,url,data){
     if(['GET','HEAD','OPTIONS'].includes(String(method).toUpperCase()))return {data};
-    let route;try{route=new URL(String(url),'https://hydra.invalid').pathname;}catch{return {data};}
-    return enabled()&&route==='/auth/realtime'?{deny:true}:{data};
+    if(!enabled())return {data};
+    let route;try{route=decodeURIComponent(new URL(String(url),'https://hydra.invalid').pathname).replace(/\/+$/,'');}catch{return {deny:true};}
+    // Block every native activity write, including manual totals, batch imports,
+    // linked-store sessions and screenshot reservation/commit. Private cloud-save
+    // artifacts, downloads, authentication, chat and read-only metadata stay native.
+    const artifacts=/^\/profile\/games\/artifacts(?:\/|$)/.test(route);
+    const activity=/^\/profile\/(?:games|integrations|game-links|screenshots|souvenirs(?:-visibility)?|achievements)(?:\/|$)/.test(route);
+    const capture=/^\/presigned-urls\/(?:achievement-image|screenshot(?:s|-image)?)(?:\/|$)/.test(route);
+    return route==='/auth/realtime'||activity&&!artifacts||capture?{deny:true}:{data};
   }
   const instances=new WeakSet();
   function attachTransport(instance){
@@ -89,11 +96,12 @@ function createPrivacy({directory,getConfig,log=()=>{},changed=()=>{}}){
     binding=capabilities||{};const {api,realtime,souvenirStore}=binding;
     if(api&&!api.__nexusPrivacy){
       Object.defineProperty(api,'__nexusPrivacy',{value:true});
-      for(const method of ['post','postResponse','put','patch'])if(typeof api[method]==='function'){
+      for(const method of ['post','postResponse','put','patch','delete'])if(typeof api[method]==='function'){
         const native=api[method];api[method]=async function(url,data,...rest){if(policy(method==='postResponse'?'POST':method,url,data).deny)throw presenceError();return native.call(this,url,data,...rest);};
       }
       // An upgrade can start before Hydra has restored the account session.
-      // Retry native profile queues on login too; Invisible only pauses presence.
+      // Re-check transport policy after auth awaits too; never release queued
+      // activity merely because an account session was replaced.
       api.onAuthContextChanged?.(()=>{if(enabled())closeRealtime();triggerWorkers();notify();});
       const descriptor=Object.getOwnPropertyDescriptor(api,'instance');
       if(!descriptor||descriptor.configurable){let instance=api.instance;attachTransport(instance);Object.defineProperty(api,'instance',{configurable:true,get:()=>instance,set:value=>{instance=value;attachTransport(value);}});}else attachTransport(api.instance);
@@ -104,14 +112,16 @@ function createPrivacy({directory,getConfig,log=()=>{},changed=()=>{}}){
     }
     if(souvenirStore&&!souvenirStore.__nexusPrivacy){
       Object.defineProperty(souvenirStore,'__nexusPrivacy',{value:true});const list=souvenirStore.list;
-      if(typeof list==='function')souvenirStore.list=async function(...args){const rows=await list.apply(this,args);return args[0]?.nexusUpload===true?rows.filter(legacyScreenshotAllowed):rows;};
+      if(typeof list==='function')souvenirStore.list=async function(...args){const rows=await list.apply(this,args);return args[0]?.nexusUpload===true?(enabled()?[]:rows.filter(legacyScreenshotAllowed)):rows;};
     }
     if(enabled())closeRealtime();
     if(dirty)persist();notify();triggerWorkers();
   }
-  async function change(value,persistConfig){
+  async function change(value,persistConfig,{accepted=false}={}){
     if(typeof value!=='boolean')throw Error('Invalid privacy preference');
     if(value&&!status().supported)throw Error(i18n.main.t('Invisible Mode is unavailable for this Hydra build. Reinstall the latest Nexus installer.'));
+    if(value&&!requested()&&!accepted)throw Error(i18n.main.t('Confirm the privacy impact before enabling Invisible Mode.'));
+    if(value&&!requested()&&binding.running?.().length)throw Error(i18n.main.t('Close all games before changing plugins'));
     transition=true;closeRealtime();
     try{await persistConfig();}
     finally{

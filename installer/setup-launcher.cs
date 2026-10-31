@@ -14,9 +14,10 @@ internal static class NexusSetup {
         }
     }
     [STAThread] static int Main(string[] args) {
+        string dir=null;bool completed=false;
         try {
             if(args.Length>1 || (args.Length>0 && args[0]!="--preview" && args[0]!="--preview-updater"))throw new ArgumentException("Supported options: --preview or --preview-updater (interface only).");
-            string dir=Path.Combine(Path.GetTempPath(),"Hydra-Nexus-Setup-"+Guid.NewGuid().ToString("N"));
+            dir=Path.Combine(Path.GetTempPath(),"Hydra-Nexus-Setup-"+Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(dir);
             foreach(string name in new[]{"Hydra_Nexus.bat","setup-gui.ps1","setup-worker.ps1","setup-detect.ps1","setup-copy.json","update-progress.ps1","preview-updater.ps1"})Extract(name,dir);
             string hash;
@@ -26,7 +27,17 @@ internal static class NexusSetup {
             start.UseShellExecute=false;start.CreateNoWindow=true;start.RedirectStandardError=true;
             bool updater=args.Length>0 && args[0]=="--preview-updater";
             start.Arguments="-NoLogo -NoProfile -NonInteractive -STA -ExecutionPolicy Bypass -File \""+Path.Combine(dir,updater?"preview-updater.ps1":"setup-gui.ps1")+"\""+(args.Length>0&&!updater?" -PreviewOnly":"");
-            using(var child=Process.Start(start)){string error=child.StandardError.ReadToEnd();child.WaitForExit();if(child.ExitCode!=0 && error.Length>0)MessageBox.Show(error,"Hydra Nexus Setup",MessageBoxButtons.OK,MessageBoxIcon.Error);return child.ExitCode;}
+            using(var child=Process.Start(start)){string error=child.StandardError.ReadToEnd();child.WaitForExit();completed=child.ExitCode==0;if(child.ExitCode!=0 && error.Length>0)MessageBox.Show(error,"Hydra Nexus Setup",MessageBoxButtons.OK,MessageBoxIcon.Error);return child.ExitCode;}
         }catch(Exception error){MessageBox.Show(error.Message,"Hydra Nexus Setup",MessageBoxButtons.OK,MessageBoxIcon.Error);return 1;}
+        finally {
+            // Only remove resources extracted by this launch, after its child exits
+            // successfully. Leave failed jobs and any unexpected files for diagnosis.
+            if(completed && dir!=null) {
+                foreach(string name in new[]{"Hydra_Nexus.bat","setup-gui.ps1","setup-worker.ps1","setup-detect.ps1","setup-copy.json","update-progress.ps1","preview-updater.ps1"}) {
+                    try{File.Delete(Path.Combine(dir,name));}catch{}
+                }
+                try{Directory.Delete(dir,false);}catch{}
+            }
+        }
     }
 }

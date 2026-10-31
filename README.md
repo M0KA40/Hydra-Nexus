@@ -6,7 +6,17 @@
 
 Hydra Nexus is a community extension for Hydra Launcher on Windows. It adds game storage tools, per-game Steam accounts, play activity, tabs, notes and your own backgrounds. Enable the tools you need in Plugins. Nexus follows Hydra’s language and uses native controls that work with your theme. An existing Hydra Launcher installation is required.
 
-**[Download installer](https://github.com/M0KA40/Hydra-Nexus/releases/latest/download/Hydra_Nexus_2.2.exe)** · [Release notes](https://github.com/M0KA40/Hydra-Nexus/releases/tag/v2.2) · [Report a problem](https://github.com/M0KA40/Hydra-Nexus/issues/new/choose)
+**[Download installer](https://github.com/M0KA40/Hydra-Nexus/releases/download/v3.0/Hydra_Nexus.exe)** · [Release notes](https://github.com/M0KA40/Hydra-Nexus/releases/tag/v3.0) · [Report a problem](https://github.com/M0KA40/Hydra-Nexus/issues/new/choose)
+
+## Nexus Cloud · BETA
+
+![Nexus Cloud](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/cloud.webp)
+
+Keep supported game saves and local achievements in your own Dropbox or OneDrive account. Connect one provider through your browser, back up one game or all eligible games, and optionally back up after a game closes. On this PC or another, connect the same account, verify your cloud copies, review destinations and confirm before restoring.
+
+Cloud uses your account storage. Optional password encryption protects new backup packages; keep the original password outside this PC. Detection depends on supported locations, with manual save folders available. Restoring local files does not unlock Steam or Epic achievements.
+
+**Where to use it: Settings → Hydra Nexus → Plugins → Nexus Cloud, then open Nexus Cloud from the sidebar.**
 
 ## Steam launch settings
 
@@ -103,7 +113,7 @@ Choose your own local image or video as Hydra’s background. Adjust darkness an
 
 ## Install and update
 
-1. Download Hydra_Nexus_2.2.exe from Releases.
+1. Download Hydra_Nexus.exe from Releases.
 2. Exit Hydra completely, including its tray icon.
 3. Run the EXE and choose Install / Update / Repair.
 4. Open Hydra → Settings → Hydra Nexus → Plugins.
@@ -119,3 +129,7 @@ No separate Node.js or Python installation is needed to run the installer. Updat
 ```sh
 python build.py
 ```
+
+## Native EXE architecture
+
+[Installer, update flow and build documentation](docs/native-exe.md).

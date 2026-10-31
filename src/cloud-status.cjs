@@ -1,0 +1,15 @@
+'use strict';
+const fs=require('node:fs/promises'),path=require('node:path'),crypto=require('node:crypto');
+const {atomicText}=require('./themes.cjs');
+function createBackupStatus({directory,changed=()=>{}}){const file=path.join(directory,'backup-status.json');let records={},error=null,writes=Promise.resolve();
+ const snapshot=()=>({attempts:Object.values(records).filter(r=>r.status==='running'||r.status==='incomplete'&&!r.acknowledged||r.status==='complete'&&Date.now()-r.updated<15000),error});
+ const emit=()=>{try{changed(snapshot());}catch{}};
+ async function save(){if(error){emit();return;}const text=JSON.stringify({schema:1,records},null,2);const write=writes.then(()=>atomicText(file,text));writes=write.catch(()=>{});await write;emit();}
+ async function initialize(){try{const stat=await fs.lstat(file);if(stat.isSymbolicLink()||stat.size>2*1024*1024)throw Error('Invalid backup status');const data=JSON.parse(await fs.readFile(file,'utf8'));if(data.schema!==1||!data.records||Array.isArray(data.records)||Object.keys(data.records).length>2000)throw Error('Invalid backup status');for(const [key,r]of Object.entries(data.records))if(!/^[-\w]+:[-\w.]+$/.test(key)||r.key!==key||typeof r.title!=='string'||!['running','complete','incomplete'].includes(r.status)||typeof r.acknowledged!=='boolean'||r.automatic!==undefined&&typeof r.automatic!=='boolean')throw Error('Invalid backup status');records=data.records;let interrupted=false;for(const r of Object.values(records))if(r.status==='running'){r.status='incomplete';r.acknowledged=false;r.stage='interrupted';r.error='The previous cloud backup did not finish';interrupted=true;}if(interrupted)await save();}catch(e){if(e.code!=='ENOENT')error='Backup notification history needs attention';}emit();}
+ async function begin(game,{automatic=false}={}){if(error)throw Error(error);if(!records[game.key]&&Object.keys(records).length>=2000){const old=Object.values(records).find(r=>r.status==='complete'&&r.acknowledged);if(old)delete records[old.key];else throw Error('Backup history needs attention');}records[game.key]={key:game.key,title:String(game.title||game.key).slice(0,500),id:crypto.randomUUID(),automatic:automatic===true,status:'running',stage:'preparing',acknowledged:false,started:Date.now(),updated:Date.now()};await save();return records[game.key].id;}
+ function stage(key,value,attempt){if(attempt&&records[key]?.id!==attempt)return;if(!records[key]||records[key].status!=='running')return;records[key].stage=value;records[key].updated=Date.now();emit();}
+ async function finish(key,success,message='',attempt){if(attempt&&records[key]?.id!==attempt)return;if(!records[key])return;Object.assign(records[key],{status:success?'complete':'incomplete',stage:success?'complete':'failed',acknowledged:success,error:success?null:String(message).slice(0,2000),updated:Date.now()});await save();}
+ async function acknowledge(key){if(records[key]?.status==='incomplete'){records[key].acknowledged=true;await save();}return snapshot();}
+ return{initialize,snapshot,begin,stage,finish,acknowledge,get:key=>records[key]||null};
+}
+module.exports={createBackupStatus};

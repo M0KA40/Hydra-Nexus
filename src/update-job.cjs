@@ -23,25 +23,13 @@ function createUpdateJobs({folder,app,shutdown,startupTimeoutMs=45000}){
     const id=crypto.randomBytes(16).toString('hex'),token=crypto.randomBytes(32).toString('hex'),dir=path.join(folder,'job-'+id);
     await fsp.mkdir(dir,{recursive:true});
     const exe=app.getPath('exe'),request={schema:2,id,token,parentPid:process.pid,parentExe:process.execPath,exe,processNames:[...new Set([path.basename(exe,path.extname(exe)),'hydralauncher'])],installer:staged.file,sha256:staged.sha256,version:staged.version,revision:staged.revision,showProgress:app.isPackaged!==false,presentation:require('./update-presentation.cjs').updatePresentation()};
-    const jobFile=path.join(dir,'request.json'),workerFile=path.join(dir,'worker.ps1');
-    let worker=require('./update-assets.cjs').worker;
-    if(worker==='__NEXUS_UPDATE_WORKER__')worker=await fsp.readFile(path.join(__dirname,'../installer/update-worker.ps1'),'utf8');
-    let progress=require('./update-assets.cjs').progress;
-    if(progress==='__NEXUS_UPDATE_PROGRESS__'){
-      const surface=(await fsp.readFile(path.join(__dirname,'../installer/setup-surface.ps1'),'utf8')).replace('__NEXUS_SURFACE_XAML_BASE64__',(await fsp.readFile(path.join(__dirname,'../installer/setup-window.xaml'))).toString('base64')).replace('__NEXUS_PROGRESS_LOGO__',(await fsp.readFile(path.join(__dirname,'../assets/brand/Hydra-Nexus-transparent.png'))).toString('base64'));
-      progress=(await fsp.readFile(path.join(__dirname,'../installer/update-progress.ps1'),'utf8')).replace('# __NEXUS_SHARED_SURFACE__',surface);
-    }
-    await atomicText(path.join(dir,'progress.ps1'),'\ufeff'+progress);
-    await atomicText(workerFile,'\ufeff'+worker);await atomicText(jobFile,JSON.stringify(request));
+    const jobFile=path.join(dir,'request.json');
+    await atomicText(jobFile,JSON.stringify(request));
     active={schema:2,id,token};await atomicText(pointer,JSON.stringify(active));
-    const powershell=path.join(process.env.SystemRoot||'C:\\Windows','System32','WindowsPowerShell','v1.0','powershell.exe');
-    const stdout=path.join(dir,'startup.log'),stderr=path.join(dir,'startup-errors.log');
-    // Start-Process creates an independent Windows lifetime. The fixed worker
-    // acknowledges its own mutex and parent handle before data is saved or closed.
-    const bootstrap="$ErrorActionPreference='Stop';Start-Process -WindowStyle Hidden -FilePath "+quote(powershell)+" -ArgumentList @('-NoLogo','-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',"+quote('"'+workerFile+'"')+",'-JobFile',"+quote('"'+jobFile+'"')+") -RedirectStandardOutput "+quote(stdout)+" -RedirectStandardError "+quote(stderr);
+    const stderr=path.join(dir,'state.json');
     let launchError=null,child;
     try{
-      child=cp.spawn(powershell,['-NoLogo','-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-WindowStyle','Hidden','-EncodedCommand',Buffer.from(bootstrap,'utf16le').toString('base64')],{windowsHide:true,detached:false,stdio:'ignore'});
+      child=cp.spawn(staged.file,['--update',jobFile],{windowsHide:false,detached:true,stdio:'ignore'});
       child.once('error',error=>{launchError=error;});child.once('exit',code=>{if(code!==0)launchError=Error('The update helper exited before it was ready (code '+code+'). See '+stderr);});child.unref();
       const deadline=Date.now()+startupTimeoutMs;
       while(true){

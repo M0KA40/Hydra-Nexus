@@ -1,4 +1,11 @@
+
+- Owner Arabic scope rule (2026-10-31): preserve existing Arabic support, but do not audit, test, correct or report Arabic/RTL unless explicitly requested. This overrides Arabic-specific review requirements elsewhere.
 # Hydra Nexus development
+
+- Version 3.0 distribution is native EXE only. Read `docs/native-exe.md` before installer/updater work. Use `python build.py --exe`; never revive the BAT wrapper or a PowerShell runtime. `installer/native/compatibility.json` is reviewed, hash-bound patch data; refresh it when changing native renderer/main hooks and verify against the supported official Hydra build. Published assets must keep `Hydra_Nexus.exe` and matching `SHA256SUMS.txt` names for future updates.
+- Keep delivered `Release/` artifacts immutable. Make a new uniquely named candidate after any further code change. No public upload or publication until the owner explicitly authorizes it.
+
+- Owner workflow priority (2026-10-31): English is the primary language for Play Activity design, implementation and visual review. Establish the English art direction and interactions first. Review the other supported languages, including Arabic/RTL and long translations, after the main design and interaction work is complete and before delivery. Do not make Arabic the starting point or central design constraint. Preserve all existing language support; this changes work order, not the final localization requirements. This is an owner-selected priority, not a measured usage statistic.
 
 - Mandatory page layout rule: read `docs/page-layout.md` before any page change. Inherit native Settings/header/content dimensions and theme spacing. Compare actual geometry at 1200×860, 1024×600, 1280×720 and 1920×1080, all nine languages/RTL and representative themes. No fixed full-page desktop caps or zeroing native margins. Preserve and extend the Backup/statistics geometry regressions.
 
