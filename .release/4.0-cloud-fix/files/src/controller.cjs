@@ -242,7 +242,7 @@ if(!global.__HYDRA_NEXUS__){
   const updateConfirmation=require('./update-confirmation.cjs').createUpdateConfirmation({send,trusted,dialog});
   const updater=require('./updater.cjs').createUpdater({directory,version:VERSION,revision:brand.revision||1,getRepository:()=>config.repository,fetcher:(url,options)=>net.fetch(url,options),app,dialog,shutdown:updateShutdown,confirm:updateConfirmation.confirm});
   app.whenReady().then(async()=>{await ready;if(!configError)await updater.started();}).catch(log);
-  const releaseNotes=require('./release-notes.cjs').createReleaseNotes({directory,version:VERSION,revision:brand.revision||1,load:()=>updater.installedNotes(),log,changed:value=>{for(const win of windows.keys())send(win,{event:'releaseNotes',value});}});
+  const releaseNotes=require('./release-notes.cjs').createReleaseNotes({directory,version:VERSION,revision:brand.revision||1,announcementRevision:brand.announcementRevision||brand.revision||1,load:()=>updater.installedNotes(),log,changed:value=>{for(const win of windows.keys())send(win,{event:'releaseNotes',value});}});
   let automaticChecking=false,lastUpdateNotice=null,nextUpdateNotice=0,pendingUpdateNotice=null;
   async function automaticUpdateCheck(){
     if(configError||config.autoCheckUpdates===false||automaticChecking)return;

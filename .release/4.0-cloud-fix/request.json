@@ -2,15 +2,11 @@
   "version": "4.0",
   "revision": 2,
   "baseline_sha256": "6785849fed752568c26530120f6a74f8c3240b7b3965b591ea835da63a9a0dae",
-  "source_sha256": "a5a94668a9b6db07e0056356629f6587a8e4b654182e95d298188b15e46a851c",
+  "source_sha256": "1ab0002ac88c7340e9e8f3e601ea84f02dfb69462f4e498fcc8060c1807dea43",
   "files": [
     {
       "path": "Hydra-Nexus-exe-release.json",
       "sha256": "2622afcf119a5c77257b9d8af75c320bce19e46633bf1183b5ebdd0763730643"
-    },
-    {
-      "path": "docs/releases/4.0.md",
-      "sha256": "0f13a7b1c026aac4bffffe8ed8f45f2781f8dd5a0505f5fbceded762a9507661"
     },
     {
       "path": "installer/native/Setup.cs",
@@ -21,8 +17,12 @@
       "sha256": "f4f39c824e366410f4aa2647fbdf5f1b571ef27cdb4134676548a252cc9df92a"
     },
     {
+      "path": "release.py",
+      "sha256": "f7796cfe619e04ae0fc86e9848f256f2a8d072de84836d130bc5f588709754cd"
+    },
+    {
       "path": "src/brand.cjs",
-      "sha256": "6ea60f7c18c41fa7d791ee65e2f435d46f6eddca557bbe36db9f942bfc40b1b2"
+      "sha256": "10e916c48c7510b1633b9733e142fba01f699025d1f33492e8df1fb9885a1cd4"
     },
     {
       "path": "src/cloud-rclone.cjs",
@@ -34,11 +34,15 @@
     },
     {
       "path": "src/controller.cjs",
-      "sha256": "860846b39a366792f24e9a966e8ed49040b694f23bbb2cc5ecf9dd542ce4d1f8"
+      "sha256": "067191104a601fd7354a0bfc43ef64b10a742621cebdee012405cb72dfe8e1cb"
     },
     {
       "path": "src/release-content.cjs",
       "sha256": "9a156a33ac51514247241061b9208612d9b84266745a1fb71efe0ac8b96a1f16"
+    },
+    {
+      "path": "src/release-notes.cjs",
+      "sha256": "200e2725edf0b66d643990d5d6341193db6a9cd0928653d5d0ea4082ce4cbec1"
     },
     {
       "path": "src/update-job.cjs",
@@ -55,6 +59,10 @@
     {
       "path": "tests/test-cloud-rclone.cjs",
       "sha256": "2fa67838e48f70d4ddc712ca82fb3b52675dfd531dd13e2c8b8f7583d5dd04d8"
+    },
+    {
+      "path": "tests/test-release-notes.cjs",
+      "sha256": "30f391865608b7e19b80f324f6e556354cdf91df9d548409b830bef5ea3615d0"
     },
     {
       "path": "tests/test-cloud-update-handoff.cjs",
@@ -90,7 +98,9 @@
     "test-update-safety.cjs",
     "test-update-shutdown.cjs",
     "test-cloud-rclone-native.cjs",
-    "test-cloud-security.cjs"
+    "test-cloud-security.cjs",
+    "test-release-notes.cjs",
+    "test-plugin-discovery.cjs"
   ],
-  "publication_attempt": 2
+  "publication_attempt": 3
 }

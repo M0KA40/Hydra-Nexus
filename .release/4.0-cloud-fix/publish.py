@@ -45,10 +45,10 @@ def prepare():
  channel=json.loads((PREVIOUS/'Hydra-Nexus-exe-release.json').read_text(encoding='utf-8-sig'))
  if channel!={'schema':1,'version':'4.0','revision':1}:raise ValueError('Public channel moved; refusing replacement')
  apply_source(PREVIOUS/'Hydra-Nexus-4.0-source.zip')
- print('Verified exact public 4.0 source and applied 14 pinned files.')
+ print('Verified exact public 4.0 source and applied pinned files.')
 def check():
  # Keep fixtures off the runner profile 8.3 TEMP alias. Production restore guards stay unchanged.
- fixture_temp=WORK/"test-temp"
+ fixture_temp=pathlib.Path.home().resolve()/"nexus-release-fixtures"
  fixture_temp.mkdir(exist_ok=True)
  os.environ["TEMP"]=os.environ["TMP"]=str(fixture_temp.resolve())
  for file in (SOURCE/'src').rglob('*'):
@@ -62,34 +62,28 @@ def check():
  if sha(SOURCE/'dist/Hydra-Nexus-4.0-source.zip')!=REQUEST['source_sha256']:raise ValueError('Source package differs from locally reviewed candidate')
  channel=json.loads((SOURCE/'dist/Hydra-Nexus-exe-release.json').read_text(encoding='utf-8'))
  if channel!={'schema':1,'version':'4.0','revision':2}:raise ValueError('Wrong update channel')
- print('29 affected suites passed; packaged source exactly matches local candidate.')
+ print('Affected suites passed; packaged source exactly matches local candidate.')
 def upload(folder):
  for name in NAMES:run('gh','release','upload','v4.0',str(folder/name),'--clobber')
 def publish():
  verify_assets(SOURCE/'dist')
  previous=json.loads((WORK/'release.json').read_text(encoding='utf-8'))
- current=json.loads(subprocess.check_output(['gh','api','repos/M0KA40/Hydra-Nexus/releases/tags/v4.0'],text=True))
+ current=json.loads(subprocess.check_output(['gh','api','repos/M0KA40/Hydra-Nexus/releases/tags/v4.0'],text=True,encoding="utf-8"))
  if {a['name']:a['id'] for a in current['assets']}!={a['name']:a['id'] for a in previous['assets']}:raise ValueError('Public assets changed during build')
  body=current['body']
- if '<!-- HYDRA_NEXUS_REVISION 1 -->' not in body:raise ValueError('Public revision moved')
- fixed_body=body.replace('<!-- HYDRA_NEXUS_REVISION 1 -->','<!-- HYDRA_NEXUS_REVISION 2 -->',1)
- notes=WORK/'public-notes.md';notes.write_text(fixed_body,encoding='utf-8')
  try:
   upload(SOURCE/'dist')
-  run('gh','release','edit','v4.0','--notes-file',str(notes))
   verified=WORK/'downloaded';verified.mkdir()
   for name in NAMES:run('gh','release','download','v4.0','--pattern',name,'--dir',str(verified))
   verify_assets(verified)
   for name in NAMES:
    if sha(verified/name)!=sha(SOURCE/'dist'/name):raise ValueError('Public download differs: '+name)
-  public=json.loads(subprocess.check_output(['gh','api','repos/M0KA40/Hydra-Nexus/releases/tags/v4.0'],text=True))
-  if '<!-- HYDRA_NEXUS_REVISION 2 -->' not in public['body']:raise ValueError('Public revision missing')
+  public=json.loads(subprocess.check_output(['gh','api','repos/M0KA40/Hydra-Nexus/releases/tags/v4.0'],text=True,encoding="utf-8"))
+  if public['body']!=body:raise ValueError('Public patch notes changed')
   print('PUBLICATION VERIFIED: version 4.0, internal revision 2, all five downloads match.')
  except BaseException:
   print('Publication failed; restoring all original assets.',file=sys.stderr)
   upload(PREVIOUS)
-  notes.write_text(body,encoding='utf-8')
-  run('gh','release','edit','v4.0','--notes-file',str(notes))
   raise
 if __name__=='__main__':
  {'prepare':prepare,'check':check,'publish':publish}[sys.argv[1]]()
