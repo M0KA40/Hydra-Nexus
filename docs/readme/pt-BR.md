@@ -26,7 +26,7 @@ As páginas dos jogos organizam o conteúdo em Visão geral, Atualizações, Sob
 
 O novo design Nexus Discovery traz visual e animações próprios para conquistas normais, ocultas, raras e de platina. Nas Configurações, alterne entre o design Nexus e as notificações originais do Hydra, personalize o som e veja uma prévia com **Testar notificação**. A prévia não desbloqueia conquistas nem altera o histórico.
 
-[▶ Assistir ao vídeo das notificações de conquistas](https://github.com/M0KA40/Hydra-Nexus/blob/main/assets/media/nexus-discovery-achievements.mp4)
+https://github.com/user-attachments/assets/5adbe1b9-05c3-460a-ad13-85ad4a72fe4c
 
 ## Configurações de inicialização do Steam
 

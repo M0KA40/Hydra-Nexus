@@ -26,7 +26,7 @@ Les pages des jeux répartissent le contenu entre Vue d’ensemble, Actualités,
 
 Le nouveau design Nexus Discovery apporte son style et ses animations aux succès ordinaires, cachés, rares et platine. Dans les paramètres, choisissez entre Nexus et les notifications d’origine de Hydra, personnalisez le son et utilisez **Tester la notification** pour un aperçu. Ce test ne débloque aucun succès et ne modifie pas leur historique.
 
-[▶ Voir la vidéo des notifications de succès](https://github.com/M0KA40/Hydra-Nexus/blob/main/assets/media/nexus-discovery-achievements.mp4)
+https://github.com/user-attachments/assets/5adbe1b9-05c3-460a-ad13-85ad4a72fe4c
 
 ## Options de lancement Steam
 

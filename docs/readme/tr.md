@@ -26,7 +26,7 @@ Oyun sayfaları içeriği Genel Bakış, Güncellemeler, Hakkında, Topluluk ve 
 
 Yeni Nexus Discovery tasarımı; normal, gizli, nadir ve platin başarımlar için kendine özgü görünüm ve animasyonlar sunar. Ayarlar’dan Nexus ile Hydra’nın özgün bildirimleri arasında geçiş yapabilir, sesi özelleştirebilir ve **Bildirimi dene** ile önizleme yapabilirsiniz. Önizleme başarım açmaz ve başarım geçmişini değiştirmez.
 
-[▶ Başarım bildirimleri videosunu izleyin](https://github.com/M0KA40/Hydra-Nexus/blob/main/assets/media/nexus-discovery-achievements.mp4)
+https://github.com/user-attachments/assets/5adbe1b9-05c3-460a-ad13-85ad4a72fe4c
 
 ## Steam başlatma ayarları
 

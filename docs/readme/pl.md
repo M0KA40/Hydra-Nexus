@@ -26,7 +26,7 @@ Strony gier dzielą treści na Przegląd, Aktualizacje, O grze, Społeczność i
 
 Nowy wygląd Nexus Discovery dodaje własny styl i animacje dla zwykłych, ukrytych, rzadkich i platynowych osiągnięć. W Ustawieniach możesz przełączać się między Nexus a oryginalnymi powiadomieniami Hydra, dostosować dźwięk i wyświetlić podgląd przyciskiem **Przetestuj powiadomienie**. Podgląd nie odblokowuje osiągnięć ani nie zmienia ich historii.
 
-[▶ Obejrzyj film z powiadomieniami o osiągnięciach](https://github.com/M0KA40/Hydra-Nexus/blob/main/assets/media/nexus-discovery-achievements.mp4)
+https://github.com/user-attachments/assets/5adbe1b9-05c3-460a-ad13-85ad4a72fe4c
 
 ## Ustawienia uruchamiania Steam
 
