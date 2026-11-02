@@ -22,7 +22,7 @@ Spielseiten gliedern Inhalte in Übersicht, Updates, Über das Spiel, Community 
 
 ### Erfolgsbenachrichtigungen
 
-Das neue Nexus-Discovery-Design bringt einen eigenen Look und neue Animationen für normale, versteckte, seltene und Platin-Erfolge. Wechsle in den Einstellungen zwischen Nexus und den ursprünglichen Hydra-Benachrichtigungen, passe den Ton an und nutze **Benachrichtigung testen** für eine Vorschau. Dabei werden keine Erfolge freigeschaltet und keine Verlaufsdaten geändert.
+Das neue Nexus-Discovery-Design bringt einen eigenen Look und neue Animationen für normale, versteckte, seltene und Platin-Erfolge. Wechsle in den Einstellungen zwischen Nexus und den ursprünglichen Hydra-Benachrichtigungen, passe den Ton an und nutze **Benachrichtigung testen** für eine Vorschau.
 
 https://github.com/user-attachments/assets/5adbe1b9-05c3-460a-ad13-85ad4a72fe4c
 

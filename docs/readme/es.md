@@ -22,7 +22,7 @@ Las páginas de juegos organizan el contenido en Vista general, Actualizaciones,
 
 ### Notificaciones de logros
 
-El nuevo diseño Nexus Discovery aporta un estilo y animaciones propios a los logros normales, ocultos, raros y de platino. En Ajustes puedes alternar entre Nexus y las notificaciones originales de Hydra, personalizar el sonido y ver una vista previa con **Probar notificación**. La prueba no desbloquea logros ni modifica su historial.
+El nuevo diseño Nexus Discovery aporta un estilo y animaciones propios a los logros normales, ocultos, raros y de platino. En Ajustes puedes alternar entre Nexus y las notificaciones originales de Hydra, personalizar el sonido y ver una vista previa con **Probar notificación**.
 
 https://github.com/user-attachments/assets/5adbe1b9-05c3-460a-ad13-85ad4a72fe4c
 

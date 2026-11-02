@@ -22,7 +22,7 @@ Oyun sayfaları içeriği Genel Bakış, Güncellemeler, Hakkında, Topluluk ve 
 
 ### Başarım bildirimleri
 
-Yeni Nexus Discovery tasarımı; normal, gizli, nadir ve platin başarımlar için kendine özgü görünüm ve animasyonlar sunar. Ayarlar’dan Nexus ile Hydra’nın özgün bildirimleri arasında geçiş yapabilir, sesi özelleştirebilir ve **Bildirimi dene** ile önizleme yapabilirsiniz. Önizleme başarım açmaz ve başarım geçmişini değiştirmez.
+Yeni Nexus Discovery tasarımı; normal, gizli, nadir ve platin başarımlar için kendine özgü görünüm ve animasyonlar sunar. Ayarlar’dan Nexus ile Hydra’nın özgün bildirimleri arasında geçiş yapabilir, sesi özelleştirebilir ve **Bildirimi dene** ile önizleme yapabilirsiniz.
 
 https://github.com/user-attachments/assets/5adbe1b9-05c3-460a-ad13-85ad4a72fe4c
 

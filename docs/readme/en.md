@@ -22,7 +22,7 @@ Game pages organize content into Overview, Updates, About, Community and Details
 
 ### Achievement notifications
 
-A new Nexus Discovery notification design brings its own look and motion to normal, hidden, rare and platinum achievements. Switch between the Nexus design and Hydra’s original notifications in Settings, customize the notification sound, and preview it with **Try notification**. The preview does not unlock achievements or change their history.
+A new Nexus Discovery notification design brings its own look and motion to normal, hidden, rare and platinum achievements. Switch between the Nexus design and Hydra’s original notifications in Settings, customize the notification sound, and preview it with **Try notification**.
 
 https://github.com/user-attachments/assets/5adbe1b9-05c3-460a-ad13-85ad4a72fe4c
 
