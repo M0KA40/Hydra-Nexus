@@ -1,36 +1,64 @@
-![Hydra Nexus — Extend your Hydra experience](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/f575584cd94e2d50d5026ce64f396540ee46fc4c/assets/promo/overview.jpg)
+![Hydra Nexus — Your Hydra experience, reimagined.](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/promo/overview.jpg)
 
 [English](README.md) · [Português (Brasil)](docs/readme/pt-BR.md) · [Español](docs/readme/es.md) · [Русский](docs/readme/ru.md) · [العربية](docs/readme/ar.md) · [Français](docs/readme/fr.md) · [Deutsch](docs/readme/de.md) · [Türkçe](docs/readme/tr.md) · [Polski](docs/readme/pl.md)
 
 # Hydra Nexus
 
-Hydra Nexus is a community extension for Hydra Launcher on Windows. It adds game storage tools, per-game Steam accounts, play activity, tabs, notes and your own backgrounds. Enable the tools you need in Plugins. Nexus follows Hydra’s language and uses native controls that work with your theme. An existing Hydra Launcher installation is required.
+Hydra Nexus is a community extension for Hydra Launcher on Windows. Discover a redesigned interface with Nexus Discovery, new achievement notifications, a library release calendar, local and cloud backups, per-game Steam accounts, play activity, storage tools, tabs, notes and custom backgrounds. Choose the tools you need in Plugins. Nexus follows Hydra’s selected language and works with your theme. An existing Hydra Launcher installation is required.
 
 **[Download installer](https://github.com/M0KA40/Hydra-Nexus/releases/latest/download/Hydra_Nexus.exe)** · [Release notes](https://github.com/M0KA40/Hydra-Nexus/releases/latest) · [Report a problem](https://github.com/M0KA40/Hydra-Nexus/issues/new/choose)
 
-For older Hydra: [BAT 2.3 compatibility edition](https://github.com/M0KA40/Hydra-Nexus/releases/download/v2.3/Hydra_Nexus.bat). New features require EXE 3.0.
+For older Hydra: [BAT 2.3 compatibility edition](https://github.com/M0KA40/Hydra-Nexus/releases/download/v2.3/Hydra_Nexus.bat). Use the latest EXE installer for current features.
 
-## Nexus Cloud · BETA
+## Nexus Discovery
 
-![Nexus Cloud](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/cloud.webp)
+![Nexus Discovery](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/discovery.webp)
 
-Keep supported game saves and local achievements in your own Dropbox or OneDrive account. Connect one provider through your browser, back up one game or all eligible games, and optionally back up after a game closes. On this PC or another, connect the same account, verify your cloud copies, review destinations and confirm before restoring.
+**Your Hydra experience, reimagined.**
 
-Cloud uses your account storage. Optional password encryption protects new backup packages; keep the original password outside this PC. Detection depends on supported locations, with manual save folders available. Restoring local files does not unlock Steam or Epic achievements.
+Nexus Discovery refreshes Hydra from Home to the details of each game. A cinematic Home spotlight presents four of Steam’s most active games, alongside new releases and discoveries inspired by your library. Refined catalogue and library layouts, subtle glass effects on game covers and smooth transitions give browsing a new look.
 
-**Where to use it: Settings → Hydra Nexus → Plugins → Nexus Cloud, then open Nexus Cloud from the sidebar.**
+Game pages organize content into Overview, Updates, About, Community and Details, including developer news and patch notes from Steam. Downloads put the game artwork and progress front and center. Redesigned Play Activity and per-game statistics bring your games, playtime, active days and sessions into focus, with weekly and monthly recaps that follow your selected theme.
+
+**Where to use it:** Settings → Hydra Nexus → Themes; achievement notification options in Settings.
+
+### Achievement notifications
+
+A new Nexus Discovery notification design brings its own look and motion to normal, hidden, rare and platinum achievements. Switch between the Nexus design and Hydra’s original notifications in Settings, customize the notification sound, and preview it with **Try notification**. The preview does not unlock achievements or change their history.
+
+[▶ Watch the achievement notification video](https://github.com/M0KA40/Hydra-Nexus/blob/main/assets/media/nexus-discovery-achievements.mp4)
 
 ## Steam launch settings
 
-![Steam launch settings](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/ac0b8e5df56367c357d743ffb2c01ea4b1fc9c9a/assets/features/steam.webp)
+![Steam launch settings](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/steam.webp)
 
 Assign a saved Steam account and launch mode to each game. Default / standalone launches normally without asking Nexus to start or switch Steam; an existing Steam session stays unchanged. Steam online uses a saved personal account online. Steam offline forces the selected account offline, including shared accounts. Only accounts already saved in Steam are listed. Turn off Steam’s account-choice prompt on startup to allow automatic switching.
 
 **Where to use it:** Library → game page → Steam button beside Play
 
+## Game Release Calendar
+
+![Game Release Calendar](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/calendar.webp)
+
+Follow release dates for games already in your library, all in one monthly calendar. See upcoming and past releases with game covers on their release days. Games sharing a date are grouped together; select a day to browse its games and open a game’s page directly.
+
+Dates refresh when data is available, with saved dates kept when a refresh fails. Games with only a year or an unconfirmed date such as TBA stay in a separate list, without assigning a guessed release day.
+
+**Where to use it:** Settings → Hydra Nexus → Plugins → Release Calendar; then Library → Calendar.
+
+## Nexus Cloud · BETA
+
+![Nexus Cloud](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/cloud.webp)
+
+Keep supported saves and local achievements in local backups, in your own Dropbox or OneDrive account, or both. Review backup status, back up one game or all eligible games, and optionally create backups after a game closes.
+
+Before restoring, review files and destinations, verify backup integrity and confirm replacements. Safety copies protect affected files. Cloud storage uses your own account, and optional password encryption protects new backup packages. Keep the original password safely. Restoring local achievement files does not unlock Steam or Epic account achievements.
+
+**Where to use it:** Settings → Hydra Nexus → Plugins → Nexus Cloud; then Nexus Cloud in the sidebar.
+
 ## Game Storage Manager
 
-![Game Storage Manager](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/1dedee7bd0a56fbe0db332a1fdb326ab8b46ac9a/assets/features/storage.webp)
+![Game Storage Manager](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/storage.webp)
 
 Browse installed games by drive, available space and measured file sizes. Search and sort by size or last played. Open a game folder or move selected games after reviewing the destination and required space. Copied files are verified before Hydra’s paths are updated and originals removed. Uncertain folders require confirmation; partial measurements are labelled. External launcher registrations and desktop shortcuts are not rewritten.
 
@@ -38,21 +66,15 @@ Browse installed games by drive, available space and measured file sizes. Search
 
 ## Play Activity
 
-![Play Activity](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/f575584cd94e2d50d5026ce64f396540ee46fc4c/assets/features/activity.webp)
+![Play Activity](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/activity.webp)
 
-Review recorded sessions, playtime and the last-played date for each game. Weekly and monthly recaps show games, active days and available dated achievements. Control notices from the bell, or disable recaps and all their notices while keeping session tracking and per-game history. Detailed history starts when Nexus tracks play; lifetime totals cannot reconstruct earlier sessions.
+Explore a redesigned history of your games, playtime, active days and sessions. Switch between weekly, monthly and custom periods, and open each game’s statistics for more detail. Recap notifications use artwork from the period and colors suited to your theme. Manage notices from the bell. Detailed session history begins when Nexus starts tracking; lifetime totals cannot reconstruct earlier sessions.
 
-**Where to use it:** Sidebar → Play activity; per-game graph beside playtime
-
-
-
-Keep separate recovery points for each game’s saves and local achievements. Restore a point, open its folder or extract a verified copy elsewhere without replacing current saves. Add an extra save folder or stop new backups for one game while keeping its history. For cloud copies, choose a folder synced by Google Drive for desktop; Drive handles cloud sync without a Google login inside Nexus. Close games before restoring. Local achievement restore does not grant Steam/Epic account unlocks.
-
-**Where to use it:** Sidebar → Backup; game Options → General → Backup
+**Where to use it:** Sidebar → Play activity; graph beside a game’s playtime
 
 ## Extract Path
 
-![Extract Path](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/f575584cd94e2d50d5026ce64f396540ee46fc4c/assets/features/extract.webp)
+![Extract Path](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/extract.webp)
 
 Download archives to one drive and extract the game to another. Enable automatic extraction in Download settings and choose Extract path. Nexus remembers the last accepted destination and keeps a destination for each queued download. A game folder is created inside it. Original archives remain in their download location for resume/seeding unless you separately enable archive deletion after extraction.
 
@@ -60,7 +82,7 @@ Download archives to one drive and extract the game to another. Enable automatic
 
 ## Download Finish Actions
 
-![Download Finish Actions](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/f575584cd94e2d50d5026ce64f396540ee46fc4c/assets/features/finish.webp)
+![Download Finish Actions](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/finish.webp)
 
 Choose a notification, Sleep or PC Shutdown after the whole download queue and enabled extractions finish. Power actions have 60 seconds to cancel. New downloads resume waiting; closing Hydra cancels the pending action. Enabling the plugin requires a Hydra restart, and restart never automatically arms a power action.
 
@@ -68,7 +90,7 @@ Choose a notification, Sleep or PC Shutdown after the whole download queue and e
 
 ## Invisible Mode
 
-![Invisible Mode](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/f575584cd94e2d50d5026ce64f396540ee46fc4c/assets/features/invisible.webp)
+![Invisible Mode](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/invisible.webp)
 
 Control Hydra activity sharing while retaining local progress and access to artwork. Enabling the plugin activates Invisible Mode immediately; change it afterward from the account menu. Private activity stays local after turning the mode off until you explicitly resume sharing. Presence updates can take time, and game notifications also depend on Hydra servers.
 
@@ -76,7 +98,7 @@ Control Hydra activity sharing while retaining local progress and access to artw
 
 ## Game Tabs
 
-![Game Tabs](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/f575584cd94e2d50d5026ce64f396540ee46fc4c/assets/features/tabs.webp)
+![Game Tabs](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/tabs.webp)
 
 Open multiple game pages in tabs within the same Hydra window and return to your place. Catalogue search results, filters and scroll are retained. Right-click a game in Catalogue or Library and choose Open in New Tab; switch using the tab bar and close with ×. Tabs belong to the current Hydra session and are not restored after a full application restart.
 
@@ -124,7 +146,7 @@ No separate Node.js or Python installation is needed to run the installer. Updat
 
 ## More information
 
-[Privacy](docs/privacy.md) · [Troubleshooting](docs/troubleshooting.md) · [Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md) · [MIT](LICENSE) · [Third-party notices](THIRD_PARTY_NOTICES.md)
+[Support](SUPPORT.md) · [Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md) · [MIT](LICENSE) · [Third-party notices](THIRD_PARTY_NOTICES.md)
 
 ## Build from source
 
@@ -135,3 +157,4 @@ python build.py
 ## Native EXE architecture
 
 [Installer, update flow and build documentation](docs/native-exe.md).
+

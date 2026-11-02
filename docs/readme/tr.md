@@ -1,94 +1,116 @@
-![Hydra Nexus — Extend your Hydra experience](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/f575584cd94e2d50d5026ce64f396540ee46fc4c/assets/promo/overview.jpg)
+![Hydra Nexus — Hydra deneyiminiz, yeniden tasarlandı.](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/promo/overview.jpg)
 
 [English](../../README.md) · [Português (Brasil)](pt-BR.md) · [Español](es.md) · [Русский](ru.md) · [العربية](ar.md) · [Français](fr.md) · [Deutsch](de.md) · [Türkçe](tr.md) · [Polski](pl.md)
 
 # Hydra Nexus
 
-Hydra Nexus, Windows üzerinde Hydra Launcher için topluluk tarafından geliştirilen bir eklentidir. Depolama araçları, oyuna özel Steam hesapları, oyun etkinliği, sekmeler, notlar ve kendi arka planlarınızı ekler. İstediğiniz araçları Plugins bölümünden açın. Hydra dilini ve temaya uyan yerel denetimleri kullanır. Hydra Launcher önceden kurulu olmalıdır.
+Hydra Nexus, Windows için Hydra Launcher’a topluluk tarafından geliştirilen bir eklentidir. Nexus Discovery arayüzünü, yeni başarım bildirimlerini, kütüphane çıkış takvimini, yerel ve bulut yedeklerini, oyuna özel Steam hesaplarını, oyun etkinliğini, depolama araçlarını, sekmeleri, notları ve özel arka planları keşfedin. İstediğiniz araçları Eklentiler bölümünden etkinleştirin. Nexus, Hydra’nın seçili dilini kullanır ve temanızla uyum sağlar. Hydra Launcher’ın kurulu olması gerekir.
 
 **[Yükleyiciyi indir](https://github.com/M0KA40/Hydra-Nexus/releases/latest/download/Hydra_Nexus.exe)** · [Sürüm notları](https://github.com/M0KA40/Hydra-Nexus/releases/latest) · [Sorun bildir](https://github.com/M0KA40/Hydra-Nexus/issues/new/choose)
 
-Eski Hydra için: [uyumlu BAT 2.3](https://github.com/M0KA40/Hydra-Nexus/releases/download/v2.3/Hydra_Nexus.bat). Yeni özellikler EXE 3.0 gerektirir.
+Eski Hydra için: [uyumlu BAT 2.3](https://github.com/M0KA40/Hydra-Nexus/releases/download/v2.3/Hydra_Nexus.bat). Güncel özellikler için en yeni EXE yükleyicisini kullanın.
+
+## Nexus Discovery
+
+![Nexus Discovery](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/discovery.webp)
+
+**Hydra deneyiminiz, yeniden tasarlandı.**
+
+Nexus Discovery, ana sayfadan oyun ayrıntılarına kadar Hydra’yı yeniler. Sinematik ana sayfa vitrini, Steam’in en aktif dört oyununu; yeni çıkan oyunlar ve kütüphanenizden ilham alan önerilerle birlikte sunar. Düzenlenen katalog ve kütüphane, kapaklardaki hafif cam efektleri ve akıcı geçişler gezinmeye yeni bir görünüm kazandırır.
+
+Oyun sayfaları içeriği Genel Bakış, Güncellemeler, Hakkında, Topluluk ve Ayrıntılar bölümlerine ayırır; Steam’den geliştirici haberleri ve güncelleme notlarını da gösterir. İndirmeler sayfası oyun görselini ve ilerlemeyi öne çıkarır. Yenilenen oyun etkinliği ve oyun istatistikleri; oyunları, süreyi, aktif günleri ve oturumları, temanıza uyum sağlayan haftalık ve aylık özetlerle sunar.
+
+**Nerede kullanılır:** Ayarlar → Hydra Nexus → Temalar; başarım bildirimi seçenekleri Ayarlar’da.
+
+### Başarım bildirimleri
+
+Yeni Nexus Discovery tasarımı; normal, gizli, nadir ve platin başarımlar için kendine özgü görünüm ve animasyonlar sunar. Ayarlar’dan Nexus ile Hydra’nın özgün bildirimleri arasında geçiş yapabilir, sesi özelleştirebilir ve **Bildirimi dene** ile önizleme yapabilirsiniz. Önizleme başarım açmaz ve başarım geçmişini değiştirmez.
+
+[▶ Başarım bildirimleri videosunu izleyin](https://github.com/M0KA40/Hydra-Nexus/blob/main/assets/media/nexus-discovery-achievements.mp4)
+
+## Steam başlatma ayarları
+
+![Steam başlatma ayarları](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/steam.webp)
+
+Her oyuna kayıtlı bir Steam hesabı ve başlatma modu atayın. Default / standalone, Nexus’tan Steam’i başlatmasını veya hesap değiştirmesini istemez; açık oturum değişmez. Steam online kişisel hesabı çevrimiçi kullanır. Steam offline, paylaşılanlar dahil seçilen hesabı çevrimdışına zorlar. Yalnızca Steam’de kayıtlı hesaplar listelenir. Otomatik geçiş için Steam açılışındaki hesap seçme sorusunu kapatın.
+
+**Nerede kullanılır:** Kütüphane → oyun sayfası → Oyna yanındaki Steam düğmesi
+
+## Oyun çıkış takvimi
+
+![Oyun çıkış takvimi](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/calendar.webp)
+
+Kütüphanenizdeki oyunların çıkış tarihlerini aylık takvimden takip edin. Yaklaşan ve geçmiş çıkışlar, ilgili günlerde oyun kapaklarıyla gösterilir. Aynı tarihte çıkan oyunlar gruplanır; oyunları görmek ve sayfalarını açmak için bir gün seçin.
+
+Veri bulunduğunda tarihler güncellenir; güncelleme başarısız olursa kayıtlı tarihler gösterilmeye devam eder. Yalnızca yılı bilinen veya tarihi henüz doğrulanmayan oyunlar, tahmini bir çıkış günü atanmadan ayrı bir listede tutulur.
+
+**Nerede kullanılır:** Ayarlar → Hydra Nexus → Eklentiler → Çıkış Takvimi; ardından Kütüphane → Takvim.
 
 ## Nexus Cloud · BETA
 
 ![Nexus Cloud](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/cloud.webp)
 
-Desteklenen kayıtları ve yerel başarımları kendi Dropbox veya OneDrive hesabınızda saklayın. Tarayıcıdan tek hizmet bağlayın, bir oyunu veya uygun tüm oyunları yedekleyin; isterseniz oyun kapandıktan sonra otomatik yedeklemeyi açın. Bu veya başka bir bilgisayarda aynı hesabı bağlayın, kopyaları ve hedefleri inceleyip geri yüklemeyi onaylayın.
+Desteklenen kayıtları ve yerel başarımları bilgisayarınızda, kendi Dropbox veya OneDrive hesabınızda ya da her ikisinde saklayın. Yedek durumunu inceleyin, bir oyunu veya uygun tüm oyunları yedekleyin; isterseniz oyun kapandıktan sonra yedek oluşturun.
 
-Cloud hesabınızdaki alanı kullanır. İsteğe bağlı şifreleme yeni paketleri korur; özgün parolayı bu bilgisayarın dışında saklayın. Algılama desteklenen konumlara bağlıdır, elle klasör eklenebilir. Yerel dosyalar Steam veya Epic başarımlarını açmaz.
+Geri yüklemeden önce dosyaları, hedefleri ve yedek bütünlüğünü inceleyip değiştirme işlemini onaylayın. Güvenlik kopyaları etkilenen dosyaları korur. Bulut, kendi hesabınızın alanını kullanır; isteğe bağlı parola şifrelemesi yeni paketleri korur. İlk parolayı güvenle saklayın. Yerel başarım dosyalarını geri yüklemek Steam veya Epic başarımlarını açmaz.
 
-**Konum: Ayarlar → Hydra Nexus → Eklentiler → Nexus Cloud; ardından kenar çubuğundan Nexus Cloud’u açın.**
+**Nerede kullanılır:** Ayarlar → Hydra Nexus → Eklentiler → Nexus Cloud; ardından kenar çubuğundan Nexus Cloud.
 
-## Steam launch settings
+## Oyun depolama yöneticisi
 
-![Steam launch settings](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/ac0b8e5df56367c357d743ffb2c01ea4b1fc9c9a/assets/features/steam.webp)
-
-Her oyuna kayıtlı bir Steam hesabı ve başlatma modu atayın. Default / standalone, Nexus’tan Steam’i başlatmasını veya hesap değiştirmesini istemez; açık oturum değişmez. Steam online kişisel hesabı çevrimiçi kullanır. Steam offline, paylaşılanlar dahil seçilen hesabı çevrimdışına zorlar. Yalnızca Steam’de kayıtlı hesaplar listelenir. Otomatik geçiş için Steam açılışındaki hesap seçme sorusunu kapatın.
-
-**Kullanım yeri:** Library → game page → Steam button beside Play
-
-## Game Storage Manager
-
-![Game Storage Manager](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/1dedee7bd0a56fbe0db332a1fdb326ab8b46ac9a/assets/features/storage.webp)
+![Oyun depolama yöneticisi](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/storage.webp)
 
 Kurulu oyunları sürücü, boş alan ve ölçülen dosya boyutuna göre görün. Boyuta veya son oynanmaya göre arayın ve sıralayın. Hedefi ve gerekli alanı inceleyerek klasör açın veya oyun taşıyın. Kopyalar, yollar güncellenip asıllar silinmeden önce doğrulanır. Belirsiz klasörler ve kısmi ölçümler işaretlenir. Harici başlatıcı kayıtları ve masaüstü kısayolları değiştirilmez.
 
-**Kullanım yeri:** Settings → below Big Picture → Game Storage Manager
+**Nerede kullanılır:** Ayarlar → Big Picture altında → Oyun depolama yöneticisi
 
-## Play Activity
+## Oyun etkinliği
 
-![Play Activity](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/f575584cd94e2d50d5026ce64f396540ee46fc4c/assets/features/activity.webp)
+![Oyun etkinliği](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/activity.webp)
 
-Oturumları, oyun süresini ve son oynanma tarihini inceleyin. Haftalık/aylık özetler oyunları, etkin günleri ve tarihli başarıları gösterir. Bildirimleri zilden yönetin veya oturum takibini koruyarak özetleri ve bildirimlerini kapatın. Ayrıntılı geçmiş Nexus takibiyle başlar; eski toplam süre geçmiş oturumları yeniden oluşturamaz.
+Oyunlarınızın, oynama sürenizin, aktif günlerinizin ve oturumlarınızın yenilenen geçmişini inceleyin. Haftalık, aylık veya özel dönemler arasında geçiş yapın ve her oyunun istatistiklerini açın. Özetlerde dönemin oyun görselleri ve temanızın renkleri kullanılır. Bildirimleri zil simgesinden yönetin. Ayrıntılı geçmiş, Nexus takibe başladığında oluşur; toplam sürelerden eski oturumlar yeniden oluşturulamaz.
 
-**Kullanım yeri:** Sidebar → Play activity; per-game graph beside playtime
+**Nerede kullanılır:** Kenar çubuğu → Oyun etkinliği; oynama süresi yanındaki grafik
 
+## Çıkartma klasörü
 
-
-Her oyunun kayıtları ve yerel başarıları için ayrı kurtarma noktaları tutun. Güncel kayıtları değiştirmeden geri yükleyin, klasörü açın veya doğrulanmış bir kopya çıkarın. Ek klasör ekleyin veya geçmişi koruyarak yeni yedekleri durdurun. Bulut için masaüstü Google Drive’ın eşitlediği klasörü seçin; Nexus içinde Google girişi gerekmez. Geri yüklemeden önce oyunları kapatın. Yerel başarıları yüklemek Steam/Epic hesabında başarı açmaz.
-
-**Kullanım yeri:** Sidebar → Backup; game Options → General → Backup
-
-## Extract Path
-
-![Extract Path](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/f575584cd94e2d50d5026ce64f396540ee46fc4c/assets/features/extract.webp)
+![Çıkartma klasörü](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/extract.webp)
 
 Arşivleri bir sürücüye indirin, oyunu diğerine çıkarın. Otomatik çıkarmayı açıp Extract path seçin. Nexus son kabul edilen hedefi ve sıradaki her indirme hedefini hatırlar; oyun klasörü oluşturur. Çıkarma sonrası silmeyi ayrıca açmadıkça arşivler sürdürme/paylaşım için indirme yerinde kalır.
 
-**Kullanım yeri:** Download settings → automatic extraction → Extract path
+**Nerede kullanılır:** İndirme ayarları → otomatik çıkartma → Çıkartma klasörü
 
-## Download Finish Actions
+## İndirme bitiş eylemleri
 
-![Download Finish Actions](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/f575584cd94e2d50d5026ce64f396540ee46fc4c/assets/features/finish.webp)
+![İndirme bitiş eylemleri](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/finish.webp)
 
 Tüm indirme sırası ve etkin çıkarmalar bitince bildirim, uyku veya PC kapatma seçin. Güç işlemlerini iptal etmek için 60 saniye vardır. Yeni indirmeler beklemeyi sürdürür; Hydra kapanınca işlem iptal olur. Eklentiyi açmak yeniden başlatma gerektirir; yeniden başlatma güç işlemini otomatik kurmaz.
 
-**Kullanım yeri:** Downloads → beside Cancel → Download Finish Actions
+**Nerede kullanılır:** İndirmeler → İptal yanında → İndirme bitiş eylemleri
 
-## Invisible Mode
+## Görünmez mod
 
-![Invisible Mode](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/f575584cd94e2d50d5026ce64f396540ee46fc4c/assets/features/invisible.webp)
+![Görünmez mod](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/invisible.webp)
 
 Yerel ilerleme ve görselleri koruyarak Hydra etkinlik paylaşımını yönetin. Eklentiyi açmak Invisible Mode’u hemen etkinleştirir; sonra hesap menüsünden değiştirebilirsiniz. Paylaşımı açıkça sürdürmedikçe mod kapatıldıktan sonra özel etkinlik yerel kalır. Durum güncellemeleri gecikebilir; bildirimler Hydra sunucularına da bağlıdır.
 
-**Kullanım yeri:** Account menu → below Friends → Invisible Mode
+**Nerede kullanılır:** Hesap menüsü → Arkadaşlar altında → Görünmez mod
 
-## Game Tabs
+## Oyun sekmeleri
 
-![Game Tabs](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/f575584cd94e2d50d5026ce64f396540ee46fc4c/assets/features/tabs.webp)
+![Oyun sekmeleri](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/tabs.webp)
 
 Aynı Hydra penceresinde birden çok oyun sayfasını sekmelerde açın. Katalog sonuçları, filtreler ve kaydırma korunur. Katalog veya kitaplıktaki oyuna sağ tıklayıp Open in New Tab seçin; çubuktan geçiş yapın, × ile kapatın. Sekmeler geçerli oturuma aittir; uygulama tamamen yeniden açılınca geri gelmez.
 
-**Kullanım yeri:** Catalogue or Library → right-click → Open in New Tab
+**Nerede kullanılır:** Katalog veya Kütüphane → sağ tık → Yeni sekmede aç
 
-## Custom backgrounds
+## Özel arka planlar
 
 https://github.com/user-attachments/assets/f69ff1b4-6250-43b1-a5d7-98ca3722d952
 
 Arka plan olarak yerel resim veya video seçin. Karartma ve bulanıklığı ayarlayın; Hydra etkin değilken videoyu isteğe bağlı duraklatın ve Reset ile tema arka planına dönün. Oynatma kodeğe bağlıdır; H.264 MP4 veya WebM önerilir.
 
-**Kullanım yeri:** Hydra Nexus Settings → Themes → Choose image or video
+**Nerede kullanılır:** Hydra Nexus Ayarları → Temalar → Resim veya video seç
 
 ## Diğer araçlar
 
@@ -124,10 +146,11 @@ Yükleyici için ayrıca Node.js veya Python gerekmez. Ayarlar, notlar, geçmiş
 
 ## Bilgi
 
-[Privacy](../../docs/privacy.md) · [Troubleshooting](../../docs/troubleshooting.md) · [Changelog](../../CHANGELOG.md) · [Contributing](../../CONTRIBUTING.md) · [MIT](../../LICENSE) · [Third-party notices](../../THIRD_PARTY_NOTICES.md)
+[Destek](../../SUPPORT.md) · [Changelog](../../CHANGELOG.md) · [Contributing](../../CONTRIBUTING.md) · [MIT](../../LICENSE) · [Third-party notices](../../THIRD_PARTY_NOTICES.md)
 
 ## Kaynaktan derle
 
 ```sh
 python build.py
 ```
+

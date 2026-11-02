@@ -1,94 +1,116 @@
-![Hydra Nexus — Extend your Hydra experience](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/f575584cd94e2d50d5026ce64f396540ee46fc4c/assets/promo/overview.jpg)
+![Hydra Nexus — Tu experiencia con Hydra, reinventada.](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/promo/overview.jpg)
 
 [English](../../README.md) · [Português (Brasil)](pt-BR.md) · [Español](es.md) · [Русский](ru.md) · [العربية](ar.md) · [Français](fr.md) · [Deutsch](de.md) · [Türkçe](tr.md) · [Polski](pl.md)
 
 # Hydra Nexus
 
-Hydra Nexus es una extensión comunitaria de Hydra Launcher para Windows. Añade gestión del almacenamiento, cuentas de Steam por juego, actividad, pestañas, notas y fondos propios. Activa las herramientas que necesites en Plugins. Sigue el idioma de Hydra y utiliza controles nativos compatibles con tu tema. Requiere una instalación previa de Hydra Launcher.
+Hydra Nexus es una extensión comunitaria de Hydra Launcher para Windows. Descubre Nexus Discovery, las nuevas notificaciones de logros, el calendario de lanzamientos de tu biblioteca, copias locales y en la nube, cuentas de Steam por juego, actividad de juego, herramientas de almacenamiento, pestañas, notas y fondos personalizados. Activa las herramientas que necesites en Plugins. Nexus sigue el idioma de Hydra y funciona con tu tema. Requiere una instalación de Hydra Launcher.
 
 **[Descargar instalador](https://github.com/M0KA40/Hydra-Nexus/releases/latest/download/Hydra_Nexus.exe)** · [Notas de versión](https://github.com/M0KA40/Hydra-Nexus/releases/latest) · [Informar de un problema](https://github.com/M0KA40/Hydra-Nexus/issues/new/choose)
 
-Para Hydra anterior: [BAT 2.3 de compatibilidad](https://github.com/M0KA40/Hydra-Nexus/releases/download/v2.3/Hydra_Nexus.bat). Las nuevas funciones requieren EXE 3.0.
+Para Hydra anterior: [BAT 2.3 de compatibilidad](https://github.com/M0KA40/Hydra-Nexus/releases/download/v2.3/Hydra_Nexus.bat). Usa el instalador EXE más reciente para las funciones actuales.
+
+## Nexus Discovery
+
+![Nexus Discovery](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/discovery.webp)
+
+**Tu experiencia con Hydra, reinventada.**
+
+Nexus Discovery renueva Hydra desde el inicio hasta los detalles de cada juego. El inicio presenta un escaparate cinematográfico con cuatro de los juegos más activos de Steam, además de novedades y recomendaciones inspiradas en tu biblioteca. El catálogo y la biblioteca incorporan una presentación más cuidada, efectos de cristal sutiles en las carátulas y transiciones suaves.
+
+Las páginas de juegos organizan el contenido en Vista general, Actualizaciones, Acerca de, Comunidad y Detalles, con noticias y notas de actualización de los desarrolladores en Steam. Descargas da protagonismo al arte del juego y al progreso. La actividad y las estadísticas de cada juego presentan tus juegos, tiempo de juego, días activos y sesiones, con resúmenes semanales y mensuales adaptados al tema elegido.
+
+**Dónde usarlo:** Ajustes → Hydra Nexus → Temas; opciones de notificaciones de logros en Ajustes.
+
+### Notificaciones de logros
+
+El nuevo diseño Nexus Discovery aporta un estilo y animaciones propios a los logros normales, ocultos, raros y de platino. En Ajustes puedes alternar entre Nexus y las notificaciones originales de Hydra, personalizar el sonido y ver una vista previa con **Probar notificación**. La prueba no desbloquea logros ni modifica su historial.
+
+[▶ Ver el vídeo de las notificaciones de logros](https://github.com/M0KA40/Hydra-Nexus/blob/main/assets/media/nexus-discovery-achievements.mp4)
+
+## Opciones de inicio de Steam
+
+![Opciones de inicio de Steam](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/steam.webp)
+
+Asigna a cada juego una cuenta de Steam guardada y un modo de inicio. Default / standalone no pide a Nexus que inicie Steam ni cambie de cuenta; una sesión abierta permanece intacta. Steam online usa una cuenta personal conectada. Steam offline fuerza el modo sin conexión de la cuenta elegida, incluidas las compartidas. Solo aparecen cuentas ya guardadas. Desactiva la pregunta de selección de cuenta al iniciar Steam para permitir el cambio automático.
+
+**Dónde usarlo:** Biblioteca → página del juego → botón Steam junto a Jugar
+
+## Calendario de lanzamientos
+
+![Calendario de lanzamientos](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/calendar.webp)
+
+Sigue las fechas de lanzamiento de los juegos de tu biblioteca en un calendario mensual. Consulta lanzamientos futuros y pasados con sus carátulas en cada fecha. Los juegos que comparten fecha se agrupan; selecciona un día para verlos y abrir sus páginas.
+
+Las fechas se actualizan cuando hay datos disponibles; si la actualización falla, se conservan las guardadas. Los juegos que solo tienen un año o una fecha sin confirmar permanecen en una lista aparte, sin inventar un día de lanzamiento.
+
+**Dónde usarlo:** Ajustes → Hydra Nexus → Plugins → Calendario de lanzamientos; después Biblioteca → Calendario.
 
 ## Nexus Cloud · BETA
 
 ![Nexus Cloud](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/cloud.webp)
 
-Guarda partidas y logros locales compatibles en tu cuenta Dropbox o OneDrive. Conecta un servicio desde el navegador, copia un juego o todos los aptos y activa, si quieres, copias al cerrar el juego. En este PC o en otro, conecta la misma cuenta, verifica las copias, revisa los destinos y confirma la restauración.
+Guarda partidas y logros locales compatibles en copias locales, en tu cuenta de Dropbox o OneDrive, o en ambos. Revisa su estado, copia un juego o todos los compatibles y, si quieres, crea copias al cerrar los juegos.
 
-Cloud usa el almacenamiento de tu cuenta. El cifrado opcional protege paquetes nuevos; guarda la contraseña original fuera de este PC. La detección depende de ubicaciones compatibles y admite carpetas manuales. Restaurar archivos locales no desbloquea logros Steam o Epic.
+Antes de restaurar, revisa archivos y destinos, verifica la integridad y confirma las sustituciones. Las copias de seguridad protegen los archivos afectados. La nube utiliza el almacenamiento de tu cuenta; el cifrado opcional protege los paquetes nuevos. Guarda la contraseña original en un lugar seguro. Restaurar archivos de logros locales no desbloquea logros en Steam o Epic.
 
-**Dónde usarlo: Ajustes → Hydra Nexus → Complementos → Nexus Cloud; después abre Nexus Cloud en la barra lateral.**
+**Dónde usarlo:** Ajustes → Hydra Nexus → Plugins → Nexus Cloud; después Nexus Cloud en la barra lateral.
 
-## Steam launch settings
+## Gestor de almacenamiento de juegos
 
-![Steam launch settings](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/ac0b8e5df56367c357d743ffb2c01ea4b1fc9c9a/assets/features/steam.webp)
-
-Asigna a cada juego una cuenta de Steam guardada y un modo de inicio. Default / standalone no pide a Nexus que inicie Steam ni cambie de cuenta; una sesión abierta permanece intacta. Steam online usa una cuenta personal conectada. Steam offline fuerza el modo sin conexión de la cuenta elegida, incluidas las compartidas. Solo aparecen cuentas ya guardadas. Desactiva la pregunta de selección de cuenta al iniciar Steam para permitir el cambio automático.
-
-**Dónde usarlo:** Library → game page → Steam button beside Play
-
-## Game Storage Manager
-
-![Game Storage Manager](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/1dedee7bd0a56fbe0db332a1fdb326ab8b46ac9a/assets/features/storage.webp)
+![Gestor de almacenamiento de juegos](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/storage.webp)
 
 Consulta juegos instalados por unidad, espacio libre y tamaño medido. Busca y ordena por tamaño o último uso. Abre una carpeta o mueve juegos tras revisar destino y espacio. Las copias se verifican antes de actualizar rutas y eliminar originales. Se indican carpetas inciertas y mediciones parciales. No se modifican registros de otros lanzadores ni accesos directos.
 
-**Dónde usarlo:** Settings → below Big Picture → Game Storage Manager
+**Dónde usarlo:** Ajustes → debajo de Big Picture → Gestor de almacenamiento de juegos
 
-## Play Activity
+## Actividad de juego
 
-![Play Activity](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/f575584cd94e2d50d5026ce64f396540ee46fc4c/assets/features/activity.webp)
+![Actividad de juego](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/activity.webp)
 
-Revisa sesiones, tiempo y última fecha de juego. Los resúmenes semanales y mensuales muestran juegos, días activos y logros fechados disponibles. Controla avisos con la campana o desactiva resúmenes y avisos manteniendo el seguimiento. El historial detallado comienza con Nexus; los totales antiguos no reconstruyen sesiones anteriores.
+Explora el historial rediseñado de juegos, tiempo de juego, días activos y sesiones. Cambia entre periodos semanales, mensuales y personalizados y abre las estadísticas de cada juego. Los resúmenes utilizan imágenes del periodo y colores de tu tema. Gestiona los avisos desde la campana. El historial detallado empieza cuando Nexus registra las sesiones; los totales antiguos no permiten reconstruir sesiones anteriores.
 
-**Dónde usarlo:** Sidebar → Play activity; per-game graph beside playtime
+**Dónde usarlo:** Barra lateral → Actividad de juego; gráfico junto al tiempo de juego
 
+## Carpeta de extracción
 
-
-Guarda puntos de recuperación separados para partidas y logros locales. Restaura, abre la carpeta o extrae una copia verificada sin reemplazar partidas actuales. Añade carpetas o detén nuevas copias de un juego conservando su historial. Para la nube, elige una carpeta sincronizada por Google Drive para ordenadores; Drive sincroniza sin iniciar sesión de Google en Nexus. Cierra los juegos antes de restaurar. Restaurar logros locales no desbloquea logros de cuentas Steam/Epic.
-
-**Dónde usarlo:** Sidebar → Backup; game Options → General → Backup
-
-## Extract Path
-
-![Extract Path](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/f575584cd94e2d50d5026ce64f396540ee46fc4c/assets/features/extract.webp)
+![Carpeta de extracción](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/extract.webp)
 
 Descarga archivos en una unidad y extrae el juego en otra. Activa la extracción automática y elige Extract path. Nexus recuerda el último destino aceptado y el de cada descarga en cola, creando una carpeta por juego. Los archivos permanecen en el destino de descarga para reanudar/compartir, salvo que actives por separado su eliminación tras extraer.
 
-**Dónde usarlo:** Download settings → automatic extraction → Extract path
+**Dónde usarlo:** Ajustes de descarga → extracción automática → Carpeta de extracción
 
-## Download Finish Actions
+## Acciones al finalizar descargas
 
-![Download Finish Actions](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/f575584cd94e2d50d5026ce64f396540ee46fc4c/assets/features/finish.webp)
+![Acciones al finalizar descargas](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/finish.webp)
 
 Elige aviso, suspensión o apagado del PC cuando termine toda la cola y las extracciones activadas. Hay 60 segundos para cancelar acciones de energía. Nuevas descargas reanudan la espera; cerrar Hydra cancela. Activar el plugin exige reiniciar Hydra y nunca arma automáticamente una acción.
 
-**Dónde usarlo:** Downloads → beside Cancel → Download Finish Actions
+**Dónde usarlo:** Descargas → junto a Cancelar → Acciones al finalizar descargas
 
-## Invisible Mode
+## Modo invisible
 
-![Invisible Mode](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/f575584cd94e2d50d5026ce64f396540ee46fc4c/assets/features/invisible.webp)
+![Modo invisible](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/invisible.webp)
 
 Controla el uso compartido de actividad en Hydra conservando progreso local e imágenes. Activar el plugin enciende Invisible Mode; luego puedes cambiarlo en el menú de cuenta. La actividad privada sigue local al desactivarlo hasta reanudar explícitamente su envío. La presencia puede tardar y los avisos también dependen de los servidores de Hydra.
 
-**Dónde usarlo:** Account menu → below Friends → Invisible Mode
+**Dónde usarlo:** Menú de cuenta → debajo de Amigos → Modo invisible
 
-## Game Tabs
+## Pestañas de juegos
 
-![Game Tabs](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/f575584cd94e2d50d5026ce64f396540ee46fc4c/assets/features/tabs.webp)
+![Pestañas de juegos](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/tabs.webp)
 
 Abre varias páginas de juegos en pestañas de la misma ventana. Se conservan resultados, filtros y desplazamiento del catálogo. Haz clic derecho en Catálogo o Biblioteca y elige Open in New Tab; cambia en la barra y cierra con ×. Las pestañas pertenecen a la sesión actual y no se recuperan tras reiniciar completamente.
 
-**Dónde usarlo:** Catalogue or Library → right-click → Open in New Tab
+**Dónde usarlo:** Catálogo o Biblioteca → clic derecho → Abrir en nueva pestaña
 
-## Custom backgrounds
+## Fondos personalizados
 
 https://github.com/user-attachments/assets/f69ff1b4-6250-43b1-a5d7-98ca3722d952
 
 Elige una imagen o vídeo local como fondo. Ajusta oscuridad y desenfoque, pausa opcionalmente el vídeo cuando Hydra esté inactivo y restaura el fondo del tema con Reset. La reproducción depende del códec; se recomienda H.264 MP4 o WebM.
 
-**Dónde usarlo:** Hydra Nexus Settings → Themes → Choose image or video
+**Dónde usarlo:** Ajustes de Hydra Nexus → Temas → Elegir imagen o vídeo
 
 ## Otras herramientas
 
@@ -124,10 +146,11 @@ El instalador no necesita Node.js o Python por separado. Se mantienen ajustes, n
 
 ## Más información
 
-[Privacy](../../docs/privacy.md) · [Troubleshooting](../../docs/troubleshooting.md) · [Changelog](../../CHANGELOG.md) · [Contributing](../../CONTRIBUTING.md) · [MIT](../../LICENSE) · [Third-party notices](../../THIRD_PARTY_NOTICES.md)
+[Ayuda](../../SUPPORT.md) · [Changelog](../../CHANGELOG.md) · [Contributing](../../CONTRIBUTING.md) · [MIT](../../LICENSE) · [Third-party notices](../../THIRD_PARTY_NOTICES.md)
 
 ## Compilar desde el código
 
 ```sh
 python build.py
 ```
+
