@@ -1,11 +1,22 @@
-name: Package native EXE
+name: Publish Hydra Nexus 4.0 fix
 on:
+  push:
+    branches: [main]
+    paths: ['.release/4.0-cloud-fix/request.json']
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
+concurrency:
+  group: nexus-4-0-publication
+  cancel-in-progress: false
 jobs:
-  package:
+  release:
+    if: github.ref == 'refs/heads/main'
     runs-on: windows-latest
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: M0KA40/Hydra-Nexus
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -14,15 +25,19 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: python build.py --exe
-      - run: python tests/check.py
-      - run: python release.py
-      - uses: actions/upload-artifact@v4
+      - name: Restore verified 4.0 source and apply reviewed fix
+        run: python .release/4.0-cloud-fix/publish.py prepare
+      - name: Build native installer
+        working-directory: release-work/Hydra-Nexus
+        run: python build.py --exe
+      - name: Check Cloud coordination, update safety and package
+        run: python .release/4.0-cloud-fix/publish.py check
+      - name: Preserve existing public assets
+        uses: actions/upload-artifact@v4
         with:
-          name: Hydra-Nexus-3.0
-          path: |
-            dist/Hydra_Nexus.exe
-            dist/Hydra-Nexus-3.0-source.zip
-            dist/Hydra-Nexus-3.0-release-notes.json
-            dist/Hydra-Nexus-exe-release.json
-            dist/SHA256SUMS.txt
+          name: previous-public-4.0-assets
+          path: release-work/previous/*
+          retention-days: 30
+          if-no-files-found: error
+      - name: Publish and verify all five release assets
+        run: python .release/4.0-cloud-fix/publish.py publish
