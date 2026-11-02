@@ -8,8 +8,6 @@ Hydra Nexus إضافة مجتمعية لـ Hydra Launcher على Windows. اكت
 
 **[تحميل المثبت](https://github.com/M0KA40/Hydra-Nexus/releases/latest/download/Hydra_Nexus.exe)** · [ملاحظات الإصدار](https://github.com/M0KA40/Hydra-Nexus/releases/latest) · [الإبلاغ عن مشكلة](https://github.com/M0KA40/Hydra-Nexus/issues/new/choose)
 
-لنسخ Hydra القديمة: [إصدار التوافق BAT 2.3](https://github.com/M0KA40/Hydra-Nexus/releases/download/v2.3/Hydra_Nexus.bat). استخدم أحدث مثبّت EXE للحصول على الميزات الحالية.
-
 ## Nexus Discovery
 
 ![Nexus Discovery](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/discovery.webp)
@@ -153,4 +151,5 @@ https://github.com/user-attachments/assets/f69ff1b4-6250-43b1-a5d7-98ca3722d952
 ```sh
 python build.py
 ```
+
 

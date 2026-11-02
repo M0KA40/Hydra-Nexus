@@ -8,8 +8,6 @@ Hydra Nexus, Windows için Hydra Launcher’a topluluk tarafından geliştirilen
 
 **[Yükleyiciyi indir](https://github.com/M0KA40/Hydra-Nexus/releases/latest/download/Hydra_Nexus.exe)** · [Sürüm notları](https://github.com/M0KA40/Hydra-Nexus/releases/latest) · [Sorun bildir](https://github.com/M0KA40/Hydra-Nexus/issues/new/choose)
 
-Eski Hydra için: [uyumlu BAT 2.3](https://github.com/M0KA40/Hydra-Nexus/releases/download/v2.3/Hydra_Nexus.bat). Güncel özellikler için en yeni EXE yükleyicisini kullanın.
-
 ## Nexus Discovery
 
 ![Nexus Discovery](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/discovery.webp)
@@ -153,4 +151,5 @@ Yükleyici için ayrıca Node.js veya Python gerekmez. Ayarlar, notlar, geçmiş
 ```sh
 python build.py
 ```
+
 

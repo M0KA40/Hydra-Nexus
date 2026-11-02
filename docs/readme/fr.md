@@ -8,8 +8,6 @@ Hydra Nexus est une extension communautaire de Hydra Launcher pour Windows. Déc
 
 **[Télécharger](https://github.com/M0KA40/Hydra-Nexus/releases/latest/download/Hydra_Nexus.exe)** · [Notes de version](https://github.com/M0KA40/Hydra-Nexus/releases/latest) · [Signaler un problème](https://github.com/M0KA40/Hydra-Nexus/issues/new/choose)
 
-Pour les anciennes versions de Hydra : [BAT 2.3 compatible](https://github.com/M0KA40/Hydra-Nexus/releases/download/v2.3/Hydra_Nexus.bat). Utilisez le dernier installateur EXE pour les fonctionnalités actuelles.
-
 ## Nexus Discovery
 
 ![Nexus Discovery](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/discovery.webp)
@@ -153,4 +151,5 @@ L’installateur ne nécessite pas d’installation séparée de Node.js ou Pyth
 ```sh
 python build.py
 ```
+
 
