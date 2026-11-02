@@ -91,5 +91,6 @@
     "test-update-shutdown.cjs",
     "test-cloud-rclone-native.cjs",
     "test-cloud-security.cjs"
-  ]
+  ],
+  "publication_attempt": 2
 }

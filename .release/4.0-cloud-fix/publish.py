@@ -47,6 +47,10 @@ def prepare():
  apply_source(PREVIOUS/'Hydra-Nexus-4.0-source.zip')
  print('Verified exact public 4.0 source and applied 14 pinned files.')
 def check():
+ # Keep fixtures off the runner profile 8.3 TEMP alias. Production restore guards stay unchanged.
+ fixture_temp=WORK/"test-temp"
+ fixture_temp.mkdir(exist_ok=True)
+ os.environ["TEMP"]=os.environ["TMP"]=str(fixture_temp.resolve())
  for file in (SOURCE/'src').rglob('*'):
   if file.suffix in ('.js','.cjs'):run('node','--check',str(file))
  run('node','--check',str(SOURCE/'dist/hydra-nexus-bridge.cjs'))
