@@ -1,0 +1,21 @@
+name: Arrange 4.2 release language links
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  arrange:
+    if: github.repository == 'M0KA40/Hydra-Nexus' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Publish linked language pages and arrange blue links in one row
+        run: python .github/nexus-release-links-4.2/arrange.py
