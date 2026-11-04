@@ -1,0 +1,25 @@
+name: Finish 4.2 languages and owner attribution
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: nexus-final-owner-attribution
+  cancel-in-progress: false
+jobs:
+  finish:
+    if: github.repository == 'M0KA40/Hydra-Nexus' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Move language choices to the top and correct task attribution
+        run: python .github/nexus-finish-4.2/finish.py
