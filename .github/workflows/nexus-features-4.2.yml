@@ -1,0 +1,70 @@
+name: Prepare Nexus 4.2 feature presentation
+
+on:
+  workflow_dispatch:
+    inputs:
+      apply_changes:
+        description: Apply all nine language pages and feature images to main
+        type: boolean
+        required: true
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nexus-4-2-feature-presentation
+  cancel-in-progress: false
+
+jobs:
+  preview:
+    if: github.repository == 'M0KA40/Hydra-Nexus' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      source_sha: ${{ steps.source.outputs.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Record the reviewed checkout
+        id: source
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Verify the allowlist and prepare the preview
+        run: python .github/nexus-features-4.2/prepare.py preview --output feature-preview
+      - name: Upload the preview and exact change list
+        uses: actions/upload-artifact@v4
+        with:
+          name: Hydra-Nexus-4.2-feature-preview
+          path: feature-preview/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Add the result to the run summary
+        run: cat feature-preview/SUMMARY.md >> "$GITHUB_STEP_SUMMARY"
+
+  apply:
+    needs: preview
+    if: inputs.apply_changes == true && github.repository == 'M0KA40/Hydra-Nexus' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.preview.outputs.source_sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Apply only the approved localized presentation files
+        run: python .github/nexus-features-4.2/prepare.py apply --output feature-preview
+      - name: Verify, commit and push through Actions
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_HEAD: ${{ needs.preview.outputs.source_sha }}
+        run: python .github/nexus-features-4.2/prepare.py commit
