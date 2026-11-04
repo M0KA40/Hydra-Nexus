@@ -1,0 +1,249 @@
+{
+  "repository": "M0KA40/Hydra-Nexus",
+  "version": "4.2",
+  "revision": 23,
+  "releaseId": 434516222,
+  "files": {
+    "Hydra_Nexus.exe": {
+      "sha256": "18451de17341218f79996436192bab148c0d69a2771e9217e922f77b7fe9143c",
+      "bytes": 53088864
+    },
+    "Hydra-Nexus-4.2-source.zip": {
+      "sha256": "16fba308e2fd70170c06831870157621324955a89c4da685d841fade915833ff",
+      "bytes": 125392804
+    },
+    "Hydra-Nexus-4.2-release-notes.json": {
+      "sha256": "1c5c15373b936186b6269fa2855778d965872dd1e2df258431957e9450a751c3",
+      "bytes": 26648
+    },
+    "Hydra-Nexus-exe-release.json": {
+      "sha256": "bbc37f1859a094ced6f3153980cf2dbc9df6b01f501bf2729275fb0ea2bf7d75",
+      "bytes": 56
+    },
+    "SHA256SUMS.txt": {
+      "sha256": "64fb98f3ef436bce6dcc98d692d650fa30003aa6478a54575c8f62778fb087fa",
+      "bytes": 375
+    }
+  },
+  "coverSha256": "72bafa17267a003b917e243d48ccf81308973bdb5efd92daf855f8ffe073b247",
+  "body": "<!-- HYDRA_NEXUS_REVISION 23 -->\n\n![Hydra Nexus 4.2](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/promo/release-4.2.png)\n\n# Hydra Nexus 4.2 — Release notes\n\nNew features give you more control, distinctive achievement sounds and a more polished experience throughout Hydra Nexus.\n\n## Game Pause\n\nTake a break and pick up exactly where you left off. Pause supported single-player games, including cutscenes, even when the game has no pause option. Press **F5** to pause and press it again to resume, even from another window. You can also customize the shortcut to suit you.\n\n**For supported single-player games only. Do not use in online games or games with anti-cheat.**\n\n## SteamGridDB Artwork\n\nMore ways to make your library your own. Connect your **SteamGridDB** account’s API key to recover missing artwork results in Hydra’s **Customization**, including **Icon, Logo, Library Hero and Cover**. Choose from the artwork available on SteamGridDB and give each game the look you want.\n\n## Nexus Dynamic — Achievement sounds\n\nA distinct sound for every achievement. Nexus Dynamic provides dedicated sounds for **Normal, Hidden, Rare and Platinum** achievements, matching the moment and the type of achievement you unlock. Try them in the achievement notification settings. The previous sound remains available as **Nexus Legacy**.\n\n## Custom sound management\n\nAdd a collection of your favorite sounds, choose the one you want to use and remove those you no longer need from a clearer, easier-to-use list.\n\n## Developer blogs — Updates\n\nFollow news and updates from each game’s developers in a clearer, better-organized format. Posts now support the languages published by the developer and supported by Hydra Nexus. Your interface language is used when available, and you can switch between the languages available for each post.\n\n## Feedback — Get in touch\n\nA dedicated section lets you send messages directly to the Hydra Nexus developer. Share your suggestions, ideas for future features and feedback about the tool.\n\n## Translation improvements\n\nImproved translations across supported languages, with clearer, more consistent wording throughout the interface.\n\n## A lighter installer and general improvements\n\nInstallation files have been reorganized, cleaned up and compressed, cutting the installer size roughly in half, alongside interface improvements and a range of bug fixes.\n\n<details>\n<summary>Português (Brasil)</summary>\n\n# Hydra Nexus 4.2 — Notas da atualização\n\nNovos recursos oferecem mais controle, sons de conquistas exclusivos e uma experiência mais organizada no Hydra Nexus.\n\n## Game Pause\n\nFaça uma pausa e continue exatamente de onde parou. Pause jogos de um jogador compatíveis, incluindo cenas cinematográficas, mesmo quando o jogo não oferece essa opção. Pressione **F5** para pausar e novamente para continuar, inclusive a partir de outra janela. Você também pode personalizar o atalho como preferir.\n\n**Somente para jogos de um jogador compatíveis. Não use em jogos online nem em jogos com sistemas antitrapaça.**\n\n## SteamGridDB Artwork\n\nMais opções para personalizar sua biblioteca. Vincule a chave de API da sua conta do **SteamGridDB** para recuperar resultados de imagens ausentes em **Personalização** no Hydra, incluindo **Icon, Logo, Library Hero e Cover**. Escolha entre as imagens disponíveis no site e dê a cada jogo o visual que você deseja.\n\n## Nexus Dynamic — Sons de conquistas\n\nUm som especial para cada conquista. O Nexus Dynamic oferece sons próprios para conquistas **normais, ocultas, raras (Rare) e de platina (Platinum)**, acompanhando cada momento e tipo de conquista desbloqueada. Experimente-os nas configurações das notificações de conquistas. O som anterior continua disponível como **Nexus Legacy**.\n\n## Gerenciamento de sons personalizados\n\nAdicione seus sons favoritos, escolha qual deseja usar e remova os que não precisa mais em uma lista mais organizada e fácil de usar.\n\n## Publicações dos desenvolvedores — Updates\n\nAcompanhe as notícias e atualizações dos desenvolvedores de cada jogo em um formato mais claro e organizado. As publicações agora oferecem os idiomas disponibilizados pelo desenvolvedor e compatíveis com o Hydra Nexus. O idioma da interface é usado quando disponível, e você pode alternar entre os idiomas oferecidos em cada publicação.\n\n## Feedback — Fale com o desenvolvedor\n\nUma seção dedicada permite enviar mensagens diretamente ao desenvolvedor do Hydra Nexus. Compartilhe sugestões, ideias para novos recursos e comentários sobre a ferramenta.\n\n## Melhorias nas traduções\n\nTraduções aprimoradas nos idiomas compatíveis, com textos mais claros e consistentes em toda a interface.\n\n## Instalador mais leve e melhorias gerais\n\nOs arquivos de instalação foram reorganizados, limpos e comprimidos, reduzindo o tamanho do instalador aproximadamente pela metade. A atualização também traz melhorias na interface e diversas correções de erros.\n\n</details>\n\n<details>\n<summary>Español</summary>\n\n# Hydra Nexus 4.2 — Notas de la actualización\n\nNuevas funciones para darte más control, sonidos de logros exclusivos y una experiencia más cuidada y organizada en Hydra Nexus.\n\n## Game Pause\n\nTómate un descanso y continúa justo donde lo dejaste. Pausa los juegos para un jugador compatibles, incluidas las cinemáticas, aunque el juego no tenga una opción de pausa. Pulsa **F5** para pausar y vuelve a pulsarlo para continuar, incluso desde otra ventana. También puedes personalizar el atajo a tu gusto.\n\n**Solo para juegos de un jugador compatibles. No lo uses en juegos en línea ni en juegos con sistemas antitrampas.**\n\n## SteamGridDB Artwork\n\nMás opciones para personalizar tu biblioteca. Vincula la clave API de tu cuenta de **SteamGridDB** para recuperar resultados de imágenes que faltan en **Personalización** de Hydra, incluidos **Icon, Logo, Library Hero y Cover**. Elige entre las imágenes disponibles en el sitio y dale a cada juego el aspecto que prefieras.\n\n## Nexus Dynamic — Sonidos de logros\n\nUn sonido especial para cada logro. Nexus Dynamic ofrece sonidos específicos para los logros **normales, ocultos, raros (Rare) y de platino (Platinum)**, adaptados a cada momento y al tipo de logro que desbloqueas. Pruébalos en los ajustes de las notificaciones de logros. El sonido anterior sigue disponible como **Nexus Legacy**.\n\n## Gestión de sonidos personalizados\n\nAñade tus sonidos favoritos, elige cuál quieres usar y elimina los que ya no necesites desde una lista más clara y fácil de usar.\n\n## Publicaciones de los desarrolladores — Updates\n\nSigue las noticias y actualizaciones de los desarrolladores de cada juego con un formato más claro y organizado. Las publicaciones ahora permiten consultar los idiomas que ofrece el desarrollador y que admite Hydra Nexus. Se muestran en el idioma de la interfaz cuando está disponible, y puedes cambiar entre los idiomas disponibles en cada publicación.\n\n## Feedback — Contacto directo\n\nUna sección dedicada te permite enviar mensajes directamente al desarrollador de Hydra Nexus. Comparte tus sugerencias, ideas para futuras funciones y comentarios sobre la herramienta.\n\n## Mejoras en las traducciones\n\nTraducciones mejoradas en los idiomas compatibles, con textos más claros y coherentes en toda la interfaz.\n\n## Un instalador más ligero y mejoras generales\n\nLos archivos de instalación se han reorganizado, depurado y comprimido para reducir el tamaño del instalador aproximadamente a la mitad, junto con mejoras en la interfaz y diversas correcciones de errores.\n\n</details>\n\n<details>\n<summary>Русский</summary>\n\n# Hydra Nexus 4.2 — Что нового\n\nБольше возможностей управления, особые звуки достижений и более удобная, продуманная работа с Hydra Nexus.\n\n## Game Pause\n\nСделайте перерыв и продолжите с того же момента. Приостанавливайте поддерживаемые одиночные игры, включая внутриигровые ролики, даже если в самой игре нет паузы. Нажмите **F5**, чтобы приостановить игру, и ещё раз, чтобы продолжить — даже из другого окна. Сочетание клавиш можно настроить под себя.\n\n**Только для поддерживаемых одиночных игр. Не используйте в сетевых играх и играх с античитом.**\n\n## SteamGridDB Artwork\n\nБольше возможностей для оформления библиотеки. Подключите API-ключ своего аккаунта **SteamGridDB**, чтобы получать недостающие изображения в разделе **«Оформление»** Hydra: **Icon, Logo, Library Hero и Cover**. Выбирайте изображения, доступные на сайте, и оформляйте каждую игру по своему вкусу.\n\n## Nexus Dynamic — Звуки достижений\n\nДля каждого достижения — свой звук. Nexus Dynamic предлагает отдельные звуки для **обычных, скрытых, редких (Rare) и платиновых (Platinum)** достижений, соответствующие моменту и типу полученной награды. Прослушать их можно в настройках уведомлений о достижениях. Прежний звук по-прежнему доступен под названием **Nexus Legacy**.\n\n## Управление собственными звуками\n\nДобавляйте любимые звуки, выбирайте нужный и удаляйте те, которыми больше не пользуетесь, в более удобном и упорядоченном списке.\n\n## Публикации разработчиков — Updates\n\nЧитайте новости и обновления от разработчиков каждой игры в более понятном и удобном формате. Теперь доступны языки, на которых разработчик публикует записи и которые поддерживает Hydra Nexus. Если есть версия на языке интерфейса, она открывается автоматически. Между доступными языками каждой записи можно переключаться.\n\n## Feedback — Прямая связь\n\nВ новом разделе можно отправлять сообщения напрямую разработчику Hydra Nexus. Делитесь предложениями, идеями для будущих функций и замечаниями о работе инструмента.\n\n## Улучшенные переводы\n\nПереводы на поддерживаемые языки доработаны: формулировки стали понятнее, а терминология — последовательнее.\n\n## Более компактный установщик и общие улучшения\n\nФайлы установки упорядочены, очищены от лишнего и сжаты, благодаря чему размер установщика уменьшился примерно вдвое. Также улучшен интерфейс и исправлен ряд ошибок.\n\n</details>\n\n<details>\n<summary>العربية</summary>\n\n# Hydra Nexus 4.2 — ملاحظات التحديث\n\nإضافات جديدة تمنحكم تحكمًا أكبر، وأصوات إنجازات مميزة، وتجربة أكثر ترتيبًا داخل Hydra Nexus.\n\n## Game Pause\n\nخذ استراحة وأكمل من نفس اللحظة. أوقف الألعاب الفردية المدعومة مؤقتًا، بما فيها المشاهد السينمائية، حتى عندما لا توفر اللعبة خيار الإيقاف. اضغط **F5** للإيقاف واضغطه مجددًا للاستكمال، حتى من نافذة أخرى، مع إمكانية تخصيص الاختصار بما يناسبك.\n\n**للألعاب الفردية المدعومة فقط؛ لا تستخدمها في الألعاب عبر الإنترنت أو مع أنظمة مكافحة الغش.**\n\n## SteamGridDB Artwork\n\nخيارات أكثر لتخصيص مظهر مكتبتك. اربط مفتاح API الخاص بحسابك على **SteamGridDB** لاستعادة نتائج الصور الناقصة داخل **Customization** في Hydra، بما يشمل **Icon وLogo وLibrary Hero وCover**. اختر من الصور المتاحة على الموقع وامنح كل لعبة المظهر الذي يناسبها.\n\n## Nexus Dynamic — أصوات الإنجازات\n\nلكل إنجاز نغمته الخاصة. يقدم Nexus Dynamic أصواتًا مخصصة للإنجازات **العادية، والمخفية، والنادرة Rare، والبلاتينية Platinum**، لتناسب كل لحظة ونوع الإنجاز الذي تحصل عليه. يمكنكم تجربتها من قسم إشعارات الإنجازات في الإعدادات، مع بقاء الصوت السابق متاحًا باسم **Nexus Legacy**.\n\n## إدارة الأصوات المخصصة\n\nأضيفوا مجموعة من أصواتكم المفضلة، واختاروا الصوت الذي تريدون استخدامه، واحذفوا الأصوات التي لم تعودوا بحاجة إليها من قائمة أكثر ترتيبًا وسهولة.\n\n## مدونات المطورين — Updates\n\nتابعوا أخبار وتحديثات مطوري كل لعبة بتنسيق أوضح وأكثر تنظيمًا. أصبحت المدونات تدعم عرض اللغات التي ينشرها المطور ويدعمها Hydra Nexus؛ تُعرض بلغة الواجهة عند توفرها، ويمكن التبديل بين اللغات المتاحة لكل مدونة.\n\n## Feedback — تواصل مباشر\n\nأضفنا قسمًا مخصصًا لإرسال رسائلكم إلى مطور Hydra Nexus مباشرة. شاركونا اقتراحاتكم، وأفكاركم للميزات القادمة، وملاحظاتكم حول الأداة.\n\n## تحسينات الترجمة\n\nتحسين ترجمات اللغات المدعومة وإعادة صياغة عدد من النصوص لتكون أوضح وأكثر تناسقًا.\n\n## مثبّت أخف وتحسينات عامة\n\nإعادة تنظيم ملفات التثبيت وتنظيفها وضغطها، لتقليل حجم المثبّت إلى النصف، إلى جانب تحسينات عامة على الواجهة وإصلاحات متنوعة للأخطاء.\n\n</details>\n\n<details>\n<summary>Français</summary>\n\n# Hydra Nexus 4.2 — Notes de mise à jour\n\nDe nouvelles fonctions pour mieux garder le contrôle, des sons de succès distinctifs et une expérience plus soignée dans Hydra Nexus.\n\n## Game Pause\n\nFaites une pause et reprenez exactement où vous en étiez. Mettez en pause les jeux solo compatibles, y compris les cinématiques, même lorsque le jeu ne propose pas cette option. Appuyez sur **F5** pour suspendre le jeu, puis à nouveau pour reprendre, même depuis une autre fenêtre. Vous pouvez aussi personnaliser le raccourci selon vos préférences.\n\n**Réservé aux jeux solo compatibles. Ne l’utilisez pas dans les jeux en ligne ni dans les jeux dotés d’un système anti-triche.**\n\n## SteamGridDB Artwork\n\nPlus de possibilités pour personnaliser votre bibliothèque. Associez la clé API de votre compte **SteamGridDB** pour retrouver les résultats d’images manquants dans la rubrique **Personnalisation** de Hydra, notamment **Icon, Logo, Library Hero et Cover**. Choisissez parmi les images disponibles sur le site et donnez à chaque jeu l’apparence qui vous convient.\n\n## Nexus Dynamic — Sons des succès\n\nÀ chaque succès son propre son. Nexus Dynamic propose des sons dédiés aux succès **normaux, cachés, rares (Rare) et de platine (Platinum)**, adaptés au moment et au type de succès obtenu. Vous pouvez les écouter dans les paramètres des notifications de succès. Le son précédent reste disponible sous le nom **Nexus Legacy**.\n\n## Gestion des sons personnalisés\n\nAjoutez vos sons préférés, choisissez celui à utiliser et supprimez ceux dont vous n’avez plus besoin dans une liste plus claire et plus simple à gérer.\n\n## Publications des développeurs — Updates\n\nSuivez l’actualité et les mises à jour des développeurs de chaque jeu dans une présentation plus claire et mieux organisée. Les publications proposent désormais les langues fournies par le développeur et prises en charge par Hydra Nexus. Elles s’affichent dans la langue de l’interface lorsqu’elle est disponible, et vous pouvez choisir parmi les langues proposées pour chaque publication.\n\n## Feedback — Contact direct\n\nUne rubrique dédiée vous permet d’envoyer vos messages directement au développeur de Hydra Nexus. Partagez vos suggestions, vos idées pour de futures fonctions et vos remarques sur l’outil.\n\n## Amélioration des traductions\n\nLes traductions des langues prises en charge ont été affinées, avec des formulations plus claires et une terminologie plus cohérente dans toute l’interface.\n\n## Un installateur plus léger et des améliorations générales\n\nLes fichiers d’installation ont été réorganisés, nettoyés et compressés pour ramener la taille de l’installateur à environ la moitié de sa taille précédente. Cette version apporte également des améliorations de l’interface et diverses corrections de bugs.\n\n</details>\n\n<details>\n<summary>Deutsch</summary>\n\n# Hydra Nexus 4.2 — Versionshinweise\n\nNeue Funktionen geben dir mehr Kontrolle, individuelle Erfolgsklänge und ein übersichtlicheres Erlebnis in Hydra Nexus.\n\n## Game Pause\n\nMach eine Pause und spiele genau dort weiter, wo du aufgehört hast. Pausiere unterstützte Einzelspielerspiele einschließlich Zwischensequenzen, auch wenn das Spiel selbst keine Pausefunktion bietet. Drücke **F5** zum Pausieren und erneut zum Fortsetzen — auch aus einem anderen Fenster. Das Tastenkürzel kannst du nach deinen Wünschen anpassen.\n\n**Nur für unterstützte Einzelspielerspiele. Nicht in Online-Spielen oder Spielen mit Anti-Cheat verwenden.**\n\n## SteamGridDB Artwork\n\nMehr Möglichkeiten, deine Bibliothek zu gestalten. Verknüpfe den API-Schlüssel deines **SteamGridDB**-Kontos, um fehlende Bildergebnisse in Hydras Bereich **Anpassung** wiederzufinden, darunter **Icon, Logo, Library Hero und Cover**. Wähle aus den auf der Website verfügbaren Bildern und gib jedem Spiel das passende Aussehen.\n\n## Nexus Dynamic — Erfolgsklänge\n\nFür jeden Erfolg der passende Klang. Nexus Dynamic bietet eigene Klänge für **normale, versteckte, seltene (Rare) und Platin-Erfolge (Platinum)**, passend zum Moment und zur Art des freigeschalteten Erfolgs. Du kannst sie in den Einstellungen für Erfolgsbenachrichtigungen ausprobieren. Der bisherige Klang bleibt als **Nexus Legacy** verfügbar.\n\n## Eigene Klänge verwalten\n\nFüge deine Lieblingsklänge hinzu, wähle den gewünschten Klang aus und entferne nicht mehr benötigte Einträge in einer übersichtlicheren, leichter bedienbaren Liste.\n\n## Entwicklerbeiträge — Updates\n\nVerfolge Neuigkeiten und Updates der jeweiligen Spieleentwickler in einer klareren und übersichtlicheren Darstellung. Beiträge unterstützen jetzt die Sprachen, in denen der Entwickler veröffentlicht und die Hydra Nexus unterstützt. Wenn verfügbar, wird deine Oberflächensprache verwendet. Für jeden Beitrag kannst du zwischen den angebotenen Sprachen wechseln.\n\n## Feedback — Direkter Kontakt\n\nIn einem eigenen Bereich kannst du Nachrichten direkt an den Entwickler von Hydra Nexus senden. Teile deine Vorschläge, Ideen für künftige Funktionen und Rückmeldungen zum Tool.\n\n## Verbesserte Übersetzungen\n\nDie Übersetzungen der unterstützten Sprachen wurden überarbeitet. Klarere Formulierungen und einheitlichere Begriffe sorgen für eine verständlichere Oberfläche.\n\n## Kleineres Installationsprogramm und allgemeine Verbesserungen\n\nDie Installationsdateien wurden neu geordnet, bereinigt und komprimiert. Dadurch ist das Installationsprogramm ungefähr halb so groß. Hinzu kommen Verbesserungen an der Oberfläche und verschiedene Fehlerbehebungen.\n\n</details>\n\n<details>\n<summary>Türkçe</summary>\n\n# Hydra Nexus 4.2 — Güncelleme notları\n\nDaha fazla kontrol sağlayan yeni özellikler, farklı başarım türlerine özel sesler ve Hydra Nexus genelinde daha düzenli bir deneyim.\n\n## Game Pause\n\nAra verin, sonra tam kaldığınız yerden devam edin. Oyunun kendi duraklatma seçeneği olmasa bile desteklenen tek oyunculu oyunları ve ara sahneleri duraklatın. Duraklatmak için **F5** tuşuna basın; devam etmek için başka bir penceredeyken bile tekrar basmanız yeterli. Kısayolu tercihinize göre özelleştirebilirsiniz.\n\n**Yalnızca desteklenen tek oyunculu oyunlar içindir. Çevrimiçi oyunlarda veya hile önleme sistemi bulunan oyunlarda kullanmayın.**\n\n## SteamGridDB Artwork\n\nKitaplığınızı kişiselleştirmek için daha fazla seçenek. **SteamGridDB** hesabınızın API anahtarını bağlayarak Hydra’nın **Özelleştirme** bölümündeki eksik görsel sonuçlarını bulun. **Icon, Logo, Library Hero ve Cover** türleri desteklenir. Sitedeki görseller arasından seçim yaparak her oyuna istediğiniz görünümü kazandırın.\n\n## Nexus Dynamic — Başarım sesleri\n\nHer başarıma özel bir ses. Nexus Dynamic, **normal, gizli, nadir (Rare) ve platin (Platinum)** başarımlar için o ana ve açtığınız başarımın türüne uygun sesler sunar. Bu sesleri başarım bildirimi ayarlarından deneyebilirsiniz. Önceki ses de **Nexus Legacy** adıyla kullanılabilir olmaya devam eder.\n\n## Özel ses yönetimi\n\nSevdiğiniz sesleri ekleyin, kullanmak istediğinizi seçin ve artık ihtiyaç duymadıklarınızı daha düzenli ve kolay kullanılan bir listeden kaldırın.\n\n## Geliştirici yazıları — Updates\n\nHer oyunun geliştiricisinden gelen haber ve güncellemeleri daha açık ve düzenli bir biçimde takip edin. Yazılar artık geliştiricinin yayımladığı ve Hydra Nexus’un desteklediği dillerde görüntülenebilir. Varsa arayüz diliniz kullanılır; her yazı için sunulan diller arasında geçiş yapabilirsiniz.\n\n## Feedback — Doğrudan iletişim\n\nYeni bölümden Hydra Nexus geliştiricisine doğrudan mesaj gönderebilirsiniz. Önerilerinizi, gelecekteki özelliklere ilişkin fikirlerinizi ve araç hakkındaki görüşlerinizi paylaşın.\n\n## Çeviri iyileştirmeleri\n\nDesteklenen dillerin çevirileri geliştirildi; arayüzdeki metinler daha anlaşılır ve tutarlı olacak şekilde düzenlendi.\n\n## Daha küçük yükleyici ve genel iyileştirmeler\n\nKurulum dosyaları yeniden düzenlendi, gereksiz içerikler kaldırıldı ve dosyalar sıkıştırıldı. Böylece yükleyicinin boyutu yaklaşık yarıya indirildi. Arayüz iyileştirmeleri ve çeşitli hata düzeltmeleri de yapıldı.\n\n</details>\n\n<details>\n<summary>Polski</summary>\n\n# Hydra Nexus 4.2 — Informacje o aktualizacji\n\nNowe funkcje zapewniają większą kontrolę, wyjątkowe dźwięki osiągnięć i bardziej uporządkowaną obsługę Hydra Nexus.\n\n## Game Pause\n\nZrób przerwę i wróć dokładnie do tego samego momentu. Wstrzymuj obsługiwane gry jednoosobowe, również podczas przerywników filmowych, nawet jeśli sama gra nie oferuje pauzy. Naciśnij **F5**, aby wstrzymać grę, i ponownie, aby ją wznowić — także z innego okna. Skrót możesz dostosować do swoich potrzeb.\n\n**Tylko do obsługiwanych gier jednoosobowych. Nie używaj w grach online ani w grach z systemem antycheat.**\n\n## SteamGridDB Artwork\n\nWięcej możliwości personalizacji biblioteki. Połącz klucz API swojego konta **SteamGridDB**, aby odzyskać brakujące wyniki wyszukiwania grafik w sekcji **Dostosowywanie** programu Hydra. Obsługiwane typy to **Icon, Logo, Library Hero i Cover**. Wybieraj spośród grafik dostępnych w serwisie i nadaj każdej grze wybrany wygląd.\n\n## Nexus Dynamic — Dźwięki osiągnięć\n\nKażde osiągnięcie ma swój dźwięk. Nexus Dynamic oferuje osobne dźwięki dla osiągnięć **zwykłych, ukrytych, rzadkich (Rare) i platynowych (Platinum)**, dopasowane do chwili i rodzaju zdobytej nagrody. Możesz je wypróbować w ustawieniach powiadomień o osiągnięciach. Poprzedni dźwięk pozostaje dostępny jako **Nexus Legacy**.\n\n## Zarządzanie własnymi dźwiękami\n\nDodawaj ulubione dźwięki, wybieraj ten, którego chcesz używać, i usuwaj niepotrzebne pozycje z bardziej przejrzystej i wygodniejszej listy.\n\n## Wpisy deweloperów — Updates\n\nŚledź wiadomości i aktualizacje od twórców każdej gry w czytelniejszej, lepiej uporządkowanej formie. Wpisy obsługują teraz języki udostępnione przez dewelopera i wspierane przez Hydra Nexus. Jeśli jest dostępna wersja w języku interfejsu, zostaje wyświetlona automatycznie. Dla każdego wpisu możesz przełączać się między dostępnymi językami.\n\n## Feedback — Bezpośredni kontakt\n\nNowa sekcja pozwala wysyłać wiadomości bezpośrednio do twórcy Hydra Nexus. Dziel się sugestiami, pomysłami na przyszłe funkcje i uwagami dotyczącymi narzędzia.\n\n## Ulepszone tłumaczenia\n\nPoprawiono tłumaczenia obsługiwanych języków, a część tekstów przeredagowano, aby były bardziej zrozumiałe i spójne.\n\n## Mniejszy instalator i ogólne usprawnienia\n\nPliki instalacyjne zostały uporządkowane, oczyszczone i skompresowane, dzięki czemu rozmiar instalatora zmniejszył się mniej więcej o połowę. Wprowadzono też usprawnienia interfejsu i różne poprawki błędów.\n\n</details>\n\n",
+  "previous": [
+    {
+      "id": 433039644,
+      "tag": "v4.1",
+      "fingerprint": {
+        "id": 433039644,
+        "tag": "v4.1",
+        "bodySha256": "8cae3007f607434653fb5a0181ea961b6d88694409192c67eb6e4c29e00a5227",
+        "assets": [
+          {
+            "id": 706553494,
+            "name": "Hydra-Nexus-4.1-release-notes.json",
+            "size": 46299,
+            "digest": "sha256:8a7b4b2f3a59d767cd409ba3639598da3c19e8c28d50e84b16cf9d58d2343438"
+          },
+          {
+            "id": 709150468,
+            "name": "Hydra-Nexus-4.1-source.zip",
+            "size": 111396520,
+            "digest": "sha256:fccf790055de9a560f721b5b40f3c65921bb7857e86d0407b3151ce870d9bb85"
+          },
+          {
+            "id": 706553544,
+            "name": "Hydra-Nexus-exe-release.json",
+            "size": 43,
+            "digest": "sha256:c13d7613997aa2ac2c41a44f7e5cd99c1488571c0fc1e21c2a8d1b62b868e0d5"
+          },
+          {
+            "id": 706552733,
+            "name": "Hydra_Nexus.exe",
+            "size": 107114079,
+            "digest": "sha256:d505c611a0ea2f2d6ae94cdb993b722cea75ca9b88c425f6ccfd0e44ad8cc660"
+          },
+          {
+            "id": 709150481,
+            "name": "SHA256SUMS.txt",
+            "size": 375,
+            "digest": "sha256:a281ffc93a4723591998d99e7a94d3f4b780be64c91540f7cb2a10ae1644673d"
+          }
+        ]
+      }
+    },
+    {
+      "id": 431814351,
+      "tag": "v4.0",
+      "fingerprint": {
+        "id": 431814351,
+        "tag": "v4.0",
+        "bodySha256": "bfe6ff71a4e54a3b227fb64928a42df468f4d4cd55a6d792252aa705d24cdb98",
+        "assets": [
+          {
+            "id": 703438563,
+            "name": "Hydra-Nexus-4.0-release-notes.json",
+            "size": 39086,
+            "digest": "sha256:d796edaa9c5078d230c2374120dd952110270d34040e99e03ba2effc3eab526c"
+          },
+          {
+            "id": 703438344,
+            "name": "Hydra-Nexus-4.0-source.zip",
+            "size": 108657639,
+            "digest": "sha256:1ab0002ac88c7340e9e8f3e601ea84f02dfb69462f4e498fcc8060c1807dea43"
+          },
+          {
+            "id": 703438654,
+            "name": "Hydra-Nexus-exe-release.json",
+            "size": 54,
+            "digest": "sha256:2622afcf119a5c77257b9d8af75c320bce19e46633bf1183b5ebdd0763730643"
+          },
+          {
+            "id": 703438194,
+            "name": "Hydra_Nexus.exe",
+            "size": 104395359,
+            "digest": "sha256:f9b2c764af88f7d36af0e1d35a9d5af100bf66396a076cdea56915eecb4c6818"
+          },
+          {
+            "id": 703438613,
+            "name": "SHA256SUMS.txt",
+            "size": 375,
+            "digest": "sha256:b8aaf8772c42b0c4e4d5386c4e5b81ded4375fadc2f61ddcc8460ee067a9caad"
+          }
+        ]
+      }
+    },
+    {
+      "id": 429911305,
+      "tag": "v3.0",
+      "fingerprint": {
+        "id": 429911305,
+        "tag": "v3.0",
+        "bodySha256": "d6cb3a2556f2cf141787fa1ba725dcb55ad43eef5b9221e7dee58a8623c84a30",
+        "assets": [
+          {
+            "id": 695278809,
+            "name": "Hydra-Nexus-3.0-release-notes.json",
+            "size": 40229,
+            "digest": "sha256:5f0ca4eb5cdd1b1340c22157589705fdfa1cb7a6d2998bab98344789b7d101d9"
+          },
+          {
+            "id": 695278701,
+            "name": "Hydra-Nexus-3.0-source.zip",
+            "size": 57077782,
+            "digest": "sha256:b8af989d2d415ec2307ff1a0493343216d88c8ec79763366a01ceccfc5d833fe"
+          },
+          {
+            "id": 695278608,
+            "name": "Hydra_Nexus.exe",
+            "size": 52677727,
+            "digest": "sha256:9b9c14ab5b2950c8644f4a1549ea41284778b31487ea24882e0adc6cd8b19981"
+          },
+          {
+            "id": 695278826,
+            "name": "SHA256SUMS.txt",
+            "size": 279,
+            "digest": "sha256:08fc3d15fe6a48af4cbc28e76186405936c5456534bb050d1bdac1eaedd52e60"
+          }
+        ]
+      }
+    },
+    {
+      "id": 429918670,
+      "tag": "v2.3",
+      "fingerprint": {
+        "id": 429918670,
+        "tag": "v2.3",
+        "bodySha256": "d6cb3a2556f2cf141787fa1ba725dcb55ad43eef5b9221e7dee58a8623c84a30",
+        "assets": [
+          {
+            "id": 695362966,
+            "name": "Hydra-Nexus-2.3-release-notes.json",
+            "size": 5099,
+            "digest": "sha256:8c0c34e831af37a497bfc1a54cd81d129a92409057a535c96870cbe4a9509c78"
+          },
+          {
+            "id": 695363166,
+            "name": "Hydra-Nexus-2.3-source.zip",
+            "size": 8324116,
+            "digest": "sha256:9448a4f8369250ab4647292ade23786941ec7cbdc4b88fc68c61d36b12708756"
+          },
+          {
+            "id": 695427736,
+            "name": "Hydra-Nexus-3.0-release-notes.json",
+            "size": 37294,
+            "digest": "sha256:14b4b06836b62ddeeae220c7b701d8f64da03b7fd865c49ca027870c11105759"
+          },
+          {
+            "id": 695427761,
+            "name": "Hydra-Nexus-3.0-source.zip",
+            "size": 57222088,
+            "digest": "sha256:062b04ab670a85b52e8c5c101cbc6973e7d17b9d557cd6dd6e1b83f98d702e74"
+          },
+          {
+            "id": 695427925,
+            "name": "Hydra-Nexus-exe-release.json",
+            "size": 55,
+            "digest": "sha256:50992a4411856bf472e22cba6652f1fe5e8b469b59c0a928ff21605b958629a8"
+          },
+          {
+            "id": 695362871,
+            "name": "Hydra_Nexus.bat",
+            "size": 8083541,
+            "digest": "sha256:4aacb1fa436fda2fac59dc76ba920dbcd9b402b9a8527142dad069a9e7dccc30"
+          },
+          {
+            "id": 695427630,
+            "name": "Hydra_Nexus.exe",
+            "size": 52823135,
+            "digest": "sha256:cbc7191ee91ad9a3550db781b99b7f8f719b424354bddccf1e7e64c44c49b613"
+          },
+          {
+            "id": 695427869,
+            "name": "SHA256SUMS.txt",
+            "size": 647,
+            "digest": "sha256:a526714a79d22acae58cb59231ce8d994863b58ed282a0e96161128ef070354a"
+          }
+        ]
+      }
+    },
+    {
+      "id": 428120457,
+      "tag": "v2.2",
+      "fingerprint": {
+        "id": 428120457,
+        "tag": "v2.2",
+        "bodySha256": "d70537a47037547c65c99fe3d3a1f7739f96ae1e1c9dcf3548ee65a44cd1a9c2",
+        "assets": [
+          {
+            "id": 689171155,
+            "name": "Hydra-Nexus-2.2-release-notes.json",
+            "size": 13472,
+            "digest": "sha256:4b7a25650198fa894898901c6c77c41116863c17b053f35c65915e078168ff6b"
+          },
+          {
+            "id": 689219822,
+            "name": "Hydra-Nexus-2.2-source.zip",
+            "size": 8120768,
+            "digest": "sha256:320eff34b83faa85cd5785ad7d93c1e09c45dd7f44ff59267bc8fc5e312aa6dc"
+          },
+          {
+            "id": 689171154,
+            "name": "Hydra_Nexus.bat",
+            "size": 8179358,
+            "digest": "sha256:ae8f9a8e226e852bbd7067ad8449d60db30974f6c071483d283402ff360f8452"
+          },
+          {
+            "id": 689171156,
+            "name": "Hydra_Nexus_2.2.exe",
+            "size": 8927232,
+            "digest": "sha256:e2f6a8cd9df300552c77625cd0e9e4bd62b7ab5c9f0a292c45cf68dd55bb40f7"
+          },
+          {
+            "id": 689219830,
+            "name": "SHA256SUMS.txt",
+            "size": 366,
+            "digest": "sha256:03393a97ff0ed715268bd0722ef22ad588cad23fc4cea0959b744283f518dfc3"
+          }
+        ]
+      }
+    }
+  ]
+}

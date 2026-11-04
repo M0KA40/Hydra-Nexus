@@ -1,0 +1,26 @@
+name: Publish verified Hydra Nexus 4.2
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: nexus-final-4-2-release
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.repository == 'M0KA40/Hydra-Nexus' && github.ref == 'refs/heads/main'
+    runs-on: windows-latest
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify exact reviewed release files
+        run: python .github/nexus-release-4.2/publish.py verify
+      - name: Publish 4.2 as latest and preserve older releases privately
+        run: python .github/nexus-release-4.2/publish.py publish
