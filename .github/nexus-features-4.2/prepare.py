@@ -147,8 +147,8 @@ def commit():
     for name, entry in manifest['files'].items():
         if sha(regular(ROOT, name).read_bytes()) != entry['sha256']:
             raise ValueError('Staged presentation no longer matches the reviewed payload')
-    git('config', 'user.name', 'github-actions[bot]')
-    git('config', 'user.email', '41898282+github-actions[bot]@users.noreply.github.com')
+    git('config', 'user.name', 'Moka')
+    git('config', 'user.email', '102829514+M0KA40@users.noreply.github.com')
     git('add', '--', *sorted(ALLOWED))
     staged = set(filter(None, git('diff', '--cached', '--name-only', '-z').decode().split('\0')))
     if not staged:
