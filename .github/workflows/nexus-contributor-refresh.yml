@@ -1,0 +1,53 @@
+name: Refresh corrected contributor display
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  refresh:
+    if: github.repository == 'M0KA40/Hydra-Nexus' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      OWNER_ADMIN_TOKEN: ${{ secrets.NEXUS_OWNER_CACHE_4_2_ONCE }}
+    steps:
+      - name: Refresh cached contributors and restore main immediately
+        shell: python
+        run: |
+          import json,os,time,urllib.request
+          token=os.environ['OWNER_ADMIN_TOKEN']
+          assert token
+          repo='M0KA40/Hydra-Nexus'
+          def api(method,path,body=None):
+              request=urllib.request.Request('https://api.github.com/repos/'+repo+path,method=method,data=None if body is None else json.dumps(body).encode(),headers={'Accept':'application/vnd.github+json','Content-Type':'application/json','User-Agent':'Hydra-Nexus-contributor-cache'})
+              request.add_unredirected_header('Authorization','Bearer '+token)
+              with urllib.request.urlopen(request,timeout=45) as response:
+                  data=response.read();return json.loads(data) if data else None
+          metadata=api('GET','');assert metadata['default_branch']=='main'
+          head=api('GET','/git/ref/heads/main')['object']['sha'];assert head==os.environ['GITHUB_SHA']
+          assert not api('GET','/commits?sha='+head+'&author=github-actions%5Bbot%5D&per_page=100')
+          branch='nexus-cache-refresh-'+os.environ['GITHUB_RUN_ID']
+          api('POST','/git/refs',{'ref':'refs/heads/'+branch,'sha':head})
+          try:
+              api('PATCH','',{'default_branch':branch})
+              assert api('GET','')['default_branch']==branch
+          finally:
+              restored=False
+              for attempt in range(4):
+                  try:
+                      api('PATCH','',{'default_branch':'main'})
+                      assert api('GET','')['default_branch']=='main'
+                      restored=True;break
+                  except Exception:
+                      if attempt==3:raise
+                      time.sleep(2)
+              if restored:
+                  assert api('GET','/git/ref/heads/'+branch)['object']['sha']==head
+                  api('DELETE','/git/refs/heads/'+branch)
+          assert api('GET','/git/ref/heads/main')['object']['sha']==head
+          contributors=[]
+          for attempt in range(10):
+              contributors=[c.get('login') for c in api('GET','/contributors?per_page=100')]
+              if 'github-actions[bot]' not in contributors:break
+              time.sleep(3)
+          print(json.dumps({'contributors':contributors,'cacheRefreshed':'github-actions[bot]' not in contributors,'mainRestored':True,'temporaryBranchRemoved':True,'filesChanged':False,'releasesChanged':False}))
