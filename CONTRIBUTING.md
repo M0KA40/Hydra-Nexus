@@ -1,6 +1,6 @@
 # Contributing
 
-For a bug, use the issue template and include a short reproduction. For a code change, describe the behavior being fixed and the checks you ran. Reuse Hydra's native control styles. All new or changed interface copy must ship in the nine supported languages; read [localization](docs/localization.md) and `AGENTS.md` before adding a feature.
+For a bug, use the issue template and include a short reproduction. For a code change, describe the behavior being fixed and the checks you ran. Reuse Hydra's native control styles. All new or changed interface copy must ship in the nine supported languages; read the [layout rules](docs/page-layout.md) and [localization guide](docs/localization.md) before adding a feature.
 
 ## Layout
 

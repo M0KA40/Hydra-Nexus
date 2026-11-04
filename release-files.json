@@ -6,7 +6,6 @@
   ".github/workflows/release.yml",
   ".github/workflows/verify.yml",
   ".gitignore",
-  "AGENTS.md",
   "CHANGELOG.md",
   "CONTRIBUTING.md",
   "Hydra-Nexus-exe-release.json",

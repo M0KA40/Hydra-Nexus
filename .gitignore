@@ -9,3 +9,5 @@ __pycache__/
 /tests/updater-faults-*/
 /tests/preview-backend-*/
 *.log
+
+/AGENTS.md
