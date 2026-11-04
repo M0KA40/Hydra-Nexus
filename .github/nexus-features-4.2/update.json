@@ -113,9 +113,9 @@
       "beforeSha256": null
     },
     "assets/features/hydra-nexus-steamgriddb-artwork.png": {
-      "sha256": "6bc043f93ca111e24ce2b66bd2b5de96e8efe85e55a2a750a0095e351da01e23",
-      "bytes": 1982420,
-      "beforeSha256": null
+      "sha256": "977078023744e4e8787f5c8edab5cdbdbc593413c6ff318c54a0543e45678274",
+      "bytes": 1913898,
+      "beforeSha256": "6bc043f93ca111e24ce2b66bd2b5de96e8efe85e55a2a750a0095e351da01e23"
     }
   },
   "documents": {
