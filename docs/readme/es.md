@@ -54,6 +54,30 @@ Antes de restaurar, revisa archivos y destinos, verifica la integridad y confirm
 
 **Dónde usarlo:** Ajustes → Hydra Nexus → Plugins → Nexus Cloud; después Nexus Cloud en la barra lateral.
 
+## Game Pause
+
+![Game Pause — pausa y continúa con F5](../../assets/features/hydra-nexus-game-pause.gif)
+
+**Tómate un descanso y continúa justo donde lo dejaste.**
+
+Pausa los juegos para un jugador compatibles, incluidas las cinemáticas, aunque el juego no tenga una opción de pausa. Pulsa **F5** para pausar y vuelve a pulsarlo para continuar, incluso desde otra ventana. También puedes personalizar el atajo a tu gusto.
+
+**Requiere Windows 11.** **Solo para juegos de un jugador compatibles. No lo uses en juegos en línea ni en juegos con sistemas antitrampas.**
+
+**Dónde usarlo:** Ajustes → Hydra Nexus → Complementos → Game Pause → Administrar.
+
+## SteamGridDB Artwork
+
+![SteamGridDB Artwork — encuentra las imágenes que faltan en Personalización de Hydra](../../assets/features/hydra-nexus-steamgriddb-artwork.png)
+
+**Encuentra las imágenes que faltan en tus resultados.**
+
+Usa tu propia **clave API de SteamGridDB** para recuperar resultados que faltan en el selector de imágenes existente en **Personalización** de Hydra, incluidos **Icon, Logo, Library Hero y Cover**. Cuando Hydra no encuentra imágenes para un juego compatible de tu biblioteca, Nexus busca una coincidencia fiable en SteamGridDB y muestra las imágenes disponibles en el mismo selector. Tú eliges la imagen; Nexus no sustituye tus imágenes automáticamente.
+
+Crea una cuenta en SteamGridDB, consigue tu clave API en las preferencias de la cuenta, valídala y guárdala en Nexus y activa el complemento. La clave se cifra en tu dispositivo y no se incluye en las exportaciones de ajustes. Los resultados que ya funcionan no cambian. La disponibilidad depende del juego y de SteamGridDB; no se garantiza una coincidencia para todos los títulos.
+
+**Dónde usarlo:** Ajustes → Hydra Nexus → Complementos → SteamGridDB Artwork → Administrar; después abre Personalización en un juego.
+
 ## Gestor de almacenamiento de juegos
 
 ![Gestor de almacenamiento de juegos](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/storage.webp)

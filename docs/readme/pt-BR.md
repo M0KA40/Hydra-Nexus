@@ -54,6 +54,30 @@ Antes de restaurar, revise arquivos e destinos, verifique a integridade e confir
 
 **Onde usar:** Configurações → Hydra Nexus → Plugins → Nexus Cloud; depois Nexus Cloud na barra lateral.
 
+## Game Pause
+
+![Game Pause — pause e continue com F5](../../assets/features/hydra-nexus-game-pause.gif)
+
+**Faça uma pausa e continue exatamente de onde parou.**
+
+Pause jogos de um jogador compatíveis, incluindo cenas cinematográficas, mesmo quando o jogo não oferece essa opção. Pressione **F5** para pausar e novamente para continuar, inclusive a partir de outra janela. Você também pode personalizar o atalho como preferir.
+
+**Requer o Windows 11.** **Somente para jogos de um jogador compatíveis. Não use em jogos online nem em jogos com sistemas antitrapaça.**
+
+**Onde usar:** Configurações → Hydra Nexus → Plugins → Game Pause → Gerenciar.
+
+## SteamGridDB Artwork
+
+![SteamGridDB Artwork — encontre imagens ausentes na Personalização do Hydra](../../assets/features/hydra-nexus-steamgriddb-artwork.png)
+
+**Encontre as imagens que faltam nos seus resultados.**
+
+Use sua própria **chave de API do SteamGridDB** para recuperar resultados ausentes no seletor de imagens já existente em **Personalização** no Hydra, incluindo **Icon, Logo, Library Hero e Cover**. Quando o Hydra não encontra imagens para um jogo compatível da biblioteca, o Nexus procura uma correspondência confiável no SteamGridDB e mostra as imagens disponíveis no mesmo seletor. Você escolhe a imagem; o Nexus não substitui suas imagens automaticamente.
+
+Crie uma conta no SteamGridDB, obtenha sua chave de API nas preferências da conta, valide e salve a chave no Nexus e ative o plugin. A chave é criptografada no dispositivo e não é incluída nas exportações de configurações. Os resultados que já funcionam permanecem inalterados. A disponibilidade depende do jogo e do SteamGridDB; não há garantia de correspondência para todos os títulos.
+
+**Onde usar:** Configurações → Hydra Nexus → Plugins → SteamGridDB Artwork → Gerenciar; depois abra a Personalização de um jogo.
+
 ## Gerenciador de armazenamento de jogos
 
 ![Gerenciador de armazenamento de jogos](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/storage.webp)

@@ -54,6 +54,30 @@ Before restoring, review files and destinations, verify backup integrity and con
 
 **Where to use it:** Settings → Hydra Nexus → Plugins → Nexus Cloud; then Nexus Cloud in the sidebar.
 
+## Game Pause
+
+![Game Pause — pause and resume with F5](../../assets/features/hydra-nexus-game-pause.gif)
+
+**Take a break and pick up exactly where you left off.**
+
+Pause supported single-player games, including cutscenes, even when the game has no pause option. Press **F5** to pause and press it again to resume, even from another window. You can also customize the shortcut to suit you.
+
+**Windows 11 is required.** **For supported single-player games only. Do not use in online games or games with anti-cheat.**
+
+**Where to use it:** Settings → Hydra Nexus → Plugins → Game Pause → Manage.
+
+## SteamGridDB Artwork
+
+![SteamGridDB Artwork — find missing artwork in Hydra’s Customization](../../assets/features/hydra-nexus-steamgriddb-artwork.png)
+
+**Find the artwork missing from your results.**
+
+Use your own **SteamGridDB API key** to recover missing results inside Hydra’s existing **Customization** artwork picker, including **Icon, Logo, Library Hero and Cover**. When Hydra returns no artwork for a supported library game, Nexus looks for a reliable matching SteamGridDB record and shows the available images in the same picker. Choose the image you want; Nexus does not replace your artwork automatically.
+
+Create a SteamGridDB account, get your API key from your account preferences, then validate and save it in Nexus and enable the plugin. The key is encrypted on your device and excluded from settings exports. Working artwork results stay unchanged. Availability depends on the game and SteamGridDB; a match is not guaranteed for every title.
+
+**Where to use it:** Settings → Hydra Nexus → Plugins → SteamGridDB Artwork → Manage; then open a game’s Customization.
+
 ## Game Storage Manager
 
 ![Game Storage Manager](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/storage.webp)
