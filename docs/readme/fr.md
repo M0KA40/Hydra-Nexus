@@ -54,6 +54,30 @@ Avant une restauration, vérifiez les fichiers, les destinations et l’intégri
 
 **Où l’utiliser:** Paramètres → Hydra Nexus → Plugins → Nexus Cloud ; puis Nexus Cloud dans la barre latérale.
 
+## Game Pause
+
+![Game Pause — mettez en pause et reprenez avec F5](../../assets/features/hydra-nexus-game-pause.gif)
+
+**Faites une pause et reprenez exactement où vous en étiez.**
+
+Mettez en pause les jeux solo compatibles, y compris les cinématiques, même lorsque le jeu ne propose pas cette option. Appuyez sur **F5** pour suspendre le jeu, puis à nouveau pour reprendre, même depuis une autre fenêtre. Vous pouvez aussi personnaliser le raccourci selon vos préférences.
+
+**Windows 11 est requis.** **Réservé aux jeux solo compatibles. Ne l’utilisez pas dans les jeux en ligne ni dans les jeux dotés d’un système anti-triche.**
+
+**Où l’utiliser:** Paramètres → Hydra Nexus → Extensions → Game Pause → Gérer.
+
+## SteamGridDB Artwork
+
+![SteamGridDB Artwork — retrouvez les images manquantes dans la Personnalisation de Hydra](../../assets/features/hydra-nexus-steamgriddb-artwork.png)
+
+**Retrouvez les images absentes de vos résultats.**
+
+Utilisez votre propre **clé API SteamGridDB** pour retrouver les résultats manquants dans le sélecteur d’images existant de la rubrique **Personnalisation** de Hydra, notamment **Icon, Logo, Library Hero et Cover**. Lorsque Hydra ne trouve aucune image pour un jeu compatible de votre bibliothèque, Nexus recherche une correspondance fiable dans SteamGridDB et affiche les images disponibles dans le même sélecteur. Vous choisissez l’image souhaitée : Nexus ne remplace pas vos images automatiquement.
+
+Créez un compte SteamGridDB, récupérez votre clé API dans les préférences du compte, validez-la et enregistrez-la dans Nexus, puis activez l’extension. La clé est chiffrée sur votre appareil et exclue des exports de paramètres. Les résultats qui fonctionnent déjà restent inchangés. La disponibilité dépend du jeu et de SteamGridDB ; aucune correspondance n’est garantie pour tous les titres.
+
+**Où l’utiliser:** Paramètres → Hydra Nexus → Extensions → SteamGridDB Artwork → Gérer ; ouvrez ensuite la rubrique Personnalisation d’un jeu.
+
 ## Gestionnaire de stockage des jeux
 
 ![Gestionnaire de stockage des jeux](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/storage.webp)

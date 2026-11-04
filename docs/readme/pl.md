@@ -54,6 +54,30 @@ Przed przywróceniem sprawdź pliki, lokalizacje docelowe i integralność kopii
 
 **Gdzie znaleźć:** Ustawienia → Hydra Nexus → Wtyczki → Nexus Cloud; następnie Nexus Cloud na pasku bocznym.
 
+## Game Pause
+
+![Game Pause — wstrzymuj i wznawiaj grę klawiszem F5](../../assets/features/hydra-nexus-game-pause.gif)
+
+**Zrób przerwę i wróć dokładnie do tego samego momentu.**
+
+Wstrzymuj obsługiwane gry jednoosobowe, również podczas przerywników filmowych, nawet jeśli sama gra nie oferuje pauzy. Naciśnij **F5**, aby wstrzymać grę, i ponownie, aby ją wznowić — także z innego okna. Skrót możesz dostosować do swoich potrzeb.
+
+**Wymagany jest Windows 11.** **Tylko do obsługiwanych gier jednoosobowych. Nie używaj w grach online ani w grach z systemem antycheat.**
+
+**Gdzie korzystać:** Ustawienia → Hydra Nexus → Wtyczki → Game Pause → Zarządzaj.
+
+## SteamGridDB Artwork
+
+![SteamGridDB Artwork — znajdź brakujące grafiki w sekcji Dostosowywanie programu Hydra](../../assets/features/hydra-nexus-steamgriddb-artwork.png)
+
+**Znajdź grafiki, których brakuje w wynikach.**
+
+Użyj własnego **klucza API SteamGridDB**, aby odzyskać brakujące wyniki w istniejącym oknie wyboru grafik w sekcji **Dostosowywanie** programu Hydra. Obsługiwane typy to **Icon, Logo, Library Hero i Cover**. Gdy Hydra nie znajduje grafik dla obsługiwanej gry z biblioteki, Nexus szuka wiarygodnego dopasowania w SteamGridDB i wyświetla dostępne obrazy w tym samym oknie. To Ty wybierasz grafikę; Nexus nie zastępuje jej automatycznie.
+
+Utwórz konto SteamGridDB, pobierz klucz API z ustawień konta, sprawdź go i zapisz w Nexus, a następnie włącz wtyczkę. Klucz jest szyfrowany na urządzeniu i nie trafia do eksportowanych ustawień. Wyniki, które już działają, pozostają bez zmian. Dostępność zależy od gry i SteamGridDB; dopasowanie nie jest gwarantowane dla każdego tytułu.
+
+**Gdzie korzystać:** Ustawienia → Hydra Nexus → Wtyczki → SteamGridDB Artwork → Zarządzaj; następnie otwórz sekcję Dostosowywanie wybranej gry.
+
 ## Menedżer pamięci gier
 
 ![Menedżer pamięci gier](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/storage.webp)

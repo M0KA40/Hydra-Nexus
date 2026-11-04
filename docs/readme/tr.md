@@ -54,6 +54,30 @@ Geri yüklemeden önce dosyaları, hedefleri ve yedek bütünlüğünü inceleyi
 
 **Nerede kullanılır:** Ayarlar → Hydra Nexus → Eklentiler → Nexus Cloud; ardından kenar çubuğundan Nexus Cloud.
 
+## Game Pause
+
+![Game Pause — F5 ile duraklatın ve devam edin](../../assets/features/hydra-nexus-game-pause.gif)
+
+**Ara verin, sonra tam kaldığınız yerden devam edin.**
+
+Oyunun kendi duraklatma seçeneği olmasa bile desteklenen tek oyunculu oyunları ve ara sahneleri duraklatın. Duraklatmak için **F5** tuşuna basın; devam etmek için başka bir penceredeyken bile tekrar basmanız yeterli. Kısayolu tercihinize göre özelleştirebilirsiniz.
+
+**Windows 11 gereklidir.** **Yalnızca desteklenen tek oyunculu oyunlar içindir. Çevrimiçi oyunlarda veya hile önleme sistemi bulunan oyunlarda kullanmayın.**
+
+**Nerede kullanılır:** Ayarlar → Hydra Nexus → Eklentiler → Game Pause → Yönet.
+
+## SteamGridDB Artwork
+
+![SteamGridDB Artwork — Hydra’nın Özelleştirme bölümünde eksik görselleri bulun](../../assets/features/hydra-nexus-steamgriddb-artwork.png)
+
+**Sonuçlarınızda eksik olan görselleri bulun.**
+
+Kendi **SteamGridDB API anahtarınızı** kullanarak Hydra’nın **Özelleştirme** bölümündeki mevcut görsel seçicide eksik sonuçları bulun. **Icon, Logo, Library Hero ve Cover** türleri desteklenir. Hydra, kitaplığınızdaki desteklenen bir oyun için görsel bulamadığında Nexus, SteamGridDB’de güvenilir bir eşleşme arar ve bulunan görselleri aynı seçicide gösterir. Kullanılacak görseli siz seçersiniz; Nexus görsellerinizi otomatik olarak değiştirmez.
+
+Bir SteamGridDB hesabı oluşturun, hesap tercihlerinden API anahtarınızı alın, Nexus’ta doğrulayıp kaydedin ve eklentiyi etkinleştirin. Anahtar cihazınızda şifrelenir ve ayarlar dışa aktarıldığında dosyalara eklenmez. Zaten çalışan görsel sonuçları değişmez. Görsellerin bulunabilirliği oyuna ve SteamGridDB’ye bağlıdır; her oyun adı için eşleşme garanti edilmez.
+
+**Nerede kullanılır:** Ayarlar → Hydra Nexus → Eklentiler → SteamGridDB Artwork → Yönet; ardından bir oyunun Özelleştirme bölümünü açın.
+
 ## Oyun depolama yöneticisi
 
 ![Oyun depolama yöneticisi](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/features/storage.webp)
