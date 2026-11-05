@@ -1,0 +1,33 @@
+name: Publish four README images
+on:
+  push:
+    branches: [nexus-readme-artwork-20261105]
+permissions:
+  contents: read
+concurrency:
+  group: nexus-readme-artwork-20261105
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.repository == 'M0KA40/Hydra-Nexus' && github.actor == 'M0KA40'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    permissions:
+      contents: write
+    steps:
+      - name: Check out reviewed artwork
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: publish
+      - name: Verify references and stage only the four images
+        run: python3 apply-artwork.py publish
+      - name: Publish image-only commit
+        working-directory: publish
+        run: |
+          git -c user.name=Moka -c user.email=102829514+M0KA40@users.noreply.github.com commit -m 'Refresh four README feature images'
+          git push origin HEAD:refs/heads/main
