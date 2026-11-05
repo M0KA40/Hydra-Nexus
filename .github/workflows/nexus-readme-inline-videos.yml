@@ -1,0 +1,44 @@
+name: Publish inline README videos
+
+on:
+  push:
+    branches: [nexus-readme-inline-video-publish-20261105]
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    if: github.repository == 'M0KA40/Hydra-Nexus' && github.actor == 'M0KA40'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - name: Check out publisher
+        uses: actions/checkout@v4
+        with:
+          path: publisher
+          persist-credentials: false
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: publish
+      - name: Validate and publish the staged README changes
+        working-directory: publish
+        env:
+          CANDIDATE: 34e6518b748ca3b40a37e6def34701f4884d68e5
+        run: |
+          set -euo pipefail
+          python3 ../publisher/apply-inline.py . ../publisher/attachments.json
+          git diff --cached --check
+          git fetch --depth=2 origin refs/heads/nexus-readme-inline-videos-20261105
+          test "$(git rev-parse FETCH_HEAD)" = "$CANDIDATE"
+          test "$(git rev-parse "$CANDIDATE^")" = "$(git rev-parse HEAD)"
+          test "$(git write-tree)" = "$(git rev-parse "$CANDIDATE^{tree}")"
+          curl --fail --silent --show-error --location https://github.com/user-attachments/assets/a7789265-e442-4427-bd9e-e83d93fac86e |
+            ( test "$(sha256sum | cut -d ' ' -f 1)" = "d3890f495c11b0270f877023cdf1143f4af592110e19b7ab850aff6b579c5c0d" )
+          curl --fail --silent --show-error --location https://github.com/user-attachments/assets/0b01e04c-371b-4065-90f8-6928c9e9ac88 |
+            ( test "$(sha256sum | cut -d ' ' -f 1)" = "caf9b4279d56785452b99dc86b0836ba6c24fe309e00d55df4c19c586ba51520" )
+          git push origin "$CANDIDATE:refs/heads/main"
