@@ -24,7 +24,7 @@ Nexus Discovery обновляет Hydra — от главной страниц�
 
 Новый дизайн Nexus Discovery добавляет собственное оформление и анимацию для обычных, скрытых, редких и платиновых достижений. В настройках можно переключаться между Nexus и исходными уведомлениями Hydra, настраивать звук и запускать предпросмотр кнопкой **Проверить уведомление**.
 
-https://github.com/user-attachments/assets/5adbe1b9-05c3-460a-ad13-85ad4a72fe4c
+[![Уведомления о достижениях](../../assets/media/nexus-discovery-achievements-preview.jpg)](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/media/nexus-discovery-achievements.mp4)
 
 ## Параметры запуска Steam
 
@@ -56,7 +56,7 @@ https://github.com/user-attachments/assets/5adbe1b9-05c3-460a-ad13-85ad4a72fe4c
 
 ## Game Pause
 
-![Game Pause — пауза и продолжение по F5](../../assets/features/hydra-nexus-game-pause.gif)
+[![Game Pause — пауза и продолжение по F5](../../assets/media/hydra-nexus-game-pause-preview.jpg)](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/media/hydra-nexus-game-pause.mp4)
 
 **Сделайте перерыв и продолжите с того же момента.**
 

@@ -24,7 +24,7 @@ Strony gier dzielą treści na Przegląd, Aktualizacje, O grze, Społeczność i
 
 Nowy wygląd Nexus Discovery dodaje własny styl i animacje dla zwykłych, ukrytych, rzadkich i platynowych osiągnięć. W Ustawieniach możesz przełączać się między Nexus a oryginalnymi powiadomieniami Hydra, dostosować dźwięk i wyświetlić podgląd przyciskiem **Przetestuj powiadomienie**.
 
-https://github.com/user-attachments/assets/5adbe1b9-05c3-460a-ad13-85ad4a72fe4c
+[![Powiadomienia o osiągnięciach](../../assets/media/nexus-discovery-achievements-preview.jpg)](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/media/nexus-discovery-achievements.mp4)
 
 ## Ustawienia uruchamiania Steam
 
@@ -56,7 +56,7 @@ Przed przywróceniem sprawdź pliki, lokalizacje docelowe i integralność kopii
 
 ## Game Pause
 
-![Game Pause — wstrzymuj i wznawiaj grę klawiszem F5](../../assets/features/hydra-nexus-game-pause.gif)
+[![Game Pause — wstrzymuj i wznawiaj grę klawiszem F5](../../assets/media/hydra-nexus-game-pause-preview.jpg)](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/media/hydra-nexus-game-pause.mp4)
 
 **Zrób przerwę i wróć dokładnie do tego samego momentu.**
 

@@ -24,7 +24,7 @@ Oyun sayfaları içeriği Genel Bakış, Güncellemeler, Hakkında, Topluluk ve 
 
 Yeni Nexus Discovery tasarımı; normal, gizli, nadir ve platin başarımlar için kendine özgü görünüm ve animasyonlar sunar. Ayarlar’dan Nexus ile Hydra’nın özgün bildirimleri arasında geçiş yapabilir, sesi özelleştirebilir ve **Bildirimi dene** ile önizleme yapabilirsiniz.
 
-https://github.com/user-attachments/assets/5adbe1b9-05c3-460a-ad13-85ad4a72fe4c
+[![Başarım bildirimleri](../../assets/media/nexus-discovery-achievements-preview.jpg)](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/media/nexus-discovery-achievements.mp4)
 
 ## Steam başlatma ayarları
 
@@ -56,7 +56,7 @@ Geri yüklemeden önce dosyaları, hedefleri ve yedek bütünlüğünü inceleyi
 
 ## Game Pause
 
-![Game Pause — F5 ile duraklatın ve devam edin](../../assets/features/hydra-nexus-game-pause.gif)
+[![Game Pause — F5 ile duraklatın ve devam edin](../../assets/media/hydra-nexus-game-pause-preview.jpg)](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/media/hydra-nexus-game-pause.mp4)
 
 **Ara verin, sonra tam kaldığınız yerden devam edin.**
 

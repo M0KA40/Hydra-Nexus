@@ -24,7 +24,7 @@ Spielseiten gliedern Inhalte in Übersicht, Updates, Über das Spiel, Community 
 
 Das neue Nexus-Discovery-Design bringt einen eigenen Look und neue Animationen für normale, versteckte, seltene und Platin-Erfolge. Wechsle in den Einstellungen zwischen Nexus und den ursprünglichen Hydra-Benachrichtigungen, passe den Ton an und nutze **Benachrichtigung testen** für eine Vorschau.
 
-https://github.com/user-attachments/assets/5adbe1b9-05c3-460a-ad13-85ad4a72fe4c
+[![Erfolgsbenachrichtigungen](../../assets/media/nexus-discovery-achievements-preview.jpg)](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/media/nexus-discovery-achievements.mp4)
 
 ## Steam-Startoptionen
 
@@ -56,7 +56,7 @@ Prüfe vor einer Wiederherstellung Dateien, Ziele und die Integrität der Backup
 
 ## Game Pause
 
-![Game Pause — mit F5 pausieren und fortsetzen](../../assets/features/hydra-nexus-game-pause.gif)
+[![Game Pause — mit F5 pausieren und fortsetzen](../../assets/media/hydra-nexus-game-pause-preview.jpg)](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/media/hydra-nexus-game-pause.mp4)
 
 **Mach eine Pause und spiele genau dort weiter, wo du aufgehört hast.**
 

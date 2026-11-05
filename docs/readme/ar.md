@@ -24,7 +24,7 @@ Hydra Nexus إضافة مجتمعية لـ Hydra Launcher على Windows. اكت
 
 يضيف تصميم Nexus Discovery مظهرًا وحركة جديدين للإنجازات العادية والمخفية والنادرة والبلاتينية. يمكنك التبديل بين تصميم Nexus وإشعارات Hydra الأصلية من الإعدادات، وتخصيص الصوت ومعاينة الشكل عبر **تجربة الإشعار**.
 
-https://github.com/user-attachments/assets/5adbe1b9-05c3-460a-ad13-85ad4a72fe4c
+[![إشعارات الإنجازات](../../assets/media/nexus-discovery-achievements-preview.jpg)](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/media/nexus-discovery-achievements.mp4)
 
 ## إعدادات تشغيل Steam
 
@@ -56,7 +56,7 @@ https://github.com/user-attachments/assets/5adbe1b9-05c3-460a-ad13-85ad4a72fe4c
 
 ## Game Pause
 
-![Game Pause — إيقاف اللعبة واستكمالها باستخدام F5](../../assets/features/hydra-nexus-game-pause.gif)
+[![Game Pause — إيقاف اللعبة واستكمالها باستخدام F5](../../assets/media/hydra-nexus-game-pause-preview.jpg)](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/media/hydra-nexus-game-pause.mp4)
 
 **خذ استراحة وأكمل من نفس اللحظة.**
 
