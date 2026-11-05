@@ -24,7 +24,7 @@ Game pages organize content into Overview, Updates, About, Community and Details
 
 A new Nexus Discovery notification design brings its own look and motion to normal, hidden, rare and platinum achievements. Switch between the Nexus design and Hydra’s original notifications in Settings, customize the notification sound, and preview it with **Try notification**.
 
-[![Achievement notifications](assets/media/nexus-discovery-achievements-preview.jpg)](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/media/nexus-discovery-achievements.mp4)
+https://github.com/user-attachments/assets/a7789265-e442-4427-bd9e-e83d93fac86e
 
 ## Steam launch settings
 
@@ -56,7 +56,7 @@ Before restoring, review files and destinations, verify backup integrity and con
 
 ## Game Pause
 
-[![Game Pause — pause and resume with F5](assets/media/hydra-nexus-game-pause-preview.jpg)](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/media/hydra-nexus-game-pause.mp4)
+https://github.com/user-attachments/assets/0b01e04c-371b-4065-90f8-6928c9e9ac88
 
 **Take a break and pick up exactly where you left off.**
 

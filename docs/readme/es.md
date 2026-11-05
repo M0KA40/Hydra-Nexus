@@ -24,7 +24,7 @@ Las páginas de juegos organizan el contenido en Vista general, Actualizaciones,
 
 El nuevo diseño Nexus Discovery aporta un estilo y animaciones propios a los logros normales, ocultos, raros y de platino. En Ajustes puedes alternar entre Nexus y las notificaciones originales de Hydra, personalizar el sonido y ver una vista previa con **Probar notificación**.
 
-[![Notificaciones de logros](../../assets/media/nexus-discovery-achievements-preview.jpg)](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/media/nexus-discovery-achievements.mp4)
+https://github.com/user-attachments/assets/a7789265-e442-4427-bd9e-e83d93fac86e
 
 ## Opciones de inicio de Steam
 
@@ -56,7 +56,7 @@ Antes de restaurar, revisa archivos y destinos, verifica la integridad y confirm
 
 ## Game Pause
 
-[![Game Pause — pausa y continúa con F5](../../assets/media/hydra-nexus-game-pause-preview.jpg)](https://raw.githubusercontent.com/M0KA40/Hydra-Nexus/main/assets/media/hydra-nexus-game-pause.mp4)
+https://github.com/user-attachments/assets/0b01e04c-371b-4065-90f8-6928c9e9ac88
 
 **Tómate un descanso y continúa justo donde lo dejaste.**
 
