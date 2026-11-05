@@ -1,0 +1,33 @@
+name: Publish README demo videos
+on:
+  push:
+    branches: [nexus-readme-videos-20261105]
+permissions:
+  contents: read
+concurrency:
+  group: nexus-readme-videos-20261105
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.repository == 'M0KA40/Hydra-Nexus' && github.actor == 'M0KA40'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Check out reviewed video payload
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: publish
+      - name: Verify media and update the ten README files
+        run: python3 apply-videos.py publish
+      - name: Publish the reviewed video update
+        working-directory: publish
+        run: |
+          git -c user.name=Moka -c user.email=102829514+M0KA40@users.noreply.github.com commit -m 'Update achievement and Game Pause README demos'
+          git push origin HEAD:refs/heads/main
